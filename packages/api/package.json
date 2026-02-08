@@ -1,0 +1,19 @@
+{
+  "name": "@protoburn/api",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./context": "./src/context.ts",
+    "./routers/index": "./src/routers/index.ts"
+  },
+  "dependencies": {
+    "@protoburn/db": "workspace:*",
+    "@trpc/server": "catalog:",
+    "drizzle-orm": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@protoburn/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
