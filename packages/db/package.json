@@ -1,0 +1,29 @@
+{
+  "name": "@protoburn/db",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "@protoburn/env": "workspace:*",
+    "dotenv": "catalog:",
+    "drizzle-orm": "^0.45.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@protoburn/config": "workspace:*",
+    "better-sqlite3": "^12.6.2",
+    "drizzle-kit": "^0.31.8",
+    "typescript": "catalog:"
+  }
+}
