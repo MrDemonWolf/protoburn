@@ -1,0 +1,45 @@
+{
+  "name": "protoburn",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:native": "turbo -F native dev",
+    "dev:web": "turbo -F web dev",
+    "dev:server": "turbo -F server dev",
+    "db:push": "turbo -F @protoburn/db db:push",
+    "db:generate": "turbo -F @protoburn/db db:generate",
+    "db:migrate": "turbo -F @protoburn/db db:migrate",
+    "cf:deploy": "turbo -F @protoburn/infra deploy",
+    "cf:destroy": "turbo -F @protoburn/infra destroy",
+    "cf:setup": "pnpm -F @protoburn/infra exec alchemy configure",
+    "sync": "tsx scripts/sync.ts"
+  },
+  "dependencies": {
+    "@protoburn/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@protoburn/config": "workspace:*",
+    "@types/node": "^22.13.14",
+    "tsx": "^4.21.0",
+    "turbo": "^2.6.3",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.29.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild",
+      "workerd"
+    ]
+  }
+}
