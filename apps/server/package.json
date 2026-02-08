@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "alchemy dev",
+    "build": "tsdown",
+    "deploy": "alchemy deploy",
+    "destroy": "alchemy destroy",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/trpc-server": "catalog:",
+    "@protoburn/api": "workspace:*",
+    "@protoburn/db": "workspace:*",
+    "@protoburn/env": "workspace:*",
+    "@trpc/server": "catalog:",
+    "hono": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@protoburn/config": "workspace:*",
+    "alchemy": "catalog:",
+    "dotenv": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "wrangler": "catalog:"
+  }
+}
