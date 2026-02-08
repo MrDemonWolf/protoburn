@@ -1,0 +1,46 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "alchemy dev",
+    "dev:bare": "next dev --turbopack -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@protoburn/api": "workspace:*",
+    "@protoburn/env": "workspace:*",
+    "@radix-ui/react-checkbox": "catalog:",
+    "@radix-ui/react-dropdown-menu": "catalog:",
+    "@radix-ui/react-label": "catalog:",
+    "@radix-ui/react-slot": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "@trpc/client": "catalog:",
+    "@trpc/react-query": "catalog:",
+    "@trpc/server": "catalog:",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "lucide-react": "catalog:",
+    "next": "catalog:",
+    "next-themes": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "recharts": "catalog:",
+    "sonner": "catalog:",
+    "tailwind-merge": "catalog:",
+    "tailwindcss": "catalog:"
+  },
+  "devDependencies": {
+    "@protoburn/config": "workspace:*",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "alchemy": "catalog:",
+    "dotenv": "catalog:",
+    "typescript": "catalog:"
+  }
+}
