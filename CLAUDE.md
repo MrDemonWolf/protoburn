@@ -74,17 +74,18 @@ pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 
 Ambient fire particle effects based on monthly token usage (`apps/web/src/components/burn-intensity.tsx`):
 
-| Tier | Monthly Tokens | Embers | Flames | Side Glow |
-|------|---------------|--------|--------|-----------|
-| Cold | < 100K | 0 | 0 | No |
-| Spark | 100K+ | 3 | 0 | No |
-| Warm | 500K+ | 5 | 0 | No |
-| Burning | 1M+ | 8 | 4 | No |
-| Blazing | 5M+ | 12 | 6 | Yes |
-| Inferno | 10M+ | 15 | 8 | Yes |
-| Meltdown | 50M+ | 70 | 40 | Yes (full) |
+| Tier | Monthly Tokens | Embers | Flames | Side Glow | Top Glow | Special Effects |
+|------|---------------|--------|--------|-----------|----------|-----------------|
+| Cold | < 100K | 0 | 0 | No | No | — |
+| Spark | 100K+ | 5 | 0 | No | No | — |
+| Warm | 500K+ | 8 | 3 | No | No | — |
+| Burning | 1M+ | 15 | 8 | Yes (2.5vw) | No | — |
+| Blazing | 5M+ | 22 | 12 | Yes (4vw) | No | — |
+| Inferno | 10M+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
+| Meltdown | 50M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
 
-- Meltdown tier is extreme: 70 embers (bigger/faster/brighter), 40 large flames, 65vh bottom glow at 80% opacity, full-height 8vw side glows, pulsing red vignette border, top edge glow, and heat shimmer distortion
+- Inferno tier has: light pulsing vignette (3.5s cycle), top edge glow, wider side glows reaching higher up the screen
+- Meltdown tier is nuclear emergency: 120 embers (bigger/faster/brighter), 60 large flames, 75vh bottom glow at 90% opacity, full-height 10vw side glows, fast pulsing red vignette (1.2s cycle), top edge glow, heat shimmer distortion, flashing "⚠ MELTDOWN ⚠" warning text, yellow/black hazard stripe bars (top/bottom), rotating red beacon searchlights from corners, 4px strobing red edge lines, scrolling scanline overlay, and 1-2px screen shake on the burn overlay
 - Toggle on/off via flame button in header (persists to localStorage)
 - Current tier name displayed in header with color-coded label
 - Preview any tier with `?flametier=meltdown` (or any tier name) query param
