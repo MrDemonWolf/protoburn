@@ -44,7 +44,7 @@ interface BurnTier {
 }
 
 const TIERS: Record<string, BurnTier> = {
-  meltdown: { name: "meltdown", embers: 20, flames: 12, glowOpacity: 0.45, glowHeight: "25vh", sideGlow: true },
+  meltdown: { name: "meltdown", embers: 40, flames: 25, glowOpacity: 0.6, glowHeight: "40vh", sideGlow: true },
   inferno:  { name: "inferno",  embers: 15, flames: 8,  glowOpacity: 0.35, glowHeight: "20vh", sideGlow: true },
   blazing:  { name: "blazing",  embers: 12, flames: 6,  glowOpacity: 0.25, glowHeight: "15vh", sideGlow: true },
   burning:  { name: "burning",  embers: 8,  flames: 4,  glowOpacity: 0.18, glowHeight: "12vh", sideGlow: false },
