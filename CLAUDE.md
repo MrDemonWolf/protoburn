@@ -77,10 +77,10 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 | Tier | Monthly Tokens | Embers | Flames | Side Glow | Top Glow | Special Effects |
 |------|---------------|--------|--------|-----------|----------|-----------------|
 | Cold | < 100K | 0 | 0 | No | No | — |
-| Spark | 100K+ | 5 | 0 | No | No | — |
-| Warm | 500K+ | 8 | 3 | No | No | — |
-| Burning | 1M+ | 15 | 8 | Yes (2.5vw) | No | — |
-| Blazing | 5M+ | 22 | 12 | Yes (4vw) | No | — |
+| Spark | 100K+ | 8 | 2 | No | No | — |
+| Warm | 500K+ | 14 | 6 | Yes (2vw) | No | — |
+| Burning | 1M+ | 25 | 14 | Yes (3.5vw) | No | — |
+| Blazing | 5M+ | 32 | 18 | Yes (5vw) | No | — |
 | Inferno | 10M+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
 | Meltdown | 50M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
 
