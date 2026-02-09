@@ -8,6 +8,7 @@
     "destroy": "alchemy destroy"
   },
   "dependencies": {
+<<<<<<< Updated upstream
     "alchemy": "catalog:",
     "dotenv": "catalog:"
   },
@@ -15,5 +16,14 @@
     "@protoburn/config": "workspace:*",
     "typescript": "catalog:",
     "zod": "catalog:"
+=======
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@protoburn/config": "workspace:*",
+    "alchemy": "catalog:",
+    "typescript": "catalog:"
+>>>>>>> Stashed changes
   }
 }

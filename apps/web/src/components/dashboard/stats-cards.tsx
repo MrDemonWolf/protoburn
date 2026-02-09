@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< Updated upstream
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
@@ -60,6 +61,57 @@ export function StatsCards() {
             <div className="text-2xl font-bold">
               {stat.value}
             </div>
+=======
+import { useQuery } from "@tanstack/react-query";
+import { Zap, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { trpc } from "@/utils/trpc";
+
+function formatNumber(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n.toLocaleString();
+}
+
+export function StatsCards() {
+  const { data, isLoading } = useQuery(trpc.tokenUsage.totals.queryOptions());
+
+  const cards = [
+    {
+      title: "Total Tokens",
+      value: data?.totalTokens ?? 0,
+      icon: Zap,
+    },
+    {
+      title: "Input Tokens",
+      value: data?.totalInput ?? 0,
+      icon: ArrowDownToLine,
+    },
+    {
+      title: "Output Tokens",
+      value: data?.totalOutput ?? 0,
+      icon: ArrowUpFromLine,
+    },
+  ];
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-3">
+      {cards.map((card) => (
+        <Card key={card.title}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              {card.title}
+            </CardTitle>
+            <card.icon className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-8 w-24" />
+            ) : (
+              <div className="text-2xl font-bold">{formatNumber(card.value)}</div>
+            )}
+>>>>>>> Stashed changes
           </CardContent>
         </Card>
       ))}

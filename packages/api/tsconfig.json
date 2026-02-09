@@ -1,7 +1,16 @@
 {
   "extends": "@protoburn/config/tsconfig.base.json",
   "compilerOptions": {
+<<<<<<< Updated upstream
     "outDir": "dist"
   },
   "include": ["src"]
+=======
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "composite": true
+  }
+>>>>>>> Stashed changes
 }

@@ -1,7 +1,12 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
+<<<<<<< Updated upstream
   "style": "default",
   "rsc": true,
+=======
+  "style": "base-lyra",
+  "rsc": false,
+>>>>>>> Stashed changes
   "tsx": true,
   "tailwind": {
     "config": "",
@@ -10,6 +15,10 @@
     "cssVariables": true,
     "prefix": ""
   },
+<<<<<<< Updated upstream
+=======
+  "iconLibrary": "lucide",
+>>>>>>> Stashed changes
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
@@ -17,5 +26,11 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
+<<<<<<< Updated upstream
   "iconLibrary": "lucide"
+=======
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+>>>>>>> Stashed changes
 }
