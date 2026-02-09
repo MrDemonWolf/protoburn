@@ -1,14 +1,16 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
 import { calculateCost } from "@/lib/pricing";
 
-function formatNumber(n: number) {
+function formatNumber(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return n.toString();
+  return n.toLocaleString();
 }
 
 function cleanModelName(model: string) {
@@ -17,31 +19,42 @@ function cleanModelName(model: string) {
     .replace(/-\d{8}$/, "");
 }
 
-const RANK_LABELS = ["1st", "2nd", "3rd"];
+const MEDALS = [
+  { emoji: "\u{1F947}", label: "1st", color: "text-yellow-500", bg: "bg-yellow-500/10 border-yellow-500/20" },
+  { emoji: "\u{1F948}", label: "2nd", color: "text-gray-400", bg: "bg-gray-400/10 border-gray-400/20" },
+  { emoji: "\u{1F949}", label: "3rd", color: "text-amber-600", bg: "bg-amber-600/10 border-amber-600/20" },
+];
 
 export function TopModels() {
-  const { data, isLoading } = trpc.tokenUsage.byModel.useQuery();
+  const { data, isLoading } = useQuery(
+    trpc.tokenUsage.byModel.queryOptions(),
+  );
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2">
-              <Skeleton className="h-4 w-24" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-16 w-full" />
-            </CardContent>
-          </Card>
-        ))}
+      <div>
+        <div className="mb-3 flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-yellow-500" />
+          <h2 className="text-lg font-semibold">Top Models</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-16 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
 
-  type ModelData = { model: string; inputTokens: number; outputTokens: number; totalTokens: number };
-  const models = (data ?? [] as ModelData[])
-    .sort((a: ModelData, b: ModelData) => b.totalTokens - a.totalTokens)
+  const models = [...(data ?? [])]
+    .sort((a, b) => b.totalTokens - a.totalTokens)
     .slice(0, 3);
 
   if (models.length === 0) {
@@ -50,18 +63,20 @@ export function TopModels() {
 
   return (
     <div>
-      <h2 className="mb-3 text-lg font-semibold">Top Models</h2>
+      <div className="mb-3 flex items-center gap-2">
+        <Trophy className="h-5 w-5 text-yellow-500" />
+        <h2 className="text-lg font-semibold">Top Models</h2>
+      </div>
       <div className="grid gap-4 md:grid-cols-3">
-        {models.map((model: ModelData, index: number) => {
+        {models.map((model, index) => {
           const cost = calculateCost(model.model, model.inputTokens, model.outputTokens);
+          const medal = MEDALS[index]!;
           return (
-            <Card key={model.model}>
+            <Card key={model.model} className={`border ${medal.bg}`}>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center justify-between text-sm font-medium text-muted-foreground">
                   <span className="font-mono">{cleanModelName(model.model)}</span>
-                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                    {RANK_LABELS[index]}
-                  </span>
+                  <span className="text-lg" title={medal.label}>{medal.emoji}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
