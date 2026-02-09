@@ -62,8 +62,8 @@ pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 
 ## Dashboard Features
 
-- **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator; values animate with odometer roll-up effect on refresh (digits cascade up to final value via `AnimatedNumber` component)
-- **Top Models leaderboard**: Top 3 models by token usage with medal rankings (gold/silver/bronze) and per-model cost
+- **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator; values animate with odometer roll-up on page load and on refresh when data changes (digits cascade up to final value via `AnimatedNumber` component)
+- **Top Models leaderboard**: Top 3 models by token usage with medal rankings (gold/silver/bronze) and per-model cost; all numbers use odometer animation; FLIP position-swap animation when rankings change after refresh
 - **Usage chart**: Time-series token usage (Recharts), flexes to fill remaining viewport height
 - **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers (Haiku $1/$5, Sonnet $3/$15, Opus $5/$25 per million tokens), pattern-matched by model name, unknown models default to Sonnet rates
 - **Footer**: Auto-updating year with linked MrDemonWolf branding, backdrop blur
@@ -85,21 +85,22 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 | Meltdown | 50M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
 
 - Inferno tier has: light pulsing vignette (3.5s cycle), top edge glow, wider side glows reaching higher up the screen
-- Meltdown tier is nuclear emergency: 120 embers (bigger/faster/brighter), 60 large flames, 75vh bottom glow at 90% opacity, full-height 10vw side glows, fast pulsing red vignette (1.2s cycle), top edge glow, heat shimmer distortion, flashing "⚠ MELTDOWN ⚠" warning text, yellow/black hazard stripe bars (top/bottom), rotating red beacon searchlights from corners, 4px strobing red edge lines, scrolling scanline overlay, and 1-2px screen shake on the burn overlay
+- Meltdown tier is nuclear emergency: 120 embers (bigger/faster/brighter), 60 large flames, 75vh bottom glow at 90% opacity, full-height 10vw side glows, fast pulsing red vignette (1.2s cycle), top edge glow, heat shimmer distortion, flashing "⚠ MELTDOWN ⚠" warning text, yellow/black hazard stripe bars (top/bottom), rotating red beacon searchlights from corners, 4px strobing red edge lines, scrolling scanline overlay, 1-2px screen shake on the burn overlay, and screen shake on main content via `MeltdownShake` wrapper
 - Toggle on/off via flame button in header (persists to localStorage)
 - Current tier name displayed in header with color-coded label
 - Preview any tier with `?flametier=meltdown` (or any tier name) query param
 - Respects `prefers-reduced-motion` for accessibility
 - `BurnEnabledProvider` context in `providers.tsx`, `useEffectiveTier` hook for query param override
+- `MeltdownShake` wrapper component in `burn-intensity.tsx` — wraps main page content, applies `screenShake` animation when meltdown tier is active
 
 ## UI Details
 
 - **Layout**: No-scroll desktop viewport (`h-svh overflow-hidden`), chart flexes to fill remaining space
 - **Header**: Backdrop blur (`bg-background/80 backdrop-blur-md`), z-20 above burn embers; contains refresh button, fire toggle with tier label, and dark/light mode toggle
 - **Mode toggle**: Pill-style switch (sun/moon), click to toggle between light and dark
-- **Refresh button**: Invalidates all React Query caches, spinning animation during refresh; triggers odometer roll-up animation on stat cards when refetch completes
+- **Refresh button**: Invalidates all React Query caches, spinning animation during refresh; triggers odometer roll-up animation on stat cards and top models when refetch completes (skipped if data unchanged)
 - **Tab title on blur**: When burn effects are enabled and user switches away from the tab, browser title changes to `"$XX 🔥 TierName — ProtoBurn"` (monthly cost rounded up via `Math.ceil()`); restores default title on return (`apps/web/src/components/tab-title.tsx`)
-- **Odometer animation**: `AnimatedNumber` component (`apps/web/src/components/ui/animated-number.tsx`) — digits roll up from random positions to target values with staggered delays and cubic-bezier deceleration; non-digit characters fade in; respects `prefers-reduced-motion`
+- **Odometer animation**: `AnimatedNumber` component (`apps/web/src/components/ui/animated-number.tsx`) — digits roll up from random positions to target values with staggered delays and cubic-bezier deceleration; non-digit characters fade in; animates on first render (`animateOnMount`, default true); skips re-animation when `animateKey` bumps but value is unchanged; respects `prefers-reduced-motion`
 - **CardTitle**: Uses `font-heading` (Montserrat) globally via `card.tsx`
 
 ## tRPC Endpoints
