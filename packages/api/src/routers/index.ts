@@ -1,11 +1,6 @@
 import { z } from "zod";
-<<<<<<< Updated upstream
+import { and, gte, lt, sum } from "drizzle-orm";
 import db, { schema } from "@protoburn/db";
-import { sql, sum, gte } from "drizzle-orm";
-=======
-import { gte, sum } from "drizzle-orm";
-import db, { schema } from "@protoburn/db";
->>>>>>> Stashed changes
 import { publicProcedure, router } from "../index";
 
 const tokenUsageRouter = router({
@@ -34,17 +29,6 @@ const tokenUsageRouter = router({
     }),
 
   totals: publicProcedure.query(async () => {
-<<<<<<< Updated upstream
-    const result = await db
-      .select({
-        totalInput: sum(schema.tokenUsage.inputTokens),
-        totalOutput: sum(schema.tokenUsage.outputTokens),
-      })
-      .from(schema.tokenUsage);
-
-    const totalInput = Number(result[0]?.totalInput ?? 0);
-    const totalOutput = Number(result[0]?.totalOutput ?? 0);
-=======
     const [result] = await db
       .select({
         totalInput: sum(schema.tokenUsage.inputTokens).mapWith(Number),
@@ -53,7 +37,6 @@ const tokenUsageRouter = router({
       .from(schema.tokenUsage);
     const totalInput = result?.totalInput ?? 0;
     const totalOutput = result?.totalOutput ?? 0;
->>>>>>> Stashed changes
     return {
       totalInput,
       totalOutput,
@@ -65,30 +48,62 @@ const tokenUsageRouter = router({
     const results = await db
       .select({
         model: schema.tokenUsage.model,
-<<<<<<< Updated upstream
-        inputTokens: sum(schema.tokenUsage.inputTokens),
-        outputTokens: sum(schema.tokenUsage.outputTokens),
-=======
         inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
         outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
->>>>>>> Stashed changes
       })
       .from(schema.tokenUsage)
       .groupBy(schema.tokenUsage.model);
 
     return results.map((r) => ({
       model: r.model,
-<<<<<<< Updated upstream
-      inputTokens: Number(r.inputTokens ?? 0),
-      outputTokens: Number(r.outputTokens ?? 0),
-      totalTokens: Number(r.inputTokens ?? 0) + Number(r.outputTokens ?? 0),
-=======
       inputTokens: r.inputTokens ?? 0,
       outputTokens: r.outputTokens ?? 0,
       totalTokens: (r.inputTokens ?? 0) + (r.outputTokens ?? 0),
->>>>>>> Stashed changes
     }));
   }),
+
+  byModelMonthly: publicProcedure
+    .input(
+      z
+        .object({
+          month: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ input }) => {
+      const now = new Date();
+      const monthStr = input?.month ?? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const [year, month] = monthStr.split("-").map(Number) as [number, number];
+      const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+      const nextMonth = month === 12 ? 1 : month + 1;
+      const nextYear = month === 12 ? year + 1 : year;
+      const endDate = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
+
+      const results = await db
+        .select({
+          model: schema.tokenUsage.model,
+          inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
+          outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+        })
+        .from(schema.tokenUsage)
+        .where(
+          and(
+            gte(schema.tokenUsage.date, startDate),
+            lt(schema.tokenUsage.date, endDate),
+          ),
+        )
+        .groupBy(schema.tokenUsage.model);
+
+      return {
+        month: monthStr,
+        models: results.map((r) => ({
+          model: r.model,
+          inputTokens: r.inputTokens ?? 0,
+          outputTokens: r.outputTokens ?? 0,
+          totalTokens: (r.inputTokens ?? 0) + (r.outputTokens ?? 0),
+        })),
+      };
+    }),
 
   timeSeries: publicProcedure
     .input(
@@ -107,13 +122,8 @@ const tokenUsageRouter = router({
       const results = await db
         .select({
           date: schema.tokenUsage.date,
-<<<<<<< Updated upstream
-          inputTokens: sum(schema.tokenUsage.inputTokens),
-          outputTokens: sum(schema.tokenUsage.outputTokens),
-=======
           inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
           outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
->>>>>>> Stashed changes
         })
         .from(schema.tokenUsage)
         .where(gte(schema.tokenUsage.date, sinceStr))
@@ -122,13 +132,8 @@ const tokenUsageRouter = router({
 
       return results.map((r) => ({
         date: r.date,
-<<<<<<< Updated upstream
-        inputTokens: Number(r.inputTokens ?? 0),
-        outputTokens: Number(r.outputTokens ?? 0),
-=======
         inputTokens: r.inputTokens ?? 0,
         outputTokens: r.outputTokens ?? 0,
->>>>>>> Stashed changes
       }));
     }),
 });
