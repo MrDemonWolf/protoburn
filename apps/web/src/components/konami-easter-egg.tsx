@@ -1,10 +1,6 @@
 "use client";
 
-<<<<<<< HEAD
-import { useEffect, useState, useCallback } from "react";
-=======
 import { useEffect, useState, useCallback, useRef } from "react";
->>>>>>> 39bee2c (feat: add Konami code easter egg with fire animation)
 import { Flame } from "lucide-react";
 
 const KONAMI_CODE = [
@@ -20,28 +16,6 @@ const KONAMI_CODE = [
   "a",
 ];
 
-<<<<<<< HEAD
-function FireParticle({ index }: { index: number }) {
-  const left = Math.random() * 100;
-  const delay = Math.random() * 0.5;
-  const size = 16 + Math.random() * 32;
-  const duration = 1 + Math.random() * 2;
-
-  return (
-    <div
-      className="fixed animate-bounce pointer-events-none"
-      style={{
-        left: `${left}%`,
-        bottom: `-${size}px`,
-        animationDelay: `${delay}s`,
-        animationDuration: `${duration}s`,
-        animation: `fireRise ${duration}s ease-out ${delay}s forwards`,
-      }}
-    >
-      <Flame
-        className="text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
-        style={{ width: size, height: size }}
-=======
 const FIRE_COLORS = [
   "text-yellow-300",
   "text-yellow-400",
@@ -87,17 +61,11 @@ function FireParticle({ wave }: { wave: number }) {
           ["--drift" as string]: `${drift}px`,
           ["--spin" as string]: `${spin}deg`,
         }}
->>>>>>> 39bee2c (feat: add Konami code easter egg with fire animation)
       />
     </div>
   );
 }
 
-<<<<<<< HEAD
-export function KonamiEasterEgg() {
-  const [sequence, setSequence] = useState<string[]>([]);
-  const [activated, setActivated] = useState(false);
-=======
 function Ember({ delay }: { delay: number }) {
   const left = Math.random() * 100;
   const size = 3 + Math.random() * 6;
@@ -125,7 +93,6 @@ export function KonamiEasterEgg() {
   const [activated, setActivated] = useState(false);
   const [phase, setPhase] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
->>>>>>> 39bee2c (feat: add Konami code easter egg with fire animation)
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -139,9 +106,6 @@ export function KonamiEasterEgg() {
         newSequence.every((key, i) => key === KONAMI_CODE[i])
       ) {
         setActivated(true);
-<<<<<<< HEAD
-        setTimeout(() => setActivated(false), 4000);
-=======
         setPhase(0);
 
         // Phase transitions for dramatic timing
@@ -153,7 +117,6 @@ export function KonamiEasterEgg() {
           setActivated(false);
           setPhase(0);
         }, 5500);
->>>>>>> 39bee2c (feat: add Konami code easter egg with fire animation)
         setSequence([]);
       }
     },
@@ -162,14 +125,10 @@ export function KonamiEasterEgg() {
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
-<<<<<<< HEAD
-    return () => window.removeEventListener("keydown", handleKeyDown);
-=======
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
->>>>>>> 39bee2c (feat: add Konami code easter egg with fire animation)
   }, [handleKeyDown]);
 
   if (!activated) return null;
@@ -179,38 +138,17 @@ export function KonamiEasterEgg() {
       <style>{`
         @keyframes fireRise {
           0% {
-<<<<<<< HEAD
-            transform: translateY(0) scale(1) rotate(0deg);
-            opacity: 1;
-=======
             transform: translateY(0) scale(0.5) rotate(0deg);
             opacity: 0;
           }
           10% {
             opacity: 1;
             transform: translateY(-10vh) scale(1.2) rotate(5deg);
->>>>>>> 39bee2c (feat: add Konami code easter egg with fire animation)
           }
           50% {
             opacity: 1;
           }
           100% {
-<<<<<<< HEAD
-            transform: translateY(-100vh) scale(0.3) rotate(${Math.random() > 0.5 ? "" : "-"}30deg);
-            opacity: 0;
-          }
-        }
-      `}</style>
-      <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-        {Array.from({ length: 40 }).map((_, i) => (
-          <FireParticle key={i} index={i} />
-        ))}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="animate-pulse text-4xl font-bold text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.6)]">
-            PROTOBURN
-          </div>
-        </div>
-=======
             transform: translateY(-110vh) translateX(var(--drift, 0px)) scale(0.2) rotate(var(--spin, 30deg));
             opacity: 0;
           }
@@ -342,7 +280,6 @@ export function KonamiEasterEgg() {
             </div>
           </div>
         )}
->>>>>>> 39bee2c (feat: add Konami code easter egg with fire animation)
       </div>
     </>
   );
