@@ -33,7 +33,8 @@ export const server = await Worker("server", {
 const serverUrl = server.url ?? "http://localhost:3000";
 
 // Build web with the server URL baked in
-export const web = await Website("web", {
+export const web = await Website("protoburn", {
+  name: "protoburn",
   cwd: "../../apps/web",
   build: {
     command: "pnpm build",
