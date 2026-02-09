@@ -253,6 +253,6 @@ protoburn/
 
 ## Contact
 
-- Discord: [Join my server](https://mrdwolf.com/discord)
+- Discord: [Join my server](https://mrdwolf.net/discord)
 
 Made with love by <a href="https://www.mrdemonwolf.com">MrDemonWolf, Inc.</a>
