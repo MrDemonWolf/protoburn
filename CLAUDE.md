@@ -62,7 +62,7 @@ pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 
 ## Dashboard Features
 
-- **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator
+- **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator; values animate with odometer roll-up effect on refresh (digits cascade up to final value via `AnimatedNumber` component)
 - **Top Models leaderboard**: Top 3 models by token usage with medal rankings (gold/silver/bronze) and per-model cost
 - **Usage chart**: Time-series token usage (Recharts), flexes to fill remaining viewport height
 - **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers (Haiku $1/$5, Sonnet $3/$15, Opus $5/$25 per million tokens), pattern-matched by model name, unknown models default to Sonnet rates
@@ -97,7 +97,9 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 - **Layout**: No-scroll desktop viewport (`h-svh overflow-hidden`), chart flexes to fill remaining space
 - **Header**: Backdrop blur (`bg-background/80 backdrop-blur-md`), z-20 above burn embers; contains refresh button, fire toggle with tier label, and dark/light mode toggle
 - **Mode toggle**: Pill-style switch (sun/moon), click to toggle between light and dark
-- **Refresh button**: Invalidates all React Query caches, spinning animation during refresh
+- **Refresh button**: Invalidates all React Query caches, spinning animation during refresh; triggers odometer roll-up animation on stat cards when refetch completes
+- **Tab title on blur**: When burn effects are enabled and user switches away from the tab, browser title changes to `"$XX 🔥 TierName — ProtoBurn"` (monthly cost rounded up via `Math.ceil()`); restores default title on return (`apps/web/src/components/tab-title.tsx`)
+- **Odometer animation**: `AnimatedNumber` component (`apps/web/src/components/ui/animated-number.tsx`) — digits roll up from random positions to target values with staggered delays and cubic-bezier deceleration; non-digit characters fade in; respects `prefers-reduced-motion`
 - **CardTitle**: Uses `font-heading` (Montserrat) globally via `card.tsx`
 
 ## tRPC Endpoints
