@@ -82,8 +82,9 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 | Burning | 1M+ | 8 | 4 | No |
 | Blazing | 5M+ | 12 | 6 | Yes |
 | Inferno | 10M+ | 15 | 8 | Yes |
-| Meltdown | 50M+ | 20 | 12 | Yes |
+| Meltdown | 50M+ | 70 | 40 | Yes (full) |
 
+- Meltdown tier is extreme: 70 embers (bigger/faster/brighter), 40 large flames, 65vh bottom glow at 80% opacity, full-height 8vw side glows, pulsing red vignette border, top edge glow, and heat shimmer distortion
 - Toggle on/off via flame button in header (persists to localStorage)
 - Current tier name displayed in header with color-coded label
 - Preview any tier with `?flametier=meltdown` (or any tier name) query param

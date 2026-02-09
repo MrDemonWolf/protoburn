@@ -8,8 +8,12 @@ Track your Claude API spending and token usage with a personal dashboard. Monito
 - **Top Models Leaderboard**: Trophy-ranked top 3 models with gold/silver/bronze medals and per-model cost.
 - **Token Usage Stats**: Real-time cards showing total, input, and output tokens.
 - **Time-Series Charts**: Stacked area charts to visualize usage trends over time.
+- **Burn Intensity System**: Ambient fire particle effects that scale with monthly token usage — from a few floating embers at 100K tokens to a full-screen meltdown inferno at 50M+. Toggleable from the header with localStorage persistence.
+- **Tier Preview**: Append `?flametier=meltdown` (or any tier: cold, spark, warm, burning, blazing, inferno, meltdown) to preview fire effects.
+- **Glassmorphism UI**: Frosted glass header and footer with backdrop blur, pill-style dark/light mode toggle, and one-click data refresh.
 - **Automatic Sync**: Built-in sync script reads directly from Claude Code's local session data.
 - **API Key Protection**: Write endpoints are protected with a bearer token so only you can push data.
+- **Konami Code Easter Egg**: Up Up Down Down Left Right Left Right B A triggers an explosive multi-wave fire animation.
 - **Free Tier Friendly**: Designed to run entirely on Cloudflare's free plan (Workers + Pages + D1).
 
 ## Getting Started
@@ -237,7 +241,7 @@ protoburn/
 
 ## Tech Stack
 
-- **Frontend**: [Next.js](https://nextjs.org/) 16, [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Recharts](https://recharts.org/)
+- **Frontend**: [Next.js](https://nextjs.org/) 16, [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Recharts](https://recharts.org/), Montserrat + Roboto fonts
 - **Backend**: [Hono](https://hono.dev/), [tRPC](https://trpc.io/), [Drizzle ORM](https://orm.drizzle.team/)
 - **Database**: [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite)
 - **Deployment**: [Alchemy](https://alchemy.run), Cloudflare Workers + Pages
