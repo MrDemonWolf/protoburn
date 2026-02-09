@@ -1,12 +1,13 @@
-# protoburn - Claude Token Usage Tracker
+# protoburn - Claude API Cost & Usage Dashboard
 
-Track your Claude Code token usage with a personal dashboard. Visualize input/output tokens across models with time-series charts and per-model breakdowns, all deployed on Cloudflare's free tier.
+Track your Claude API spending and token usage with a personal dashboard. Monitor monthly costs with a fire intensity indicator, see your top 3 most-used models on a trophy leaderboard, and visualize usage trends over time — all self-hosted on Cloudflare's free tier.
 
 ## Features
 
-- **Token Usage Dashboard**: Real-time stats cards showing total, input, and output tokens.
+- **Monthly Cost Tracking**: Estimated API spend per month with a fire indicator that intensifies as costs rise.
+- **Top Models Leaderboard**: Trophy-ranked top 3 models with gold/silver/bronze medals and per-model cost.
+- **Token Usage Stats**: Real-time cards showing total, input, and output tokens.
 - **Time-Series Charts**: Stacked area charts to visualize usage trends over time.
-- **Per-Model Breakdown**: See token consumption broken down by each Claude model.
 - **Automatic Sync**: Built-in sync script reads directly from Claude Code's local session data.
 - **API Key Protection**: Write endpoints are protected with a bearer token so only you can push data.
 - **Free Tier Friendly**: Designed to run entirely on Cloudflare's free plan (Workers + Pages + D1).
@@ -204,7 +205,7 @@ protoburn/
 │   │   └── src/
 │   │       ├── app/             # Pages & layout
 │   │       └── components/
-│   │           ├── dashboard/       # Stats cards, chart, model breakdown
+│   │           ├── dashboard/       # Stats cards, chart, top models leaderboard
 │   │           └── ui/              # shadcn/ui components
 │   └── server/              # Hono API server (Cloudflare Worker)
 │       └── src/
