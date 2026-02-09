@@ -20,9 +20,9 @@ function cleanModelName(model: string) {
 }
 
 const MEDALS = [
-  { emoji: "\u{1F947}", label: "1st", color: "text-yellow-500", bg: "bg-yellow-500/10 border-yellow-500/20" },
-  { emoji: "\u{1F948}", label: "2nd", color: "text-gray-400", bg: "bg-gray-400/10 border-gray-400/20" },
-  { emoji: "\u{1F949}", label: "3rd", color: "text-amber-600", bg: "bg-amber-600/10 border-amber-600/20" },
+  { emoji: "\u{1F947}", label: "1st", bg: "bg-yellow-500/10 border-yellow-500/20" },
+  { emoji: "\u{1F948}", label: "2nd", bg: "bg-gray-400/10 border-gray-400/20" },
+  { emoji: "\u{1F949}", label: "3rd", bg: "bg-amber-600/10 border-amber-600/20" },
 ];
 
 export function TopModels() {
@@ -33,18 +33,15 @@ export function TopModels() {
   if (isLoading) {
     return (
       <div>
-        <div className="mb-3 flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-yellow-500" />
-          <h2 className="text-lg font-semibold">Top Models</h2>
+        <div className="mb-2 flex items-center gap-2">
+          <Trophy className="h-4 w-4 text-yellow-500" />
+          <h2 className="font-heading text-sm font-semibold tracking-tight">Top Models</h2>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
-              <CardHeader className="pb-2">
-                <Skeleton className="h-4 w-24" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-16 w-full" />
+              <CardContent className="py-3">
+                <Skeleton className="h-12 w-full" />
               </CardContent>
             </Card>
           ))}
@@ -63,30 +60,25 @@ export function TopModels() {
 
   return (
     <div>
-      <div className="mb-3 flex items-center gap-2">
-        <Trophy className="h-5 w-5 text-yellow-500" />
-        <h2 className="text-lg font-semibold">Top Models</h2>
+      <div className="mb-2 flex items-center gap-2">
+        <Trophy className="h-4 w-4 text-yellow-500" />
+        <h2 className="font-heading text-sm font-semibold tracking-tight">Top Models</h2>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
         {models.map((model, index) => {
           const cost = calculateCost(model.model, model.inputTokens, model.outputTokens);
           const medal = MEDALS[index]!;
           return (
             <Card key={model.model} className={`border ${medal.bg}`}>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center justify-between text-sm font-medium text-muted-foreground">
-                  <span className="font-mono">{cleanModelName(model.model)}</span>
-                  <span className="text-lg" title={medal.label}>{medal.emoji}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="text-2xl font-bold">{formatNumber(model.totalTokens)}</div>
-                <div className="flex gap-4 text-xs text-muted-foreground">
-                  <span>In: {formatNumber(model.inputTokens)}</span>
-                  <span>Out: {formatNumber(model.outputTokens)}</span>
+              <CardContent className="py-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs text-muted-foreground">{cleanModelName(model.model)}</span>
+                  <span className="text-base" title={medal.label}>{medal.emoji}</span>
                 </div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Cost: <span className="text-foreground">${cost.toFixed(2)}</span>
+                <div className="mt-1 text-xl font-bold">{formatNumber(model.totalTokens)}</div>
+                <div className="mt-0.5 flex items-center justify-between text-xs text-muted-foreground">
+                  <span>In: {formatNumber(model.inputTokens)} / Out: {formatNumber(model.outputTokens)}</span>
+                  <span className="font-medium text-foreground">${cost.toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>

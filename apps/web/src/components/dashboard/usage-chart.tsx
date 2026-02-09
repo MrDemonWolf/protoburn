@@ -38,19 +38,19 @@ export function UsageChart() {
   );
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="flex min-h-0 flex-1 flex-col">
+      <CardHeader className="pb-2">
         <CardTitle>Daily Token Usage</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex min-h-0 flex-1 flex-col">
         {isLoading ? (
-          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="min-h-[200px] w-full flex-1" />
         ) : !data?.length ? (
-          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+          <div className="flex min-h-[200px] flex-1 items-center justify-center text-muted-foreground">
             No data yet. Push usage data via the API.
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="min-h-[200px] w-full flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data}>
                 <defs>
@@ -75,6 +75,7 @@ export function UsageChart() {
                   }}
                   tickLine={false}
                   axisLine={false}
+                  fontSize={11}
                 />
                 <YAxis
                   tickFormatter={(v: number) =>
@@ -83,6 +84,7 @@ export function UsageChart() {
                   tickLine={false}
                   axisLine={false}
                   width={48}
+                  fontSize={11}
                 />
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend content={<ChartLegendContent />} />
