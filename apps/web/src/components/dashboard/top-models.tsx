@@ -72,13 +72,16 @@ export function TopModels() {
             <Card key={model.model} className={`border ${medal.bg}`}>
               <CardContent className="py-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-muted-foreground">{cleanModelName(model.model)}</span>
+                  <span className="font-heading text-sm font-bold tracking-tight">{cleanModelName(model.model)}</span>
                   <span className="text-base" title={medal.label}>{medal.emoji}</span>
                 </div>
-                <div className="mt-1 text-xl font-bold">{formatNumber(model.totalTokens)}</div>
-                <div className="mt-0.5 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>In: {formatNumber(model.inputTokens)} / Out: {formatNumber(model.outputTokens)}</span>
-                  <span className="font-medium text-foreground">${cost.toFixed(2)}</span>
+                <div className="mt-1.5 flex items-baseline justify-between">
+                  <div className="text-xl font-bold">{formatNumber(model.totalTokens)}</div>
+                  <div className="font-heading text-sm font-bold">${cost.toFixed(2)}</div>
+                </div>
+                <div className="mt-1 flex gap-3 text-xs text-muted-foreground">
+                  <span>In: {formatNumber(model.inputTokens)}</span>
+                  <span>Out: {formatNumber(model.outputTokens)}</span>
                 </div>
               </CardContent>
             </Card>
