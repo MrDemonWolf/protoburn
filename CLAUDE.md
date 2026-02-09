@@ -61,10 +61,13 @@ pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 ## Dashboard Features
 
 - **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator
-- **Top Models leaderboard**: Top 3 models by token usage with medal rankings and per-model cost
+- **Top Models leaderboard**: Top 3 models by token usage with medal rankings (gold/silver/bronze) and per-model cost
 - **Usage chart**: Time-series token usage (Recharts)
-- **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers (Haiku/Sonnet/Opus), pattern-matched by model name, unknown models default to Sonnet rates
-- **Footer**: Auto-updating year with ProtoBurn branding
+- **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers (Haiku $1/$5, Sonnet $3/$15, Opus $5/$25 per million tokens), pattern-matched by model name, unknown models default to Sonnet rates
+- **Footer**: Auto-updating year with linked MrDemonWolf branding
+- **SEO**: Title, description, keywords, and OpenGraph metadata in layout
+- **Favicon**: Fire SVG icon (`apps/web/src/app/icon.svg`)
+- **Konami code easter egg**: Up Up Down Down Left Right Left Right B A triggers a multi-wave fire animation with phased timing, ember particles, gradient "PROTOBURN" title slam, and "EVERYTHING BURNS" tagline (`apps/web/src/components/konami-easter-egg.tsx`)
 
 ## tRPC Endpoints
 
@@ -73,3 +76,9 @@ pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 - `tokenUsage.byModel` — all-time per-model token breakdown
 - `tokenUsage.byModelMonthly` — per-model breakdown filtered to current month (optional `month` param)
 - `tokenUsage.timeSeries` — daily token usage over last N days (default 30)
+
+## Commit Preferences
+
+- No co-author lines
+- Multiple logical commits preferred
+- User pushes manually
