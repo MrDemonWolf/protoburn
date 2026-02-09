@@ -1,12 +1,3 @@
-<<<<<<< Updated upstream
-.next
-out
-next-env.d.ts
-wrangler.jsonc
-.wrangler
-.open-next
-.alchemy
-=======
 # Dependencies
 /node_modules
 /.pnp
@@ -69,4 +60,3 @@ dev-dist
 .open-next
 
 wrangler.jsonc
->>>>>>> Stashed changes

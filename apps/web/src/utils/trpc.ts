@@ -1,11 +1,3 @@
-<<<<<<< Updated upstream
-"use client";
-
-import type { AppRouter } from "@protoburn/api/routers/index";
-import { createTRPCReact } from "@trpc/react-query";
-
-export const trpc = createTRPCReact<AppRouter>();
-=======
 import type { AppRouter } from "@protoburn/api/routers/index";
 
 import { env } from "@protoburn/env/web";
@@ -39,4 +31,3 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
   client: trpcClient,
   queryClient,
 });
->>>>>>> Stashed changes

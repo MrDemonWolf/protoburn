@@ -1,7 +1,3 @@
-<<<<<<< Updated upstream
-dist
-local.db
-=======
 # prod
 dist/
 /build
@@ -57,4 +53,3 @@ lerna-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
->>>>>>> Stashed changes

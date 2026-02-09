@@ -1,12 +1,6 @@
 {
   "extends": "@protoburn/config/tsconfig.base.json",
   "compilerOptions": {
-<<<<<<< Updated upstream
-    "outDir": "dist",
-    "types": ["@cloudflare/workers-types"]
-  },
-  "include": ["src"]
-=======
     "composite": true,
     "outDir": "dist",
     "baseUrl": ".",
@@ -16,5 +10,4 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   }
->>>>>>> Stashed changes
 }

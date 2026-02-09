@@ -248,12 +248,6 @@ protoburn/
 
 ## Contact
 
-<<<<<<< Updated upstream
-- Discord: [Join my server](https://mrdwolf.net/discord)
-
-Made with love by <a href="https://www.mrdemonwolf.net">MrDemonWolf, Inc.</a>
-=======
 - Discord: [Join my server](https://mrdwolf.com/discord)
 
 Made with love by <a href="https://www.mrdemonwolf.com">MrDemonWolf, Inc.</a>
->>>>>>> Stashed changes

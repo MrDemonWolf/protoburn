@@ -1,19 +1,5 @@
 {
   "name": "server",
-<<<<<<< Updated upstream
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "alchemy dev",
-    "build": "tsdown",
-    "deploy": "alchemy deploy",
-    "destroy": "alchemy destroy",
-    "check-types": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@hono/trpc-server": "catalog:",
-=======
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -23,30 +9,20 @@
   },
   "dependencies": {
     "@hono/trpc-server": "^0.4.0",
->>>>>>> Stashed changes
     "@protoburn/api": "workspace:*",
     "@protoburn/db": "workspace:*",
     "@protoburn/env": "workspace:*",
     "@trpc/server": "catalog:",
-<<<<<<< Updated upstream
-=======
     "dotenv": "catalog:",
->>>>>>> Stashed changes
     "hono": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
     "@protoburn/config": "workspace:*",
-<<<<<<< Updated upstream
-    "alchemy": "catalog:",
-    "dotenv": "catalog:",
-    "tsdown": "catalog:",
-=======
     "@types/node": "^22.13.14",
     "alchemy": "catalog:",
     "tsdown": "^0.16.5",
->>>>>>> Stashed changes
     "typescript": "catalog:",
     "wrangler": "catalog:"
   }

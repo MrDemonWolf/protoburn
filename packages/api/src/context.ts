@@ -1,13 +1,3 @@
-<<<<<<< Updated upstream
-import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
-
-export function createContext({
-  context: _context,
-}: {
-  context: FetchCreateContextFnOptions;
-}) {
-  return {};
-=======
 import type { Context as HonoContext } from "hono";
 
 export type CreateContextOptions = {
@@ -19,7 +9,6 @@ export async function createContext({ context: _context }: CreateContextOptions)
   return {
     session: null,
   };
->>>>>>> Stashed changes
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

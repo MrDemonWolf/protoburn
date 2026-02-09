@@ -1,11 +1,4 @@
 import type { Metadata } from "next";
-<<<<<<< Updated upstream
-import { Inter } from "next/font/google";
-import "@/index.css";
-import { Providers } from "@/components/providers";
-
-const inter = Inter({ subsets: ["latin"] });
-=======
 
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -22,7 +15,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
->>>>>>> Stashed changes
 
 export const metadata: Metadata = {
   title: "protoburn - Claude Token Tracker",
@@ -31,15 +23,6 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-<<<<<<< Updated upstream
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
-=======
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -52,7 +35,6 @@ export default function RootLayout({
             {children}
           </div>
         </Providers>
->>>>>>> Stashed changes
       </body>
     </html>
   );

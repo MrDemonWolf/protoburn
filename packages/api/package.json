@@ -1,17 +1,5 @@
 {
   "name": "@protoburn/api",
-<<<<<<< Updated upstream
-  "private": true,
-  "type": "module",
-  "exports": {
-    "./context": "./src/context.ts",
-    "./routers/index": "./src/routers/index.ts"
-  },
-  "dependencies": {
-    "@protoburn/db": "workspace:*",
-    "@trpc/server": "catalog:",
-    "drizzle-orm": "catalog:",
-=======
   "type": "module",
   "exports": {
     ".": {
@@ -29,15 +17,11 @@
     "@trpc/server": "catalog:",
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.1",
->>>>>>> Stashed changes
     "zod": "catalog:"
   },
   "devDependencies": {
     "@protoburn/config": "workspace:*",
-<<<<<<< Updated upstream
-=======
     "hono": "catalog:",
->>>>>>> Stashed changes
     "typescript": "catalog:"
   }
 }
