@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Flame } from "lucide-react";
 import { trpc } from "@/utils/trpc";
@@ -544,5 +544,29 @@ export function BurnIntensity() {
         )}
       </div>
     </>
+  );
+}
+
+export function MeltdownShake({ children }: { children: ReactNode }) {
+  const { enabled } = useBurnEnabled();
+
+  const { data: monthly } = useQuery(
+    trpc.tokenUsage.byModelMonthly.queryOptions(),
+  );
+
+  const monthlyTokens = (monthly?.models ?? []).reduce(
+    (sum, m) => sum + m.inputTokens + m.outputTokens,
+    0,
+  );
+
+  const tier = useEffectiveTier(monthlyTokens);
+  const isMeltdown = enabled && (tier.isMeltdown ?? false);
+
+  return (
+    <div
+      style={isMeltdown ? { animation: "screenShake 0.15s linear infinite" } : undefined}
+    >
+      {children}
+    </div>
   );
 }
