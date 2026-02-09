@@ -91,7 +91,7 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 - Preview any tier with `?flametier=meltdown` (or any tier name) query param
 - Respects `prefers-reduced-motion` for accessibility
 - `BurnEnabledProvider` context in `providers.tsx`, `useEffectiveTier` hook for query param override
-- `MeltdownShake` wrapper component in `burn-intensity.tsx` — wraps main page content, applies `screenShake` animation when meltdown tier is active
+- `MeltdownShake` wrapper component in `burn-intensity.tsx` — wraps main page content, applies `screenShake` animation when meltdown tier is active; wrapper div must have `flex flex-1 flex-col overflow-hidden` to preserve the parent `h-svh` flex layout
 
 ## UI Details
 
