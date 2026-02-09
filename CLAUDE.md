@@ -46,6 +46,18 @@ pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 - `next.config.ts` has `output: "export"` (static SPA) and `reactCompiler: true`
 - Server binds tRPC at `/trpc` and has REST endpoints at `/api/usage`
 
+## Deployment
+
+- Alchemy config: `packages/infra/alchemy.run.ts`
+- Web deploys as Cloudflare Worker with `name: "protoburn"` override → `protoburn.mrdemonwolf.workers.dev`
+- The Alchemy resource ID for the website is `"protoburn"` — do NOT change without updating `.alchemy/` state
+- Server deploys as a separate Worker
+- D1 database with migrations from `packages/db/drizzle`
+
+## Branding
+
+- Footer: `© {auto-year} ProtoBurn by MrDemonWolf, Inc.`
+
 ## Dashboard Features
 
 - **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator
