@@ -17,8 +17,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "protoburn - Claude Token Tracker",
-  description: "Personal Claude token usage dashboard",
+  title: "ProtoBurn — Claude API Cost & Usage Dashboard",
+  description:
+    "Track your Claude API spending and token usage. Monitor monthly costs, see your top models leaderboard, and visualize usage trends — self-hosted on Cloudflare.",
+  keywords: [
+    "Claude API",
+    "token usage",
+    "cost tracking",
+    "dashboard",
+    "Anthropic",
+    "LLM analytics",
+  ],
+  openGraph: {
+    title: "ProtoBurn — Claude API Cost & Usage Dashboard",
+    description:
+      "Track your Claude API spending and token usage with a personal dashboard.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +45,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <div className="grid grid-rows-[auto_1fr] h-svh">
+          <div className="flex min-h-svh flex-col bg-background">
             <Header />
             {children}
           </div>
