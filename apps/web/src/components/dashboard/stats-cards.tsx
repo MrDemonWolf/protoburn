@@ -1,9 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { Zap, ArrowDownToLine, ArrowUpFromLine, Flame } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
 import { calculateCost } from "@/lib/pricing";
 
@@ -43,6 +45,20 @@ export function StatsCards() {
 
   const fire = getFireLevel(monthlyCost);
 
+  // Track refetch cycles: when isFetching goes from >0 to 0, increment animateKey
+  const isFetching = useIsFetching();
+  const wasFetchingRef = useRef(false);
+  const [animateKey, setAnimateKey] = useState(0);
+
+  useEffect(() => {
+    if (isFetching > 0) {
+      wasFetchingRef.current = true;
+    } else if (wasFetchingRef.current) {
+      wasFetchingRef.current = false;
+      setAnimateKey((k) => k + 1);
+    }
+  }, [isFetching]);
+
   const cards = [
     {
       title: "Total Tokens",
@@ -78,7 +94,7 @@ export function StatsCards() {
             {isLoading ? (
               <Skeleton className="h-8 w-24" />
             ) : (
-              <div className="text-2xl font-bold">{card.display}</div>
+              <AnimatedNumber value={card.display} animateKey={animateKey} className="text-2xl font-bold" />
             )}
           </CardContent>
         </Card>
@@ -108,7 +124,7 @@ export function StatsCards() {
           {isLoading ? (
             <Skeleton className="h-8 w-24" />
           ) : (
-            <div className="text-2xl font-bold">${monthlyCost.toFixed(2)}</div>
+            <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-2xl font-bold" />
           )}
         </CardContent>
       </Card>
