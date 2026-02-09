@@ -8,11 +8,15 @@ interface AnimatedNumberProps {
   value: string;
   animateKey: number;
   className?: string;
+  /** Trigger roll-up animation on first render (default true) */
+  animateOnMount?: boolean;
 }
 
-export function AnimatedNumber({ value, animateKey, className }: AnimatedNumberProps) {
+export function AnimatedNumber({ value, animateKey, className, animateOnMount = true }: AnimatedNumberProps) {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const prevKeyRef = useRef(animateKey);
+  const prevValueRef = useRef<string | null>(null);
+  const hasMountedRef = useRef(false);
   // Phase: "idle" = show final positions, "start" = random positions (one frame), "rolling" = animate to target
   const [phase, setPhase] = useState<"idle" | "start" | "rolling">("idle");
   const [startOffsets, setStartOffsets] = useState<number[]>([]);
@@ -33,12 +37,28 @@ export function AnimatedNumber({ value, animateKey, className }: AnimatedNumberP
     setPhase("start");
   }, [value.length]);
 
+  // Animate on mount if enabled
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      if (animateOnMount) {
+        prevValueRef.current = value;
+        triggerAnimation();
+      }
+    }
+  }, [animateOnMount, triggerAnimation, value]);
+
   useEffect(() => {
     if (animateKey > 0 && animateKey !== prevKeyRef.current) {
       prevKeyRef.current = animateKey;
+      // Skip animation if the value hasn't changed
+      if (prevValueRef.current === value) {
+        return;
+      }
+      prevValueRef.current = value;
       triggerAnimation();
     }
-  }, [animateKey, triggerAnimation]);
+  }, [animateKey, triggerAnimation, value]);
 
   // After "start" renders one frame, move to "rolling" to animate to targets
   useEffect(() => {
