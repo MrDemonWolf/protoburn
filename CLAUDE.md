@@ -57,17 +57,46 @@ pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 ## Branding
 
 - Footer: `© {auto-year} ProtoBurn by MrDemonWolf, Inc.`
+- Fonts: Montserrat (headings via `font-heading`), Roboto (body via `font-sans`) — loaded from Google Fonts in `layout.tsx`
+- Favicon: Fire SVG icon in primary blue `#00ACED` (`apps/web/src/app/icon.svg`)
 
 ## Dashboard Features
 
 - **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator
 - **Top Models leaderboard**: Top 3 models by token usage with medal rankings (gold/silver/bronze) and per-model cost
-- **Usage chart**: Time-series token usage (Recharts)
+- **Usage chart**: Time-series token usage (Recharts), flexes to fill remaining viewport height
 - **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers (Haiku $1/$5, Sonnet $3/$15, Opus $5/$25 per million tokens), pattern-matched by model name, unknown models default to Sonnet rates
-- **Footer**: Auto-updating year with linked MrDemonWolf branding
+- **Footer**: Auto-updating year with linked MrDemonWolf branding, backdrop blur
 - **SEO**: Title, description, keywords, and OpenGraph metadata in layout
-- **Favicon**: Fire SVG icon (`apps/web/src/app/icon.svg`)
 - **Konami code easter egg**: Up Up Down Down Left Right Left Right B A triggers a multi-wave fire animation with phased timing, ember particles, gradient "PROTOBURN" title slam, and "EVERYTHING BURNS" tagline (`apps/web/src/components/konami-easter-egg.tsx`)
+
+## Burn Intensity System
+
+Ambient fire particle effects based on monthly token usage (`apps/web/src/components/burn-intensity.tsx`):
+
+| Tier | Monthly Tokens | Embers | Flames | Side Glow |
+|------|---------------|--------|--------|-----------|
+| Cold | < 100K | 0 | 0 | No |
+| Spark | 100K+ | 3 | 0 | No |
+| Warm | 500K+ | 5 | 0 | No |
+| Burning | 1M+ | 8 | 4 | No |
+| Blazing | 5M+ | 12 | 6 | Yes |
+| Inferno | 10M+ | 15 | 8 | Yes |
+| Meltdown | 50M+ | 20 | 12 | Yes |
+
+- Toggle on/off via flame button in header (persists to localStorage)
+- Current tier name displayed in header with color-coded label
+- Preview any tier with `?flametier=meltdown` (or any tier name) query param
+- Respects `prefers-reduced-motion` for accessibility
+- `BurnEnabledProvider` context in `providers.tsx`, `useEffectiveTier` hook for query param override
+
+## UI Details
+
+- **Layout**: No-scroll desktop viewport (`h-svh overflow-hidden`), chart flexes to fill remaining space
+- **Header**: Backdrop blur (`bg-background/80 backdrop-blur-md`), z-20 above burn embers; contains refresh button, fire toggle with tier label, and dark/light mode toggle
+- **Mode toggle**: Pill-style switch (sun/moon), click to toggle between light and dark
+- **Refresh button**: Invalidates all React Query caches, spinning animation during refresh
+- **CardTitle**: Uses `font-heading` (Montserrat) globally via `card.tsx`
 
 ## tRPC Endpoints
 
