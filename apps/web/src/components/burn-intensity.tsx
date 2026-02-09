@@ -41,17 +41,21 @@ interface BurnTier {
   glowOpacity: number;
   glowHeight: string;
   sideGlow: boolean;
+  sideGlowWidth: string;
+  topGlow: boolean;
+  topGlowHeight: string;
+  isInferno?: boolean;
   isMeltdown?: boolean;
 }
 
 const TIERS: Record<string, BurnTier> = {
-  meltdown: { name: "meltdown", embers: 70, flames: 40, glowOpacity: 0.8, glowHeight: "65vh", sideGlow: true, isMeltdown: true },
-  inferno:  { name: "inferno",  embers: 15, flames: 8,  glowOpacity: 0.35, glowHeight: "20vh", sideGlow: true },
-  blazing:  { name: "blazing",  embers: 12, flames: 6,  glowOpacity: 0.25, glowHeight: "15vh", sideGlow: true },
-  burning:  { name: "burning",  embers: 8,  flames: 4,  glowOpacity: 0.18, glowHeight: "12vh", sideGlow: false },
-  warm:     { name: "warm",     embers: 5,  flames: 0,  glowOpacity: 0.1,  glowHeight: "8vh",  sideGlow: false },
-  spark:    { name: "spark",    embers: 3,  flames: 0,  glowOpacity: 0.05, glowHeight: "5vh",  sideGlow: false },
-  cold:     { name: "cold",     embers: 0,  flames: 0,  glowOpacity: 0,    glowHeight: "0",    sideGlow: false },
+  meltdown: { name: "meltdown", embers: 120, flames: 60, glowOpacity: 0.9, glowHeight: "75vh", sideGlow: true, sideGlowWidth: "10vw", topGlow: true, topGlowHeight: "20vh", isMeltdown: true },
+  inferno:  { name: "inferno",  embers: 35,  flames: 18, glowOpacity: 0.45, glowHeight: "30vh", sideGlow: true, sideGlowWidth: "6vw",  topGlow: true, topGlowHeight: "12vh", isInferno: true },
+  blazing:  { name: "blazing",  embers: 22,  flames: 12, glowOpacity: 0.3,  glowHeight: "20vh", sideGlow: true, sideGlowWidth: "4vw",  topGlow: false, topGlowHeight: "0" },
+  burning:  { name: "burning",  embers: 15,  flames: 8,  glowOpacity: 0.22, glowHeight: "16vh", sideGlow: true, sideGlowWidth: "2.5vw", topGlow: false, topGlowHeight: "0" },
+  warm:     { name: "warm",     embers: 8,   flames: 3,  glowOpacity: 0.12, glowHeight: "10vh", sideGlow: false, sideGlowWidth: "0",   topGlow: false, topGlowHeight: "0" },
+  spark:    { name: "spark",    embers: 5,   flames: 0,  glowOpacity: 0.06, glowHeight: "6vh",  sideGlow: false, sideGlowWidth: "0",   topGlow: false, topGlowHeight: "0" },
+  cold:     { name: "cold",     embers: 0,   flames: 0,  glowOpacity: 0,    glowHeight: "0",    sideGlow: false, sideGlowWidth: "0",   topGlow: false, topGlowHeight: "0" },
 };
 
 export function getBurnTier(monthlyTokens: number): BurnTier {
@@ -108,26 +112,38 @@ interface ParticleData {
   colorIndex: number;
 }
 
+type TierIntensity = "normal" | "inferno" | "meltdown";
+
 function generateParticles(
   count: number,
   type: "ember" | "flame",
-  meltdown = false,
+  intensity: TierIntensity = "normal",
 ): ParticleData[] {
-  return Array.from({ length: count }, () => ({
-    left: Math.random() * 100,
-    size: meltdown
-      ? type === "ember" ? 3 + Math.random() * 8 : 20 + Math.random() * 40
-      : type === "ember" ? 2 + Math.random() * 4 : 14 + Math.random() * 18,
-    duration: meltdown
-      ? type === "ember" ? 2 + Math.random() * 4 : 2 + Math.random() * 3
-      : type === "ember" ? 4 + Math.random() * 6 : 3 + Math.random() * 4,
-    delay: meltdown ? Math.random() * 5 : Math.random() * 10,
-    drift: meltdown ? (Math.random() - 0.5) * 150 : (Math.random() - 0.5) * 80,
-    opacity: meltdown
-      ? type === "ember" ? 0.5 + Math.random() * 0.5 : 0.25 + Math.random() * 0.35
-      : type === "ember" ? 0.3 + Math.random() * 0.5 : 0.12 + Math.random() * 0.2,
-    colorIndex: Math.floor(Math.random() * 4),
-  }));
+  return Array.from({ length: count }, () => {
+    const isMeltdown = intensity === "meltdown";
+    const isInferno = intensity === "inferno";
+    return {
+      left: Math.random() * 100,
+      size: isMeltdown
+        ? type === "ember" ? 3 + Math.random() * 8 : 20 + Math.random() * 40
+        : isInferno
+          ? type === "ember" ? 2.5 + Math.random() * 6 : 16 + Math.random() * 24
+          : type === "ember" ? 2 + Math.random() * 4 : 14 + Math.random() * 18,
+      duration: isMeltdown
+        ? type === "ember" ? 1.5 + Math.random() * 3 : 1.5 + Math.random() * 2.5
+        : isInferno
+          ? type === "ember" ? 3 + Math.random() * 5 : 2.5 + Math.random() * 3.5
+          : type === "ember" ? 4 + Math.random() * 6 : 3 + Math.random() * 4,
+      delay: isMeltdown ? Math.random() * 4 : Math.random() * 10,
+      drift: isMeltdown ? (Math.random() - 0.5) * 150 : isInferno ? (Math.random() - 0.5) * 100 : (Math.random() - 0.5) * 80,
+      opacity: isMeltdown
+        ? type === "ember" ? 0.5 + Math.random() * 0.5 : 0.25 + Math.random() * 0.35
+        : isInferno
+          ? type === "ember" ? 0.4 + Math.random() * 0.5 : 0.15 + Math.random() * 0.25
+          : type === "ember" ? 0.3 + Math.random() * 0.5 : 0.12 + Math.random() * 0.2,
+      colorIndex: Math.floor(Math.random() * 4),
+    };
+  });
 }
 
 export function BurnIntensity() {
@@ -145,13 +161,15 @@ export function BurnIntensity() {
   const tier = useEffectiveTier(monthlyTokens);
 
   const isMeltdown = tier.isMeltdown ?? false;
+  const isInferno = tier.isInferno ?? false;
+  const intensity: TierIntensity = isMeltdown ? "meltdown" : isInferno ? "inferno" : "normal";
   const embers = useMemo(
-    () => generateParticles(tier.embers, "ember", isMeltdown),
-    [tier.embers, isMeltdown],
+    () => generateParticles(tier.embers, "ember", intensity),
+    [tier.embers, intensity],
   );
   const flames = useMemo(
-    () => generateParticles(tier.flames, "flame", isMeltdown),
-    [tier.flames, isMeltdown],
+    () => generateParticles(tier.flames, "flame", intensity),
+    [tier.flames, intensity],
   );
 
   if (!enabled || tier.name === "cold") return null;
@@ -194,14 +212,22 @@ export function BurnIntensity() {
         }
         @keyframes meltdownPulse {
           0%, 100% { opacity: 0.5; }
-          50% { opacity: 0.8; }
+          50% { opacity: 0.85; }
         }
         @keyframes meltdownVignette {
           0%, 100% {
-            box-shadow: inset 0 0 80px 30px rgba(239,68,68,0.3), inset 0 0 200px 60px rgba(249,115,22,0.15);
+            box-shadow: inset 0 0 100px 40px rgba(239,68,68,0.4), inset 0 0 250px 80px rgba(249,115,22,0.2);
           }
           50% {
-            box-shadow: inset 0 0 120px 50px rgba(239,68,68,0.45), inset 0 0 300px 100px rgba(249,115,22,0.25);
+            box-shadow: inset 0 0 150px 70px rgba(239,68,68,0.55), inset 0 0 350px 120px rgba(249,115,22,0.3);
+          }
+        }
+        @keyframes infernoVignette {
+          0%, 100% {
+            box-shadow: inset 0 0 60px 20px rgba(239,68,68,0.15), inset 0 0 150px 40px rgba(249,115,22,0.08);
+          }
+          50% {
+            box-shadow: inset 0 0 80px 30px rgba(239,68,68,0.22), inset 0 0 200px 60px rgba(249,115,22,0.12);
           }
         }
         @keyframes heatShimmer {
@@ -211,13 +237,54 @@ export function BurnIntensity() {
           75% { transform: translateX(1px) scaleY(1.005); }
           100% { transform: translateX(0) scaleY(1); }
         }
+        @keyframes warningFlash {
+          0%, 45% { opacity: 1; }
+          50%, 95% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        @keyframes hazardMarch {
+          0% { background-position: 0 0; }
+          100% { background-position: 40px 0; }
+        }
+        @keyframes beaconSweep {
+          0% { transform: rotate(-30deg); opacity: 0.6; }
+          50% { transform: rotate(30deg); opacity: 0.9; }
+          100% { transform: rotate(-30deg); opacity: 0.6; }
+        }
+        @keyframes edgeStrobe {
+          0%, 40% { opacity: 0.9; }
+          50%, 90% { opacity: 0; }
+          100% { opacity: 0.9; }
+        }
+        @keyframes scanlineScroll {
+          0% { background-position: 0 0; }
+          100% { background-position: 0 4px; }
+        }
+        @keyframes screenShake {
+          0%, 100% { transform: translate(0, 0); }
+          10% { transform: translate(-1px, 1px); }
+          20% { transform: translate(2px, -1px); }
+          30% { transform: translate(-1px, -1px); }
+          40% { transform: translate(1px, 2px); }
+          50% { transform: translate(-2px, 0px); }
+          60% { transform: translate(1px, -1px); }
+          70% { transform: translate(-1px, 1px); }
+          80% { transform: translate(2px, 1px); }
+          90% { transform: translate(0px, -2px); }
+        }
         @media (prefers-reduced-motion: reduce) {
           .burn-intensity * {
             animation: none !important;
           }
+          .burn-intensity .meltdown-warning-text {
+            display: none !important;
+          }
         }
       `}</style>
-      <div className="burn-intensity fixed inset-0 pointer-events-none z-10 overflow-hidden">
+      <div
+        className="burn-intensity fixed inset-0 pointer-events-none z-10 overflow-hidden"
+        style={isMeltdown ? { animation: "screenShake 0.15s linear infinite" } : undefined}
+      >
         {/* Floating embers */}
         {embers.map((p, i) => (
           <div
@@ -278,46 +345,62 @@ export function BurnIntensity() {
             <div
               className="absolute bottom-0 left-0 transition-opacity duration-1000"
               style={{
-                top: isMeltdown ? "0" : "50%",
-                width: isMeltdown ? "8vw" : "3vw",
+                top: isMeltdown ? "0" : isInferno ? "20%" : "50%",
+                width: tier.sideGlowWidth,
                 background: isMeltdown
-                  ? "linear-gradient(to right, rgba(239,68,68,0.3), rgba(249,115,22,0.1), transparent)"
-                  : "linear-gradient(to right, rgba(249,115,22,0.15), transparent)",
-                opacity: tier.glowOpacity * 0.6,
+                  ? "linear-gradient(to right, rgba(239,68,68,0.35), rgba(249,115,22,0.12), transparent)"
+                  : isInferno
+                    ? "linear-gradient(to right, rgba(239,68,68,0.2), rgba(249,115,22,0.08), transparent)"
+                    : "linear-gradient(to right, rgba(249,115,22,0.15), transparent)",
+                opacity: tier.glowOpacity * 0.7,
               }}
             />
             <div
               className="absolute bottom-0 right-0 transition-opacity duration-1000"
               style={{
-                top: isMeltdown ? "0" : "50%",
-                width: isMeltdown ? "8vw" : "3vw",
+                top: isMeltdown ? "0" : isInferno ? "20%" : "50%",
+                width: tier.sideGlowWidth,
                 background: isMeltdown
-                  ? "linear-gradient(to left, rgba(239,68,68,0.3), rgba(249,115,22,0.1), transparent)"
-                  : "linear-gradient(to left, rgba(249,115,22,0.15), transparent)",
-                opacity: tier.glowOpacity * 0.6,
+                  ? "linear-gradient(to left, rgba(239,68,68,0.35), rgba(249,115,22,0.12), transparent)"
+                  : isInferno
+                    ? "linear-gradient(to left, rgba(239,68,68,0.2), rgba(249,115,22,0.08), transparent)"
+                    : "linear-gradient(to left, rgba(249,115,22,0.15), transparent)",
+                opacity: tier.glowOpacity * 0.7,
               }}
             />
           </>
         )}
 
-        {/* MELTDOWN-ONLY: pulsing red vignette border */}
-        {isMeltdown && (
+        {/* Top glow for inferno and meltdown */}
+        {tier.topGlow && (
           <div
-            className="absolute inset-0"
+            className="absolute top-0 left-0 right-0"
             style={{
-              animation: "meltdownVignette 2s ease-in-out infinite",
+              height: tier.topGlowHeight,
+              background: isMeltdown
+                ? "linear-gradient(to bottom, rgba(239,68,68,0.3), rgba(249,115,22,0.12), transparent)"
+                : "linear-gradient(to bottom, rgba(239,68,68,0.18), rgba(249,115,22,0.06), transparent)",
+              animation: `meltdownPulse ${isMeltdown ? "2s" : "4s"} ease-in-out infinite`,
             }}
           />
         )}
 
-        {/* MELTDOWN-ONLY: top edge glow (fire everywhere) */}
+        {/* INFERNO: light pulsing vignette */}
+        {isInferno && (
+          <div
+            className="absolute inset-0"
+            style={{
+              animation: "infernoVignette 3.5s ease-in-out infinite",
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: pulsing red vignette border (faster, more intense) */}
         {isMeltdown && (
           <div
-            className="absolute top-0 left-0 right-0"
+            className="absolute inset-0"
             style={{
-              height: "15vh",
-              background: "linear-gradient(to bottom, rgba(239,68,68,0.25), rgba(249,115,22,0.1), transparent)",
-              animation: "meltdownPulse 3s ease-in-out infinite",
+              animation: "meltdownVignette 1.2s ease-in-out infinite",
             }}
           />
         )}
@@ -331,6 +414,131 @@ export function BurnIntensity() {
               background: "linear-gradient(to top, rgba(249,115,22,0.15), transparent)",
               animation: "heatShimmer 0.8s ease-in-out infinite",
               filter: "blur(1px)",
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: flashing warning text */}
+        {isMeltdown && (
+          <div
+            className="meltdown-warning-text absolute top-16 left-0 right-0 flex justify-center"
+            style={{
+              animation: "warningFlash 0.6s step-end infinite",
+              zIndex: 1,
+            }}
+          >
+            <span
+              style={{
+                color: "#ef4444",
+                fontSize: "1.25rem",
+                fontWeight: 900,
+                letterSpacing: "0.15em",
+                textShadow: "0 0 10px rgba(239,68,68,0.8), 0 0 30px rgba(239,68,68,0.4)",
+                fontFamily: "monospace",
+              }}
+            >
+              {"⚠ MELTDOWN ⚠"}
+            </span>
+          </div>
+        )}
+
+        {/* MELTDOWN-ONLY: hazard stripe bar top */}
+        {isMeltdown && (
+          <div
+            className="absolute top-0 left-0 right-0"
+            style={{
+              height: "8px",
+              background: "repeating-linear-gradient(-45deg, #facc15, #facc15 10px, #1a1a1a 10px, #1a1a1a 20px)",
+              backgroundSize: "40px 8px",
+              animation: "hazardMarch 0.5s linear infinite",
+              opacity: 0.85,
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: hazard stripe bar bottom */}
+        {isMeltdown && (
+          <div
+            className="absolute bottom-0 left-0 right-0"
+            style={{
+              height: "8px",
+              background: "repeating-linear-gradient(-45deg, #facc15, #facc15 10px, #1a1a1a 10px, #1a1a1a 20px)",
+              backgroundSize: "40px 8px",
+              animation: "hazardMarch 0.5s linear infinite",
+              opacity: 0.85,
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: warning beacon light (left) */}
+        {isMeltdown && (
+          <div
+            className="absolute"
+            style={{
+              bottom: 0,
+              left: 0,
+              width: "200px",
+              height: "60vh",
+              background: "linear-gradient(to top, rgba(239,68,68,0.25), transparent 70%)",
+              transformOrigin: "bottom left",
+              animation: "beaconSweep 2s ease-in-out infinite",
+              filter: "blur(8px)",
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: warning beacon light (right) */}
+        {isMeltdown && (
+          <div
+            className="absolute"
+            style={{
+              bottom: 0,
+              right: 0,
+              width: "200px",
+              height: "60vh",
+              background: "linear-gradient(to top, rgba(239,68,68,0.25), transparent 70%)",
+              transformOrigin: "bottom right",
+              animation: "beaconSweep 2s ease-in-out infinite reverse",
+              filter: "blur(8px)",
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: edge strobe lines (left) */}
+        {isMeltdown && (
+          <div
+            className="absolute left-0 top-0 bottom-0"
+            style={{
+              width: "4px",
+              background: "rgba(239,68,68,0.8)",
+              boxShadow: "0 0 12px 4px rgba(239,68,68,0.5)",
+              animation: "edgeStrobe 0.3s step-end infinite",
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: edge strobe lines (right) */}
+        {isMeltdown && (
+          <div
+            className="absolute right-0 top-0 bottom-0"
+            style={{
+              width: "4px",
+              background: "rgba(239,68,68,0.8)",
+              boxShadow: "0 0 12px 4px rgba(239,68,68,0.5)",
+              animation: "edgeStrobe 0.3s step-end infinite 0.15s",
+            }}
+          />
+        )}
+
+        {/* MELTDOWN-ONLY: scanline overlay */}
+        {isMeltdown && (
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)",
+              backgroundSize: "100% 4px",
+              animation: "scanlineScroll 0.2s linear infinite",
+              pointerEvents: "none",
             }}
           />
         )}
