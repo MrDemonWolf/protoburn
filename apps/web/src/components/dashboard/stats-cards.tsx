@@ -21,7 +21,7 @@ export function StatsCards() {
   const isLoading = totalsLoading || monthlyLoading;
 
   const monthlyCost = (monthly?.models ?? []).reduce(
-    (sum, m) => sum + calculateCost(m.model, m.inputTokens, m.outputTokens),
+    (sum, m) => sum + calculateCost(m.model, m.inputTokens, m.outputTokens, m.cacheCreationTokens, m.cacheReadTokens),
     0,
   );
 

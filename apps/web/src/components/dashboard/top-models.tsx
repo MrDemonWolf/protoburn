@@ -131,7 +131,7 @@ export function TopModels() {
       </div>
       <div className="grid gap-3 md:grid-cols-3">
         {models.map((model, index) => {
-          const cost = calculateCost(model.model, model.inputTokens, model.outputTokens);
+          const cost = calculateCost(model.model, model.inputTokens, model.outputTokens, model.cacheCreationTokens, model.cacheReadTokens);
           const medal = MEDALS[index]!;
           return (
             <Card

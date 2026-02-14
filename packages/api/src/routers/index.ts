@@ -12,6 +12,8 @@ const tokenUsageRouter = router({
             model: z.string(),
             inputTokens: z.number().int().nonnegative(),
             outputTokens: z.number().int().nonnegative(),
+            cacheCreationTokens: z.number().int().nonnegative().default(0),
+            cacheReadTokens: z.number().int().nonnegative().default(0),
             date: z.string(),
           }),
         ),
@@ -22,6 +24,8 @@ const tokenUsageRouter = router({
         model: r.model,
         inputTokens: r.inputTokens,
         outputTokens: r.outputTokens,
+        cacheCreationTokens: r.cacheCreationTokens,
+        cacheReadTokens: r.cacheReadTokens,
         date: r.date,
       }));
       await db.insert(schema.tokenUsage).values(rows);
@@ -33,14 +37,20 @@ const tokenUsageRouter = router({
       .select({
         totalInput: sum(schema.tokenUsage.inputTokens).mapWith(Number),
         totalOutput: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+        totalCacheCreation: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+        totalCacheRead: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
       })
       .from(schema.tokenUsage);
     const totalInput = result?.totalInput ?? 0;
     const totalOutput = result?.totalOutput ?? 0;
+    const totalCacheCreation = result?.totalCacheCreation ?? 0;
+    const totalCacheRead = result?.totalCacheRead ?? 0;
     return {
       totalInput,
       totalOutput,
-      totalTokens: totalInput + totalOutput,
+      totalCacheCreation,
+      totalCacheRead,
+      totalTokens: totalInput + totalOutput + totalCacheCreation + totalCacheRead,
     };
   }),
 
@@ -50,6 +60,8 @@ const tokenUsageRouter = router({
         model: schema.tokenUsage.model,
         inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
         outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+        cacheCreationTokens: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+        cacheReadTokens: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
       })
       .from(schema.tokenUsage)
       .groupBy(schema.tokenUsage.model);
@@ -58,7 +70,9 @@ const tokenUsageRouter = router({
       model: r.model,
       inputTokens: r.inputTokens ?? 0,
       outputTokens: r.outputTokens ?? 0,
-      totalTokens: (r.inputTokens ?? 0) + (r.outputTokens ?? 0),
+      cacheCreationTokens: r.cacheCreationTokens ?? 0,
+      cacheReadTokens: r.cacheReadTokens ?? 0,
+      totalTokens: (r.inputTokens ?? 0) + (r.outputTokens ?? 0) + (r.cacheCreationTokens ?? 0) + (r.cacheReadTokens ?? 0),
     }));
   }),
 
@@ -84,6 +98,8 @@ const tokenUsageRouter = router({
           model: schema.tokenUsage.model,
           inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
           outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+          cacheCreationTokens: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+          cacheReadTokens: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
         })
         .from(schema.tokenUsage)
         .where(
@@ -100,7 +116,9 @@ const tokenUsageRouter = router({
           model: r.model,
           inputTokens: r.inputTokens ?? 0,
           outputTokens: r.outputTokens ?? 0,
-          totalTokens: (r.inputTokens ?? 0) + (r.outputTokens ?? 0),
+          cacheCreationTokens: r.cacheCreationTokens ?? 0,
+          cacheReadTokens: r.cacheReadTokens ?? 0,
+          totalTokens: (r.inputTokens ?? 0) + (r.outputTokens ?? 0) + (r.cacheCreationTokens ?? 0) + (r.cacheReadTokens ?? 0),
         })),
       };
     }),
@@ -124,6 +142,8 @@ const tokenUsageRouter = router({
           date: schema.tokenUsage.date,
           inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
           outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+          cacheCreationTokens: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+          cacheReadTokens: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
         })
         .from(schema.tokenUsage)
         .where(gte(schema.tokenUsage.date, sinceStr))
@@ -134,6 +154,8 @@ const tokenUsageRouter = router({
         date: r.date,
         inputTokens: r.inputTokens ?? 0,
         outputTokens: r.outputTokens ?? 0,
+        cacheCreationTokens: r.cacheCreationTokens ?? 0,
+        cacheReadTokens: r.cacheReadTokens ?? 0,
       }));
     }),
 });

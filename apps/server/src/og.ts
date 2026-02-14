@@ -54,7 +54,7 @@ async function fetchData() {
       inputTokens: r.inputTokens,
       outputTokens: r.outputTokens,
       totalTokens: r.totalTokens,
-      cost: calculateCost(r.model, r.inputTokens, r.outputTokens),
+      cost: calculateCost(r.model, r.inputTokens, r.outputTokens, r.cacheCreationTokens, r.cacheReadTokens),
     }))
     .sort((a, b) => b.totalTokens - a.totalTokens);
 

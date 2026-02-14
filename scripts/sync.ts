@@ -37,6 +37,8 @@ const STATS_CACHE = join(CLAUDE_DIR, "stats-cache.json");
 export interface UsageBucket {
   input: number;
   output: number;
+  cacheCreation: number;
+  cacheRead: number;
 }
 
 // model -> date -> { input, output }
@@ -96,6 +98,8 @@ function parseStatsCache(): UsageMap {
       usage.get(model)!.set(date, {
         input: Math.round(total * ratio.inputRatio),
         output: Math.round(total * ratio.outputRatio),
+        cacheCreation: 0,
+        cacheRead: 0,
       });
     }
   }
@@ -157,16 +161,20 @@ function parseSessions(since: string) {
         const u = msg.usage;
         const inputTokens: number = u.input_tokens ?? 0;
         const outputTokens: number = u.output_tokens ?? 0;
+        const cacheCreationTokens: number = u.cache_creation_input_tokens ?? 0;
+        const cacheReadTokens: number = u.cache_read_input_tokens ?? 0;
 
         const date = ts.slice(0, 10);
 
         if (!usage.has(model)) usage.set(model, new Map());
         const modelMap = usage.get(model)!;
-        if (!modelMap.has(date)) modelMap.set(date, { input: 0, output: 0 });
+        if (!modelMap.has(date)) modelMap.set(date, { input: 0, output: 0, cacheCreation: 0, cacheRead: 0 });
         const bucket = modelMap.get(date)!;
 
         bucket.input += inputTokens;
         bucket.output += outputTokens;
+        bucket.cacheCreation += cacheCreationTokens;
+        bucket.cacheRead += cacheReadTokens;
         msgCount++;
 
         if (ts > latestTs) latestTs = ts;
@@ -219,16 +227,20 @@ async function push(usage: UsageMap) {
     model: string;
     inputTokens: number;
     outputTokens: number;
+    cacheCreationTokens: number;
+    cacheReadTokens: number;
     date: string;
   }[] = [];
 
   for (const [model, dates] of [...usage.entries()].sort()) {
     for (const [date, tokens] of [...dates.entries()].sort()) {
-      if (tokens.input === 0 && tokens.output === 0) continue;
+      if (tokens.input === 0 && tokens.output === 0 && tokens.cacheCreation === 0 && tokens.cacheRead === 0) continue;
       records.push({
         model,
         inputTokens: tokens.input,
         outputTokens: tokens.output,
+        cacheCreationTokens: tokens.cacheCreation,
+        cacheReadTokens: tokens.cacheRead,
         date,
       });
     }
@@ -280,10 +292,10 @@ async function resetDb() {
 // Pricing (mirrors apps/web/src/lib/pricing.ts)
 // ---------------------------------------------------------------------------
 
-const MODEL_PRICING: Record<string, { inputPerMillion: number; outputPerMillion: number }> = {
-  "haiku-4-5": { inputPerMillion: 1.0, outputPerMillion: 5.0 },
-  "sonnet-4-5": { inputPerMillion: 3.0, outputPerMillion: 15.0 },
-  "opus-4-6": { inputPerMillion: 5.0, outputPerMillion: 25.0 },
+const MODEL_PRICING: Record<string, { inputPerMillion: number; outputPerMillion: number; cacheWritePerMillion: number; cacheReadPerMillion: number }> = {
+  "haiku-4-5": { inputPerMillion: 1.0, outputPerMillion: 5.0, cacheWritePerMillion: 1.25, cacheReadPerMillion: 0.1 },
+  "sonnet-4-5": { inputPerMillion: 3.0, outputPerMillion: 15.0, cacheWritePerMillion: 3.75, cacheReadPerMillion: 0.3 },
+  "opus-4-6": { inputPerMillion: 5.0, outputPerMillion: 25.0, cacheWritePerMillion: 6.25, cacheReadPerMillion: 0.5 },
 };
 
 const DEFAULT_PRICING = MODEL_PRICING["sonnet-4-5"]!;
@@ -295,9 +307,14 @@ export function getPricingTier(model: string) {
   return DEFAULT_PRICING;
 }
 
-export function calculateCost(model: string, inputTokens: number, outputTokens: number): number {
+export function calculateCost(model: string, inputTokens: number, outputTokens: number, cacheCreationTokens = 0, cacheReadTokens = 0): number {
   const tier = getPricingTier(model);
-  return (inputTokens / 1_000_000) * tier.inputPerMillion + (outputTokens / 1_000_000) * tier.outputPerMillion;
+  return (
+    (inputTokens / 1_000_000) * tier.inputPerMillion +
+    (outputTokens / 1_000_000) * tier.outputPerMillion +
+    (cacheCreationTokens / 1_000_000) * tier.cacheWritePerMillion +
+    (cacheReadTokens / 1_000_000) * tier.cacheReadPerMillion
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -312,6 +329,8 @@ interface ModelEntry {
   model: string;
   inputTokens: number;
   outputTokens: number;
+  cacheCreationTokens: number;
+  cacheReadTokens: number;
   totalTokens: number;
 }
 
@@ -370,7 +389,7 @@ function printDashboard(data: Awaited<ReturnType<typeof fetchDashboard>>) {
     let monthlyTotalCost = 0;
 
     for (const m of sorted) {
-      const cost = calculateCost(m.model, m.inputTokens, m.outputTokens);
+      const cost = calculateCost(m.model, m.inputTokens, m.outputTokens, m.cacheCreationTokens, m.cacheReadTokens);
       monthlyTotalCost += cost;
       console.log(
         `    ${m.model}: ${m.totalTokens.toLocaleString()} tokens ($${cost.toFixed(2)})`,

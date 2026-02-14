@@ -8,6 +8,13 @@
       "when": 1770499020608,
       "tag": "0000_curly_imperial_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1771047236905,
+      "tag": "0001_short_phalanx",
+      "breakpoints": true
     }
   ]
 }

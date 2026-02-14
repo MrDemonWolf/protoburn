@@ -10,6 +10,8 @@ export const tokenUsage = sqliteTable(
     model: text("model").notNull(),
     inputTokens: integer("input_tokens").notNull(),
     outputTokens: integer("output_tokens").notNull(),
+    cacheCreationTokens: integer("cache_creation_tokens").notNull().default(0),
+    cacheReadTokens: integer("cache_read_tokens").notNull().default(0),
     date: text("date").notNull(),
     createdAt: text("created_at")
       .notNull()

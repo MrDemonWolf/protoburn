@@ -47,6 +47,8 @@ const usageSchema = z.object({
       model: z.string(),
       inputTokens: z.number().int().nonnegative(),
       outputTokens: z.number().int().nonnegative(),
+      cacheCreationTokens: z.number().int().nonnegative().default(0),
+      cacheReadTokens: z.number().int().nonnegative().default(0),
       date: z.string(),
     }),
   ),
@@ -64,6 +66,8 @@ app.post("/api/usage", async (c) => {
     model: r.model,
     inputTokens: r.inputTokens,
     outputTokens: r.outputTokens,
+    cacheCreationTokens: r.cacheCreationTokens,
+    cacheReadTokens: r.cacheReadTokens,
     date: r.date,
   }));
 
