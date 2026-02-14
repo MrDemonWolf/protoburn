@@ -131,6 +131,9 @@ export function BurnIntensity() {
 
   const isMeltdown = tier.isMeltdown ?? false;
   const isInferno = tier.isInferno ?? false;
+  const isBlazing = tier.name === "blazing";
+  const isBurning = tier.name === "burning";
+  const isWarm = tier.name === "warm";
   const intensity: TierIntensity = isMeltdown ? "meltdown" : isInferno ? "inferno" : "normal";
   const embers = useMemo(
     () => generateParticles(tier.embers, "ember", intensity),
@@ -229,6 +232,32 @@ export function BurnIntensity() {
           0% { background-position: 0 0; }
           100% { background-position: 0 4px; }
         }
+        @keyframes warmPulse {
+          0%, 100% { opacity: 0.15; }
+          50% { opacity: 0.28; }
+        }
+        @keyframes burningPulse {
+          0%, 100% { opacity: 0.25; }
+          50% { opacity: 0.45; }
+        }
+        @keyframes blazingShimmer {
+          0% { transform: translateX(0) scaleY(1); opacity: 0.12; }
+          33% { transform: translateX(1px) scaleY(1.008); opacity: 0.18; }
+          66% { transform: translateX(-1px) scaleY(0.995); opacity: 0.14; }
+          100% { transform: translateX(0) scaleY(1); opacity: 0.12; }
+        }
+        @keyframes blazingVignette {
+          0%, 100% {
+            box-shadow: inset 0 0 40px 12px rgba(249,115,22,0.08), inset 0 0 100px 30px rgba(251,191,36,0.04);
+          }
+          50% {
+            box-shadow: inset 0 0 60px 20px rgba(249,115,22,0.14), inset 0 0 140px 45px rgba(251,191,36,0.07);
+          }
+        }
+        @keyframes sideGlowPulse {
+          0%, 100% { opacity: 0.7; }
+          50% { opacity: 1; }
+        }
         @keyframes screenShake {
           0%, 100% { transform: translate(0, 0); }
           10% { transform: translate(-1px, 1px); }
@@ -302,9 +331,21 @@ export function BurnIntensity() {
           className="absolute bottom-0 left-0 right-0 transition-opacity duration-1000"
           style={{
             height: tier.glowHeight,
-            background:
-              "linear-gradient(to top, rgba(249,115,22,0.4), rgba(239,68,68,0.15), transparent)",
+            background: isBlazing
+              ? "linear-gradient(to top, rgba(249,115,22,0.5), rgba(239,68,68,0.25), rgba(253,224,71,0.05), transparent)"
+              : isBurning
+                ? "linear-gradient(to top, rgba(249,115,22,0.45), rgba(239,68,68,0.18), transparent)"
+                : isWarm
+                  ? "linear-gradient(to top, rgba(251,191,36,0.35), rgba(249,115,22,0.12), transparent)"
+                  : "linear-gradient(to top, rgba(249,115,22,0.4), rgba(239,68,68,0.15), transparent)",
             opacity: tier.glowOpacity,
+            animation: isBlazing
+              ? "burningPulse 3s ease-in-out infinite"
+              : isBurning
+                ? "burningPulse 4s ease-in-out infinite"
+                : isWarm
+                  ? "warmPulse 6s ease-in-out infinite"
+                  : undefined,
           }}
         />
 
@@ -314,30 +355,75 @@ export function BurnIntensity() {
             <div
               className="absolute bottom-0 left-0 transition-opacity duration-1000"
               style={{
-                top: isMeltdown ? "0" : isInferno ? "20%" : "50%",
+                top: isMeltdown ? "0" : isInferno ? "20%" : isBlazing ? "30%" : isBurning ? "40%" : "60%",
                 width: tier.sideGlowWidth,
                 background: isMeltdown
                   ? "linear-gradient(to right, rgba(239,68,68,0.35), rgba(249,115,22,0.12), transparent)"
                   : isInferno
                     ? "linear-gradient(to right, rgba(239,68,68,0.2), rgba(249,115,22,0.08), transparent)"
-                    : "linear-gradient(to right, rgba(249,115,22,0.15), transparent)",
+                    : isBlazing
+                      ? "linear-gradient(to right, rgba(249,115,22,0.2), rgba(251,191,36,0.06), transparent)"
+                      : isBurning
+                        ? "linear-gradient(to right, rgba(249,115,22,0.15), rgba(251,191,36,0.04), transparent)"
+                        : "linear-gradient(to right, rgba(251,191,36,0.12), transparent)",
                 opacity: tier.glowOpacity * 0.7,
+                animation: isBlazing ? "sideGlowPulse 3s ease-in-out infinite" : undefined,
               }}
             />
             <div
               className="absolute bottom-0 right-0 transition-opacity duration-1000"
               style={{
-                top: isMeltdown ? "0" : isInferno ? "20%" : "50%",
+                top: isMeltdown ? "0" : isInferno ? "20%" : isBlazing ? "30%" : isBurning ? "40%" : "60%",
                 width: tier.sideGlowWidth,
                 background: isMeltdown
                   ? "linear-gradient(to left, rgba(239,68,68,0.35), rgba(249,115,22,0.12), transparent)"
                   : isInferno
                     ? "linear-gradient(to left, rgba(239,68,68,0.2), rgba(249,115,22,0.08), transparent)"
-                    : "linear-gradient(to left, rgba(249,115,22,0.15), transparent)",
+                    : isBlazing
+                      ? "linear-gradient(to left, rgba(249,115,22,0.2), rgba(251,191,36,0.06), transparent)"
+                      : isBurning
+                        ? "linear-gradient(to left, rgba(249,115,22,0.15), rgba(251,191,36,0.04), transparent)"
+                        : "linear-gradient(to left, rgba(251,191,36,0.12), transparent)",
                 opacity: tier.glowOpacity * 0.7,
+                animation: isBlazing ? "sideGlowPulse 3s ease-in-out infinite 1.5s" : undefined,
               }}
             />
           </>
+        )}
+
+        {/* BLAZING: subtle heat shimmer at bottom */}
+        {isBlazing && (
+          <div
+            className="absolute bottom-0 left-0 right-0"
+            style={{
+              height: "15vh",
+              background: "linear-gradient(to top, rgba(249,115,22,0.08), transparent)",
+              animation: "blazingShimmer 1.5s ease-in-out infinite",
+              filter: "blur(0.5px)",
+            }}
+          />
+        )}
+
+        {/* BLAZING: subtle orange vignette */}
+        {isBlazing && (
+          <div
+            className="absolute inset-0"
+            style={{
+              animation: "blazingVignette 5s ease-in-out infinite",
+            }}
+          />
+        )}
+
+        {/* BURNING: ember ground glow — concentrated bright strip at the very bottom */}
+        {isBurning && (
+          <div
+            className="absolute bottom-0 left-0 right-0"
+            style={{
+              height: "4vh",
+              background: "linear-gradient(to top, rgba(249,115,22,0.25), rgba(251,191,36,0.08), transparent)",
+              animation: "burningPulse 3s ease-in-out infinite",
+            }}
+          />
         )}
 
         {/* Top glow for inferno and meltdown */}
