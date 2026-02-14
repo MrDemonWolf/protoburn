@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
-import { Zap, ArrowDownToLine, ArrowUpFromLine, Flame, PenLine, BookOpen } from "lucide-react";
+import { Zap, ArrowDownToLine, ArrowUpFromLine, Flame, PenLine, BookOpen, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
@@ -46,13 +46,7 @@ export function StatsCards() {
     }
   }, [isFetching]);
 
-  const cards = [
-    {
-      title: "Total Tokens",
-      display: formatNumber(totals?.totalTokens ?? 0),
-      icon: Zap,
-      iconClass: "text-primary",
-    },
+  const breakdownCards = [
     {
       title: "Input Tokens",
       display: formatNumber(totals?.totalInput ?? 0),
@@ -80,54 +74,73 @@ export function StatsCards() {
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-      {cards.map((card) => (
-        <Card key={card.title}>
+    <div className="space-y-4">
+      {/* Top row: Total Tokens + Est. Monthly Cost */}
+      <div className="grid gap-4 grid-cols-2">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-muted-foreground">
-              {card.title}
-            </CardTitle>
-            <card.icon className={`h-4 w-4 ${card.iconClass}`} />
+            <CardTitle className="text-muted-foreground">Total Tokens</CardTitle>
+            <Zap className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <Skeleton className="h-8 w-24" />
             ) : (
-              <AnimatedNumber value={card.display} animateKey={animateKey} className="text-2xl font-bold" />
+              <AnimatedNumber value={formatNumber(totals?.totalTokens ?? 0)} animateKey={animateKey} className="text-2xl font-bold" />
             )}
           </CardContent>
         </Card>
-      ))}
-      <Card className="relative overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Est. Monthly Cost
-            {currentMonth && (
-              <span className="ml-1 text-xs font-normal">({currentMonth})</span>
+        <Card className="relative overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-muted-foreground">
+              Est. Monthly Cost
+              {currentMonth && (
+                <span className="ml-1 text-xs font-normal">({currentMonth})</span>
+              )}
+              <span className="ml-1 text-xs font-normal text-primary">({env.NEXT_PUBLIC_API_PLAN} plan)</span>
+            </CardTitle>
+            <div className="flex items-center">
+              {Array.from({ length: fire.flames }).map((_, i) => (
+                <Flame
+                  key={i}
+                  className={`h-4 w-4 ${fire.color} ${fire.flames >= 8 ? "animate-pulse" : ""}`}
+                  style={{ marginLeft: i > 0 ? "-6px" : 0 }}
+                />
+              ))}
+              {fire.flames === 0 && (
+                <Flame className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-8 w-24" />
+            ) : (
+              <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-2xl font-bold" />
             )}
-            <span className="ml-1 text-xs font-normal text-primary">({env.NEXT_PUBLIC_API_PLAN} plan)</span>
-          </CardTitle>
-          <div className="flex items-center">
-            {Array.from({ length: fire.flames }).map((_, i) => (
-              <Flame
-                key={i}
-                className={`h-4 w-4 ${fire.color} ${fire.flames >= 8 ? "animate-pulse" : ""}`}
-                style={{ marginLeft: i > 0 ? "-6px" : 0 }}
-              />
-            ))}
-            {fire.flames === 0 && (
-              <Flame className="h-4 w-4 text-muted-foreground" />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-24" />
-          ) : (
-            <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-2xl font-bold" />
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+      {/* Bottom row: breakdown cards */}
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+        {breakdownCards.map((card) => (
+          <Card key={card.title}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-muted-foreground">
+                {card.title}
+              </CardTitle>
+              <card.icon className={`h-4 w-4 ${card.iconClass}`} />
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                <AnimatedNumber value={card.display} animateKey={animateKey} className="text-2xl font-bold" />
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

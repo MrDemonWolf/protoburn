@@ -28,7 +28,7 @@ export default function Header() {
   );
 
   const monthlyTokens = (monthly?.models ?? []).reduce(
-    (sum, m) => sum + m.inputTokens + m.outputTokens,
+    (sum, m) => sum + m.totalTokens,
     0,
   );
   const tier = useEffectiveTier(monthlyTokens);
