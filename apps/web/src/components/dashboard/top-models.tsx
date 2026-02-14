@@ -158,7 +158,7 @@ export function TopModels() {
                     className="font-heading text-sm font-bold"
                   />
                 </div>
-                <div className="mt-1 flex gap-3 text-xs text-muted-foreground">
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
                   <span className="flex">
                     In:&nbsp;
                     <AnimatedNumber
@@ -175,6 +175,26 @@ export function TopModels() {
                       className="inline-flex"
                     />
                   </span>
+                  {model.cacheCreationTokens > 0 && (
+                    <span className="flex">
+                      CW:&nbsp;
+                      <AnimatedNumber
+                        value={formatNumber(model.cacheCreationTokens)}
+                        animateKey={animateKey}
+                        className="inline-flex"
+                      />
+                    </span>
+                  )}
+                  {model.cacheReadTokens > 0 && (
+                    <span className="flex">
+                      CR:&nbsp;
+                      <AnimatedNumber
+                        value={formatNumber(model.cacheReadTokens)}
+                        animateKey={animateKey}
+                        className="inline-flex"
+                      />
+                    </span>
+                  )}
                 </div>
               </CardContent>
             </Card>

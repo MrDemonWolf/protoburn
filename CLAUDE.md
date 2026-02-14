@@ -16,7 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Monorepo**: Turbo + pnpm workspaces
 - **Frontend** (`apps/web`): Next.js 16 (static export), React 19, Tailwind CSS v4, shadcn/ui (Base UI primitives), Recharts, Lucide icons
 - **Backend** (`apps/server`): Hono with tRPC integration, API key auth for writes
-- **Database** (`packages/db`): Drizzle ORM + Cloudflare D1 (SQLite). Single `tokenUsage` table (model, inputTokens, outputTokens, date)
+- **Database** (`packages/db`): Drizzle ORM + Cloudflare D1 (SQLite). Single `tokenUsage` table (model, inputTokens, outputTokens, cacheCreationTokens, cacheReadTokens, date)
 - **API** (`packages/api`): Shared tRPC router definitions used by both web and server
 - **Infra** (`packages/infra`): Alchemy for Cloudflare Workers + D1 + static site deployment
 - **Env** (`packages/env`): T3 Env pattern with Zod validation (`NEXT_PUBLIC_SERVER_URL` for web, `DB`/`API_KEY`/`CORS_ORIGIN` for server)
@@ -50,6 +50,7 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 - UI components use `@base-ui/react` primitives (not `@radix-ui`) with shadcn "base-lyra" style
 - `next.config.ts` has `output: "export"` (static SPA) and `reactCompiler: true`
 - Server binds tRPC at `/trpc` and has REST endpoints at `/api/usage`
+- Prompt caching tokens (`cache_creation_input_tokens`, `cache_read_input_tokens`) are tracked from Claude API JSONL session data and stored separately from regular input tokens; stats-cache historical data defaults cache fields to 0
 
 ## Deployment
 
@@ -70,7 +71,13 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 - **Stats cards**: Total/Input/Output tokens + monthly cost with fire intensity indicator; values animate with odometer roll-up on page load and on refresh when data changes (digits cascade up to final value via `AnimatedNumber` component)
 - **Top Models leaderboard**: Top 3 models by token usage with medal rankings (gold/silver/bronze) and per-model cost; all numbers use odometer animation; FLIP position-swap animation when rankings change after refresh
 - **Usage chart**: Time-series token usage (Recharts), flexes to fill remaining viewport height
-- **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers (Haiku $1/$5, Sonnet $3/$15, Opus $5/$25 per million tokens), pattern-matched by model name, unknown models default to Sonnet rates
+- **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers with prompt caching support, pattern-matched by model name, unknown models default to Sonnet rates. Pricing copies also exist in `apps/server/src/lib/pricing.ts` and `scripts/sync.ts`
+
+  | Model | Input | Cache Write (1.25x) | Cache Read (0.1x) | Output |
+  |-------|-------|--------------------|--------------------|--------|
+  | Haiku 4.5 | $1/M | $1.25/M | $0.10/M | $5/M |
+  | Sonnet 4.5 | $3/M | $3.75/M | $0.30/M | $15/M |
+  | Opus 4.6 | $5/M | $6.25/M | $0.50/M | $25/M |
 - **Footer**: Auto-updating year with linked MrDemonWolf branding, backdrop blur
 - **SEO**: Title, description, keywords, and OpenGraph metadata in layout
 - **Konami code easter egg**: Up Up Down Down Left Right Left Right B A triggers a multi-wave fire animation with phased timing, ember particles, gradient "PROTOBURN" title slam, and "EVERYTHING BURNS" tagline (`apps/web/src/components/konami-easter-egg.tsx`)
@@ -110,11 +117,12 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 
 ## tRPC Endpoints
 
-- `tokenUsage.push` — bulk insert token usage records (mutation)
-- `tokenUsage.totals` — all-time aggregate input/output/total tokens
-- `tokenUsage.byModel` — all-time per-model token breakdown
-- `tokenUsage.byModelMonthly` — per-model breakdown filtered to current month (optional `month` param)
-- `tokenUsage.timeSeries` — daily token usage over last N days (default 30)
+- `tokenUsage.push` — bulk insert token usage records (mutation); includes `cacheCreationTokens` and `cacheReadTokens` (optional, default 0)
+- `tokenUsage.totals` — all-time aggregate input/output/cacheCreation/cacheRead/total tokens
+- `tokenUsage.byModel` — all-time per-model token breakdown (includes cache token fields)
+- `tokenUsage.byModelMonthly` — per-model breakdown filtered to current month (optional `month` param, includes cache token fields)
+- `tokenUsage.timeSeries` — daily token usage over last N days (default 30, includes cache token fields)
+- **D1 batch limit**: Inserts are chunked to 10 rows per query to stay under D1's 100 bound-parameter limit (7 params/row × 10 = 70)
 
 ## Testing
 
