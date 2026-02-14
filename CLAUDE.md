@@ -122,7 +122,8 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 - **Projects**: `web` (unit tests for pricing, format, burn tiers), `server` (integration tests with in-memory SQLite), `scripts` (sync utility unit tests)
 - **Server test strategy**: `@protoburn/db` aliased to `packages/db/src/test-utils.ts` (better-sqlite3 in-memory), `@protoburn/env/server` aliased to a stub — avoids `cloudflare:workers` runtime dependency
 - **Pure utility extraction**: `getBurnTier` in `apps/web/src/lib/burn-tiers.ts`, `formatNumber`/`cleanModelName`/`getFireLevel` in `apps/web/src/lib/format.ts` — testable without React/trpc imports
-- **CI**: GitHub Actions (`.github/workflows/ci.yml`) — 3 parallel jobs: type-check, test, build; triggers on push/PR to `main`
+- **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`) — 3 parallel jobs (type-check, test, build) on push/PR to `main`, plus a deploy job on push to `main` that runs `pnpm cf:deploy` after all checks pass
+- **Deploy secrets** (GitHub repo secrets): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ALCHEMY_PASSWORD`, `API_KEY`
 
 ## Commit Preferences
 
