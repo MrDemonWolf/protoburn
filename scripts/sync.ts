@@ -322,7 +322,7 @@ export function calculateCost(model: string, inputTokens: number, outputTokens: 
 // ---------------------------------------------------------------------------
 
 interface TotalsResponse {
-  result: { data: { totalInput: number; totalOutput: number; totalTokens: number } };
+  result: { data: { totalInput: number; totalOutput: number; totalCacheCreation: number; totalCacheRead: number; totalTokens: number } };
 }
 
 interface ModelEntry {
@@ -373,9 +373,11 @@ function printDashboard(data: Awaited<ReturnType<typeof fetchDashboard>>) {
 
   // All-time totals
   console.log("  All-time Totals:");
-  console.log(`    Total tokens:  ${totals.totalTokens.toLocaleString()}`);
-  console.log(`    Input tokens:  ${totals.totalInput.toLocaleString()}`);
-  console.log(`    Output tokens: ${totals.totalOutput.toLocaleString()}`);
+  console.log(`    Total tokens:       ${totals.totalTokens.toLocaleString()}`);
+  console.log(`    Input tokens:       ${totals.totalInput.toLocaleString()}`);
+  console.log(`    Output tokens:      ${totals.totalOutput.toLocaleString()}`);
+  console.log(`    Cache write tokens: ${totals.totalCacheCreation.toLocaleString()}`);
+  console.log(`    Cache read tokens:  ${totals.totalCacheRead.toLocaleString()}`);
   console.log("");
 
   // Monthly breakdown

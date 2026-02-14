@@ -88,13 +88,13 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 
 | Tier | Monthly Tokens | Embers | Flames | Side Glow | Top Glow | Special Effects |
 |------|---------------|--------|--------|-----------|----------|-----------------|
-| Cold | < 100K | 0 | 0 | No | No | — |
-| Spark | 100K+ | 8 | 2 | No | No | — |
-| Warm | 500K+ | 14 | 6 | Yes (2vw) | No | — |
-| Burning | 1M+ | 25 | 14 | Yes (3.5vw) | No | — |
-| Blazing | 5M+ | 32 | 18 | Yes (5vw) | No | — |
-| Inferno | 10M+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
-| Meltdown | 20M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
+| Cold | < 1M | 0 | 0 | No | No | — |
+| Spark | 1M+ | 8 | 2 | No | No | — |
+| Warm | 5M+ | 14 | 6 | Yes (2vw) | No | — |
+| Burning | 10M+ | 25 | 14 | Yes (3.5vw) | No | — |
+| Blazing | 50M+ | 32 | 18 | Yes (5vw) | No | — |
+| Inferno | 100M+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
+| Meltdown | 200M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
 
 - Inferno tier has: light pulsing vignette (3.5s cycle), top edge glow, wider side glows reaching higher up the screen
 - Meltdown tier is nuclear emergency: 120 embers (bigger/faster/brighter), 60 large flames, 75vh bottom glow at 90% opacity, full-height 10vw side glows, fast pulsing red vignette (1.2s cycle), top edge glow, heat shimmer distortion, flashing "⚠ MELTDOWN ⚠" warning text, yellow/black hazard stripe bars (top/bottom), rotating red beacon searchlights from corners, 4px strobing red edge lines, scrolling scanline overlay, 1-2px screen shake on the burn overlay, and screen shake on main content via `MeltdownShake` wrapper

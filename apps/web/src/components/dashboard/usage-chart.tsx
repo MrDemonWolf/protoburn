@@ -30,6 +30,14 @@ const chartConfig = {
     label: "Output",
     color: "#0B7CC1",
   },
+  cacheCreationTokens: {
+    label: "Cache Write",
+    color: "#F59E0B",
+  },
+  cacheReadTokens: {
+    label: "Cache Read",
+    color: "#8B5CF6",
+  },
 } satisfies ChartConfig;
 
 export function UsageChart() {
@@ -61,6 +69,14 @@ export function UsageChart() {
                   <linearGradient id="fillOutput" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0B7CC1" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#0B7CC1" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="fillCacheWrite" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="fillCacheRead" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -102,6 +118,22 @@ export function UsageChart() {
                   stackId="1"
                   stroke="#0B7CC1"
                   fill="url(#fillOutput)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="cacheCreationTokens"
+                  stackId="1"
+                  stroke="#F59E0B"
+                  fill="url(#fillCacheWrite)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="cacheReadTokens"
+                  stackId="1"
+                  stroke="#8B5CF6"
+                  fill="url(#fillCacheRead)"
                   strokeWidth={2}
                 />
               </AreaChart>

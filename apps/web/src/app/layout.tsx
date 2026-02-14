@@ -21,11 +21,12 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "ProtoBurn — Claude API Cost & Usage Dashboard",
   description:
-    "Track your Claude API spending and token usage. Monitor monthly costs, see your top models leaderboard, and visualize usage trends — self-hosted on Cloudflare.",
+    "Track your Claude API spending, token usage, and prompt caching costs. Monitor monthly costs including cache write/read tokens, see your top models leaderboard, and visualize usage trends — self-hosted on Cloudflare.",
   keywords: [
     "Claude API",
     "token usage",
     "cost tracking",
+    "prompt caching",
     "dashboard",
     "Anthropic",
     "LLM analytics",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ProtoBurn — Claude API Cost & Usage Dashboard",
     description:
-      "Track your Claude API spending and token usage with a personal dashboard.",
+      "Track your Claude API spending, token usage, and prompt caching costs with a personal dashboard.",
     type: "website",
     images: [
       {
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ProtoBurn — Claude API Cost & Usage Dashboard",
     description:
-      "Track your Claude API spending and token usage with a personal dashboard.",
+      "Track your Claude API spending, token usage, and prompt caching costs with a personal dashboard.",
     images: [`${process.env.NEXT_PUBLIC_SERVER_URL}/api/og`],
   },
 };

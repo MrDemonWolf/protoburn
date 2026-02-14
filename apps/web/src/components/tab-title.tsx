@@ -19,12 +19,12 @@ export function TabTitle() {
   const models = monthly?.models ?? [];
 
   const monthlyCost = models.reduce(
-    (sum, m) => sum + calculateCost(m.model, m.inputTokens, m.outputTokens),
+    (sum, m) => sum + calculateCost(m.model, m.inputTokens, m.outputTokens, m.cacheCreationTokens, m.cacheReadTokens),
     0,
   );
 
   const monthlyTokens = models.reduce(
-    (sum, m) => sum + m.inputTokens + m.outputTokens,
+    (sum, m) => sum + m.totalTokens,
     0,
   );
 
