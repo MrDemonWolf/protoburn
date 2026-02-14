@@ -71,7 +71,11 @@ app.post("/api/usage", async (c) => {
     date: r.date,
   }));
 
-  await db.insert(schema.tokenUsage).values(rows);
+  // D1 has a 100 bound-parameter limit per query; batch inserts to stay under
+  const BATCH_SIZE = 10;
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+    await db.insert(schema.tokenUsage).values(rows.slice(i, i + BATCH_SIZE));
+  }
 
   return c.json({ ok: true, count: rows.length });
 });
