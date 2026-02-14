@@ -123,7 +123,7 @@ export function BurnIntensity() {
   );
 
   const monthlyTokens = (monthly?.models ?? []).reduce(
-    (sum, m) => sum + m.inputTokens + m.outputTokens,
+    (sum, m) => sum + m.totalTokens,
     0,
   );
 
@@ -524,7 +524,7 @@ export function MeltdownShake({ children }: { children: ReactNode }) {
   );
 
   const monthlyTokens = (monthly?.models ?? []).reduce(
-    (sum, m) => sum + m.inputTokens + m.outputTokens,
+    (sum, m) => sum + m.totalTokens,
     0,
   );
 

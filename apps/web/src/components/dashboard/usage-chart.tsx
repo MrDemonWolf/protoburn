@@ -95,7 +95,10 @@ export function UsageChart() {
                 />
                 <YAxis
                   tickFormatter={(v: number) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}K` : String(v)
+                    v >= 1_000_000_000 ? `${(v / 1_000_000_000).toFixed(0)}B`
+                    : v >= 1_000_000 ? `${(v / 1_000_000).toFixed(0)}M`
+                    : v >= 1_000 ? `${(v / 1_000).toFixed(0)}K`
+                    : String(v)
                   }
                   tickLine={false}
                   axisLine={false}
