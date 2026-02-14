@@ -6,7 +6,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SERVER_URL: z.url(),
     NEXT_PUBLIC_OWNER_NAME: z.string().default("MrDemonWolf, Inc."),
     NEXT_PUBLIC_OWNER_URL: z.string().url().default("https://mrdemonwolf.com"),
-    NEXT_PUBLIC_API_PLAN: z.string().default("Build"),
+    NEXT_PUBLIC_API_PLAN: z.string().default("Max"),
   },
   runtimeEnv: {
     NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,

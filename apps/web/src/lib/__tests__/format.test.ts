@@ -2,6 +2,16 @@ import { describe, it, expect } from "vitest";
 import { formatNumber, cleanModelName, getFireLevel } from "../format";
 
 describe("formatNumber", () => {
+  it("formats trillions", () => {
+    expect(formatNumber(1_500_000_000_000)).toBe("1.5T");
+    expect(formatNumber(1_000_000_000_000)).toBe("1.0T");
+  });
+
+  it("formats billions", () => {
+    expect(formatNumber(1_500_000_000)).toBe("1.5B");
+    expect(formatNumber(1_000_000_000)).toBe("1.0B");
+  });
+
   it("formats millions", () => {
     expect(formatNumber(1_500_000)).toBe("1.5M");
     expect(formatNumber(10_000_000)).toBe("10.0M");

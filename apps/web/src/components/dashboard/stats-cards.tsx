@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
-import { Zap, ArrowDownToLine, ArrowUpFromLine, Flame } from "lucide-react";
+import { Zap, ArrowDownToLine, ArrowUpFromLine, Flame, PenLine, BookOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
@@ -65,10 +65,22 @@ export function StatsCards() {
       icon: ArrowUpFromLine,
       iconClass: "text-primary",
     },
+    {
+      title: "Cache Write",
+      display: formatNumber(totals?.totalCacheCreation ?? 0),
+      icon: PenLine,
+      iconClass: "text-amber-500",
+    },
+    {
+      title: "Cache Read",
+      display: formatNumber(totals?.totalCacheRead ?? 0),
+      icon: BookOpen,
+      iconClass: "text-violet-500",
+    },
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
       {cards.map((card) => (
         <Card key={card.title}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">

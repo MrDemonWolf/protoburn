@@ -393,12 +393,13 @@ function printDashboard(data: Awaited<ReturnType<typeof fetchDashboard>>) {
     for (const m of sorted) {
       const cost = calculateCost(m.model, m.inputTokens, m.outputTokens, m.cacheCreationTokens, m.cacheReadTokens);
       monthlyTotalCost += cost;
-      console.log(
-        `    ${m.model}: ${m.totalTokens.toLocaleString()} tokens ($${cost.toFixed(2)})`,
-      );
+      const parts = [`${m.totalTokens.toLocaleString()} tokens ($${cost.toFixed(2)})`];
+      if (m.cacheCreationTokens > 0) parts.push(`CW: ${m.cacheCreationTokens.toLocaleString()}`);
+      if (m.cacheReadTokens > 0) parts.push(`CR: ${m.cacheReadTokens.toLocaleString()}`);
+      console.log(`    ${m.model}: ${parts.join(" | ")}`);
     }
 
-    const apiPlan = process.env.API_PLAN ?? "Build";
+    const apiPlan = process.env.API_PLAN ?? "Max";
     console.log("");
     console.log(`  Est. Monthly Cost: $${monthlyTotalCost.toFixed(2)} (${apiPlan} plan)`);
   }
@@ -430,6 +431,8 @@ async function syncOnce(full: boolean): Promise<boolean> {
 
   let totalIn = 0;
   let totalOut = 0;
+  let totalCW = 0;
+  let totalCR = 0;
   const modelCount = usage.size;
   const daySet = new Set<string>();
 
@@ -437,6 +440,8 @@ async function syncOnce(full: boolean): Promise<boolean> {
     for (const [date, tokens] of dates) {
       totalIn += tokens.input;
       totalOut += tokens.output;
+      totalCW += tokens.cacheCreation;
+      totalCR += tokens.cacheRead;
       daySet.add(date);
     }
   }
@@ -449,8 +454,10 @@ async function syncOnce(full: boolean): Promise<boolean> {
   console.log(
     `Found data across ${modelCount} model(s) and ${daySet.size} day(s)`,
   );
-  console.log(`  Input tokens:  ${totalIn.toLocaleString()}`);
-  console.log(`  Output tokens: ${totalOut.toLocaleString()}`);
+  console.log(`  Input tokens:       ${totalIn.toLocaleString()}`);
+  console.log(`  Output tokens:      ${totalOut.toLocaleString()}`);
+  console.log(`  Cache write tokens: ${totalCW.toLocaleString()}`);
+  console.log(`  Cache read tokens:  ${totalCR.toLocaleString()}`);
 
   const count = await push(usage);
   console.log(`Pushed ${count} record(s) to protoburn.`);
