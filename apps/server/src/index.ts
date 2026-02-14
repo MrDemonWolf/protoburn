@@ -77,6 +77,16 @@ app.delete("/api/usage", async (c) => {
   return c.json({ ok: true });
 });
 
+app.get("/api/og", async (c) => {
+  try {
+    const { generateOgImage } = await import("./og");
+    return await generateOgImage(c);
+  } catch (e) {
+    console.error("OG image generation failed:", e);
+    return c.json({ error: String(e) }, 500);
+  }
+});
+
 app.get("/", (c) => {
   return c.text("OK");
 });

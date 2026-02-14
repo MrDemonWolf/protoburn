@@ -35,6 +35,21 @@ export const metadata: Metadata = {
     description:
       "Track your Claude API spending and token usage with a personal dashboard.",
     type: "website",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SERVER_URL}/api/og`,
+        width: 1200,
+        height: 630,
+        alt: "ProtoBurn — Claude API Cost & Usage Dashboard",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ProtoBurn — Claude API Cost & Usage Dashboard",
+    description:
+      "Track your Claude API spending and token usage with a personal dashboard.",
+    images: [`${process.env.NEXT_PUBLIC_SERVER_URL}/api/og`],
   },
 };
 
