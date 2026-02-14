@@ -7,9 +7,11 @@
  * Tracks last-sync timestamp to avoid duplicates.
  *
  * Usage:
- *   pnpm sync           # sync new usage since last run
- *   pnpm sync --full    # re-sync everything
- *   pnpm sync --reset   # wipe DB, clear state, and re-sync everything
+ *   pnpm sync                    # sync new usage since last run
+ *   pnpm sync --full             # re-sync everything
+ *   pnpm sync --reset            # wipe DB, clear state, and re-sync everything
+ *   pnpm sync --watch            # continuous mode: push every 60m, fetch every 30m
+ *   pnpm sync --watch --interval 30  # push every 30m, fetch every 15m
  */
 
 import {
@@ -270,14 +272,119 @@ async function resetDb() {
   console.log("Database cleared.");
 }
 
-async function main() {
-  const reset = process.argv.includes("--reset");
-  const full = reset || process.argv.includes("--full");
+// ---------------------------------------------------------------------------
+// Pricing (mirrors apps/web/src/lib/pricing.ts)
+// ---------------------------------------------------------------------------
 
-  if (reset) {
-    await resetDb();
+const MODEL_PRICING: Record<string, { inputPerMillion: number; outputPerMillion: number }> = {
+  "haiku-4-5": { inputPerMillion: 1.0, outputPerMillion: 5.0 },
+  "sonnet-4-5": { inputPerMillion: 3.0, outputPerMillion: 15.0 },
+  "opus-4-6": { inputPerMillion: 5.0, outputPerMillion: 25.0 },
+};
+
+const DEFAULT_PRICING = MODEL_PRICING["sonnet-4-5"]!;
+
+function getPricingTier(model: string) {
+  for (const [pattern, pricing] of Object.entries(MODEL_PRICING)) {
+    if (model.includes(pattern)) return pricing;
+  }
+  return DEFAULT_PRICING;
+}
+
+function calculateCost(model: string, inputTokens: number, outputTokens: number): number {
+  const tier = getPricingTier(model);
+  return (inputTokens / 1_000_000) * tier.inputPerMillion + (outputTokens / 1_000_000) * tier.outputPerMillion;
+}
+
+// ---------------------------------------------------------------------------
+// Fetch dashboard data from API (pull)
+// ---------------------------------------------------------------------------
+
+interface TotalsResponse {
+  result: { data: { totalInput: number; totalOutput: number; totalTokens: number } };
+}
+
+interface ModelEntry {
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}
+
+interface ByModelMonthlyResponse {
+  result: { data: { month: string; models: ModelEntry[] } };
+}
+
+async function fetchDashboard() {
+  const headers: Record<string, string> = {};
+  if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`;
+
+  // Fetch totals and monthly breakdown in parallel
+  const [totalsResp, monthlyResp] = await Promise.all([
+    fetch(`${API_URL}/trpc/tokenUsage.totals`, { headers }),
+    fetch(`${API_URL}/trpc/tokenUsage.byModelMonthly`, { headers }),
+  ]);
+
+  if (!totalsResp.ok || !monthlyResp.ok) {
+    const errText = !totalsResp.ok ? await totalsResp.text() : await monthlyResp.text();
+    throw new Error(`API fetch error: ${errText}`);
   }
 
+  const totals = (await totalsResp.json()) as TotalsResponse;
+  const monthly = (await monthlyResp.json()) as ByModelMonthlyResponse;
+
+  return {
+    totals: totals.result.data,
+    monthly: monthly.result.data,
+  };
+}
+
+function printDashboard(data: Awaited<ReturnType<typeof fetchDashboard>>) {
+  const { totals, monthly } = data;
+  const now = new Date();
+  const timestamp = now.toLocaleTimeString();
+
+  console.log("");
+  console.log(`--- Dashboard (fetched ${timestamp}) ---`);
+  console.log("");
+
+  // All-time totals
+  console.log("  All-time Totals:");
+  console.log(`    Total tokens:  ${totals.totalTokens.toLocaleString()}`);
+  console.log(`    Input tokens:  ${totals.totalInput.toLocaleString()}`);
+  console.log(`    Output tokens: ${totals.totalOutput.toLocaleString()}`);
+  console.log("");
+
+  // Monthly breakdown
+  console.log(`  Monthly Breakdown (${monthly.month}):`);
+
+  if (monthly.models.length === 0) {
+    console.log("    No usage this month.");
+  } else {
+    // Sort by total tokens descending
+    const sorted = [...monthly.models].sort((a, b) => b.totalTokens - a.totalTokens);
+    let monthlyTotalCost = 0;
+
+    for (const m of sorted) {
+      const cost = calculateCost(m.model, m.inputTokens, m.outputTokens);
+      monthlyTotalCost += cost;
+      console.log(
+        `    ${m.model}: ${m.totalTokens.toLocaleString()} tokens ($${cost.toFixed(2)})`,
+      );
+    }
+
+    console.log("");
+    console.log(`  Monthly Cost: $${monthlyTotalCost.toFixed(2)}`);
+  }
+
+  console.log("---");
+}
+
+// ---------------------------------------------------------------------------
+// One-shot sync logic
+// ---------------------------------------------------------------------------
+
+async function syncOnce(full: boolean): Promise<boolean> {
   const since = full ? "" : getLastSync();
 
   if (since) {
@@ -286,11 +393,8 @@ async function main() {
     console.log("Syncing all usage data ...");
   }
 
-  // Read from both sources
   const statsCache = full ? parseStatsCache() : new Map();
-  const { usage: sessions, latestTs, msgCount } = parseSessions(since);
-
-  // Merge: JSONL overwrites stats-cache for overlapping dates
+  const { usage: sessions, latestTs } = parseSessions(since);
   const usage = full ? mergeUsage(statsCache, sessions) : sessions;
 
   let totalIn = 0;
@@ -308,7 +412,7 @@ async function main() {
 
   if (daySet.size === 0) {
     console.log("No new usage data to sync.");
-    return;
+    return false;
   }
 
   console.log(
@@ -317,13 +421,119 @@ async function main() {
   console.log(`  Input tokens:  ${totalIn.toLocaleString()}`);
   console.log(`  Output tokens: ${totalOut.toLocaleString()}`);
 
+  const count = await push(usage);
+  console.log(`Pushed ${count} record(s) to protoburn.`);
+  if (latestTs) saveLastSync(latestTs);
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// Watch mode
+// ---------------------------------------------------------------------------
+
+function parseInterval(): number {
+  const idx = process.argv.indexOf("--interval");
+  if (idx !== -1 && process.argv[idx + 1]) {
+    const val = parseInt(process.argv[idx + 1]!, 10);
+    if (!isNaN(val) && val > 0) return val;
+  }
+  return 60; // default 60 minutes
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function formatMinutes(m: number): string {
+  if (m >= 60) {
+    const h = Math.floor(m / 60);
+    const rem = m % 60;
+    return rem > 0 ? `${h}h ${rem}m` : `${h}h`;
+  }
+  return `${m}m`;
+}
+
+async function watchMode() {
+  const pushIntervalMin = parseInterval();
+  const fetchIntervalMin = Math.max(1, Math.floor(pushIntervalMin / 2));
+  const pushIntervalMs = pushIntervalMin * 60 * 1000;
+  const fetchIntervalMs = fetchIntervalMin * 60 * 1000;
+
+  console.log(`Watch mode started.`);
+  console.log(`  Push interval:  every ${formatMinutes(pushIntervalMin)}`);
+  console.log(`  Fetch interval: every ${formatMinutes(fetchIntervalMin)}`);
+  console.log(`  Press Ctrl+C to stop.`);
+  console.log("");
+
+  // Initial sync + fetch immediately
   try {
-    const count = await push(usage);
-    console.log(`Pushed ${count} record(s) to protoburn.`);
-    if (latestTs) saveLastSync(latestTs);
+    await syncOnce(false);
   } catch (err) {
-    console.error("Error pushing data:", err);
-    process.exit(1);
+    console.error("Error on initial sync:", err);
+  }
+
+  try {
+    const data = await fetchDashboard();
+    printDashboard(data);
+  } catch (err) {
+    console.error("Error fetching dashboard:", err);
+  }
+
+  let lastPush = Date.now();
+  let lastFetch = Date.now();
+
+  // Main loop — check every 10 seconds for timer expiry
+  while (true) {
+    await sleep(10_000);
+
+    const now = Date.now();
+
+    // Fetch check (half the push interval)
+    if (now - lastFetch >= fetchIntervalMs) {
+      try {
+        const data = await fetchDashboard();
+        printDashboard(data);
+      } catch (err) {
+        console.error(`[${new Date().toLocaleTimeString()}] Fetch error:`, err);
+      }
+      lastFetch = Date.now();
+    }
+
+    // Push check
+    if (now - lastPush >= pushIntervalMs) {
+      console.log(`\n[${new Date().toLocaleTimeString()}] Pushing ...`);
+      try {
+        await syncOnce(false);
+      } catch (err) {
+        console.error(`[${new Date().toLocaleTimeString()}] Push error:`, err);
+      }
+      lastPush = Date.now();
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Entry point
+// ---------------------------------------------------------------------------
+
+async function main() {
+  const reset = process.argv.includes("--reset");
+  const full = reset || process.argv.includes("--full");
+  const watch = process.argv.includes("--watch");
+
+  if (reset) {
+    await resetDb();
+  }
+
+  if (watch) {
+    await watchMode();
+  } else {
+    try {
+      await syncOnce(full);
+    } catch (err) {
+      console.error("Error pushing data:", err);
+      process.exit(1);
+    }
   }
 }
 

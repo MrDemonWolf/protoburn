@@ -37,6 +37,8 @@ pnpm db:migrate       # Run migrations
 pnpm cf:deploy        # Deploy to Cloudflare (web + server + D1)
 pnpm cf:destroy       # Tear down Cloudflare resources
 pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
+pnpm sync:watch       # Continuous sync: push every 60m, fetch dashboard every 30m
+pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 ```
 
 ## Architecture Notes
