@@ -5,7 +5,8 @@
   "scripts": {
     "build": "next build",
     "start": "next start",
-    "dev:bare": "next dev --port 3001"
+    "dev:bare": "next dev --port 3001",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

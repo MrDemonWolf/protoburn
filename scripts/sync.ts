@@ -34,13 +34,13 @@ const CLAUDE_DIR = join(homedir(), ".claude");
 const STATE_FILE = join(CLAUDE_DIR, ".protoburn-last-sync");
 const STATS_CACHE = join(CLAUDE_DIR, "stats-cache.json");
 
-interface UsageBucket {
+export interface UsageBucket {
   input: number;
   output: number;
 }
 
 // model -> date -> { input, output }
-type UsageMap = Map<string, Map<string, UsageBucket>>;
+export type UsageMap = Map<string, Map<string, UsageBucket>>;
 
 function getLastSync(): string {
   if (existsSync(STATE_FILE)) {
@@ -181,7 +181,7 @@ function parseSessions(since: string) {
  * Merge two usage maps. JSONL data overwrites stats-cache data
  * for any overlapping (model, date) pair since it's more accurate.
  */
-function mergeUsage(statsCache: UsageMap, sessions: UsageMap): UsageMap {
+export function mergeUsage(statsCache: UsageMap, sessions: UsageMap): UsageMap {
   const merged: UsageMap = new Map();
 
   // Start with stats-cache data
@@ -284,14 +284,14 @@ const MODEL_PRICING: Record<string, { inputPerMillion: number; outputPerMillion:
 
 const DEFAULT_PRICING = MODEL_PRICING["sonnet-4-5"]!;
 
-function getPricingTier(model: string) {
+export function getPricingTier(model: string) {
   for (const [pattern, pricing] of Object.entries(MODEL_PRICING)) {
     if (model.includes(pattern)) return pricing;
   }
   return DEFAULT_PRICING;
 }
 
-function calculateCost(model: string, inputTokens: number, outputTokens: number): number {
+export function calculateCost(model: string, inputTokens: number, outputTokens: number): number {
   const tier = getPricingTier(model);
   return (inputTokens / 1_000_000) * tier.inputPerMillion + (outputTokens / 1_000_000) * tier.outputPerMillion;
 }
@@ -444,7 +444,7 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function formatMinutes(m: number): string {
+export function formatMinutes(m: number): string {
   if (m >= 60) {
     const h = Math.floor(m / 60);
     const rem = m % 60;
@@ -537,4 +537,9 @@ async function main() {
   }
 }
 
-main();
+const isDirectRun =
+  process.argv[1] &&
+  import.meta.url.endsWith(process.argv[1].replace(/^.*\//, ""));
+if (isDirectRun) {
+  main();
+}

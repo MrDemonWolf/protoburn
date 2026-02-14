@@ -32,6 +32,9 @@
     },
     "destroy": {
       "cache": false
+    },
+    "test": {
+      "cache": false
     }
   }
 }

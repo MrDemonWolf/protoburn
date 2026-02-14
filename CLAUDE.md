@@ -36,6 +36,9 @@ pnpm db:generate      # Generate Drizzle migrations
 pnpm db:migrate       # Run migrations
 pnpm cf:deploy        # Deploy to Cloudflare (web + server + D1)
 pnpm cf:destroy       # Tear down Cloudflare resources
+pnpm test             # Run all tests (vitest)
+pnpm test:watch       # Watch mode
+pnpm test:coverage    # Run with coverage
 pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
 pnpm sync:watch       # Continuous sync: push every 60m, fetch dashboard every 30m
 pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
@@ -112,6 +115,14 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 - `tokenUsage.byModel` — all-time per-model token breakdown
 - `tokenUsage.byModelMonthly` — per-model breakdown filtered to current month (optional `month` param)
 - `tokenUsage.timeSeries` — daily token usage over last N days (default 30)
+
+## Testing
+
+- **Runner**: Vitest with workspace projects (`vitest.config.ts` at root)
+- **Projects**: `web` (unit tests for pricing, format, burn tiers), `server` (integration tests with in-memory SQLite), `scripts` (sync utility unit tests)
+- **Server test strategy**: `@protoburn/db` aliased to `packages/db/src/test-utils.ts` (better-sqlite3 in-memory), `@protoburn/env/server` aliased to a stub — avoids `cloudflare:workers` runtime dependency
+- **Pure utility extraction**: `getBurnTier` in `apps/web/src/lib/burn-tiers.ts`, `formatNumber`/`cleanModelName`/`getFireLevel` in `apps/web/src/lib/format.ts` — testable without React/trpc imports
+- **CI**: GitHub Actions (`.github/workflows/ci.yml`) — 3 parallel jobs: type-check, test, build; triggers on push/PR to `main`
 
 ## Commit Preferences
 
