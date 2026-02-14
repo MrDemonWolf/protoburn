@@ -96,20 +96,20 @@ function generateParticles(
       size: isMeltdown
         ? type === "ember" ? 3 + Math.random() * 8 : 20 + Math.random() * 40
         : isInferno
-          ? type === "ember" ? 2.5 + Math.random() * 6 : 16 + Math.random() * 24
-          : type === "ember" ? 2 + Math.random() * 4 : 14 + Math.random() * 18,
+          ? type === "ember" ? 3 + Math.random() * 6 : 18 + Math.random() * 26
+          : type === "ember" ? 3 + Math.random() * 5 : 16 + Math.random() * 22,
       duration: isMeltdown
         ? type === "ember" ? 1.5 + Math.random() * 3 : 1.5 + Math.random() * 2.5
         : isInferno
-          ? type === "ember" ? 3 + Math.random() * 5 : 2.5 + Math.random() * 3.5
-          : type === "ember" ? 4 + Math.random() * 6 : 3 + Math.random() * 4,
-      delay: isMeltdown ? Math.random() * 4 : Math.random() * 10,
+          ? type === "ember" ? 3 + Math.random() * 4 : 2.5 + Math.random() * 3
+          : type === "ember" ? 3 + Math.random() * 5 : 2.5 + Math.random() * 3.5,
+      delay: isMeltdown ? Math.random() * 4 : Math.random() * 6,
       drift: isMeltdown ? (Math.random() - 0.5) * 150 : isInferno ? (Math.random() - 0.5) * 100 : (Math.random() - 0.5) * 80,
       opacity: isMeltdown
         ? type === "ember" ? 0.5 + Math.random() * 0.5 : 0.25 + Math.random() * 0.35
         : isInferno
-          ? type === "ember" ? 0.4 + Math.random() * 0.5 : 0.15 + Math.random() * 0.25
-          : type === "ember" ? 0.3 + Math.random() * 0.5 : 0.12 + Math.random() * 0.2,
+          ? type === "ember" ? 0.5 + Math.random() * 0.5 : 0.2 + Math.random() * 0.3
+          : type === "ember" ? 0.4 + Math.random() * 0.5 : 0.18 + Math.random() * 0.25,
       colorIndex: Math.floor(Math.random() * 4),
     };
   });
