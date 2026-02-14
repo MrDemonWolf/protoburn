@@ -97,7 +97,7 @@ export function StatsCards() {
             {Array.from({ length: fire.flames }).map((_, i) => (
               <Flame
                 key={i}
-                className={`h-4 w-4 ${fire.color} ${fire.flames >= 4 ? "animate-pulse" : ""}`}
+                className={`h-4 w-4 ${fire.color} ${fire.flames >= 8 ? "animate-pulse" : ""}`}
                 style={{ marginLeft: i > 0 ? "-6px" : 0 }}
               />
             ))}
