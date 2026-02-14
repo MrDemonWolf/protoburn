@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { getBurnTier } from "@/lib/burn-tiers";
 
 describe("getBurnTier", () => {
-  it("returns cold for < 1M tokens", () => {
+  it("returns cold for < 20M tokens", () => {
     const tier = getBurnTier(0);
     expect(tier.name).toBe("cold");
     expect(tier.embers).toBe(0);
@@ -11,20 +11,20 @@ describe("getBurnTier", () => {
     expect(tier.topGlow).toBe(false);
   });
 
-  it("returns cold for 999,999 tokens", () => {
-    expect(getBurnTier(999_999).name).toBe("cold");
+  it("returns cold for 19,999,999 tokens", () => {
+    expect(getBurnTier(19_999_999).name).toBe("cold");
   });
 
-  it("returns spark for >= 1M tokens", () => {
-    const tier = getBurnTier(1_000_000);
+  it("returns spark for >= 20M tokens", () => {
+    const tier = getBurnTier(20_000_000);
     expect(tier.name).toBe("spark");
     expect(tier.embers).toBe(8);
     expect(tier.flames).toBe(2);
     expect(tier.sideGlow).toBe(false);
   });
 
-  it("returns warm for >= 5M tokens", () => {
-    const tier = getBurnTier(5_000_000);
+  it("returns warm for >= 100M tokens", () => {
+    const tier = getBurnTier(100_000_000);
     expect(tier.name).toBe("warm");
     expect(tier.embers).toBe(14);
     expect(tier.flames).toBe(6);
@@ -32,8 +32,8 @@ describe("getBurnTier", () => {
     expect(tier.sideGlowWidth).toBe("2vw");
   });
 
-  it("returns burning for >= 10M tokens", () => {
-    const tier = getBurnTier(10_000_000);
+  it("returns burning for >= 200M tokens", () => {
+    const tier = getBurnTier(200_000_000);
     expect(tier.name).toBe("burning");
     expect(tier.embers).toBe(25);
     expect(tier.flames).toBe(14);
@@ -41,8 +41,8 @@ describe("getBurnTier", () => {
     expect(tier.sideGlowWidth).toBe("3.5vw");
   });
 
-  it("returns blazing for >= 50M tokens", () => {
-    const tier = getBurnTier(50_000_000);
+  it("returns blazing for >= 1B tokens", () => {
+    const tier = getBurnTier(1_000_000_000);
     expect(tier.name).toBe("blazing");
     expect(tier.embers).toBe(32);
     expect(tier.flames).toBe(18);
@@ -51,8 +51,8 @@ describe("getBurnTier", () => {
     expect(tier.topGlow).toBe(false);
   });
 
-  it("returns inferno for >= 100M tokens", () => {
-    const tier = getBurnTier(100_000_000);
+  it("returns inferno for >= 2B tokens", () => {
+    const tier = getBurnTier(2_000_000_000);
     expect(tier.name).toBe("inferno");
     expect(tier.embers).toBe(35);
     expect(tier.flames).toBe(18);
@@ -63,8 +63,8 @@ describe("getBurnTier", () => {
     expect(tier.isInferno).toBe(true);
   });
 
-  it("returns meltdown for >= 200M tokens", () => {
-    const tier = getBurnTier(200_000_000);
+  it("returns meltdown for >= 4B tokens", () => {
+    const tier = getBurnTier(4_000_000_000);
     expect(tier.name).toBe("meltdown");
     expect(tier.embers).toBe(120);
     expect(tier.flames).toBe(60);
@@ -76,6 +76,6 @@ describe("getBurnTier", () => {
   });
 
   it("meltdown at high tokens still returns meltdown", () => {
-    expect(getBurnTier(1_000_000_000).name).toBe("meltdown");
+    expect(getBurnTier(20_000_000_000).name).toBe("meltdown");
   });
 });

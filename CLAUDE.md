@@ -95,13 +95,13 @@ Ambient fire particle effects based on monthly total token usage including cache
 
 | Tier | Monthly Tokens | Embers | Flames | Side Glow | Top Glow | Special Effects |
 |------|---------------|--------|--------|-----------|----------|-----------------|
-| Cold | < 1M | 0 | 0 | No | No | — |
-| Spark | 1M+ | 8 | 2 | No | No | — |
-| Warm | 5M+ | 14 | 6 | Yes (2vw) | No | — |
-| Burning | 10M+ | 25 | 14 | Yes (3.5vw) | No | — |
-| Blazing | 50M+ | 32 | 18 | Yes (5vw) | No | — |
-| Inferno | 100M+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
-| Meltdown | 200M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
+| Cold | < 20M | 0 | 0 | No | No | — |
+| Spark | 20M+ | 8 | 2 | No | No | — |
+| Warm | 100M+ | 14 | 6 | Yes (2vw) | No | — |
+| Burning | 200M+ | 25 | 14 | Yes (3.5vw) | No | — |
+| Blazing | 1B+ | 32 | 18 | Yes (5vw) | No | — |
+| Inferno | 2B+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
+| Meltdown | 4B+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
 
 - Tier thresholds are defined in `apps/web/src/lib/burn-tiers.ts` (web) and `apps/server/src/lib/burn-tiers.ts` (server) — both must be kept in sync
 - Monthly tokens for tier calculation uses `m.totalTokens` (includes cache tokens) — NOT just input+output
