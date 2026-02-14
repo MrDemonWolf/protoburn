@@ -256,8 +256,8 @@ async function push(usage: UsageMap) {
   return result.count ?? records.length;
 }
 
-async function resetDb() {
-  console.log("Resetting database ...");
+async function clearDb() {
+  console.log("Clearing database ...");
   const headers: Record<string, string> = {};
   if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`;
   const resp = await fetch(`${API_URL}/api/usage`, {
@@ -268,8 +268,12 @@ async function resetDb() {
     const text = await resp.text();
     throw new Error(`API error ${resp.status}: ${text}`);
   }
-  if (existsSync(STATE_FILE)) unlinkSync(STATE_FILE);
   console.log("Database cleared.");
+}
+
+async function resetDb() {
+  await clearDb();
+  if (existsSync(STATE_FILE)) unlinkSync(STATE_FILE);
 }
 
 // ---------------------------------------------------------------------------
@@ -391,6 +395,11 @@ async function syncOnce(full: boolean): Promise<boolean> {
     console.log(`Syncing usage since ${since.slice(0, 19)} ...`);
   } else {
     console.log("Syncing all usage data ...");
+  }
+
+  // Clear DB before full sync to avoid duplicates
+  if (full) {
+    await clearDb();
   }
 
   const statsCache = full ? parseStatsCache() : new Map();
