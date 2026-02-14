@@ -3,6 +3,7 @@ import { UsageChart } from "@/components/dashboard/usage-chart";
 import { TopModels } from "@/components/dashboard/top-models";
 import { KonamiEasterEgg } from "@/components/konami-easter-egg";
 import { BurnIntensity, MeltdownShake } from "@/components/burn-intensity";
+import { env } from "@protoburn/env/web";
 
 export default function Home() {
   const year = new Date().getFullYear();
@@ -19,12 +20,12 @@ export default function Home() {
           <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
             &copy; {year} ProtoBurn by{" "}
             <a
-              href="https://mrdemonwolf.com"
+              href={env.NEXT_PUBLIC_OWNER_URL}
               className="font-bold text-foreground hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              MrDemonWolf, Inc.
+              {env.NEXT_PUBLIC_OWNER_NAME}
             </a>
           </div>
         </footer>

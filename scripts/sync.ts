@@ -26,7 +26,7 @@ import { homedir } from "os";
 
 const API_URL =
   process.env.PROTOBURN_API_URL ??
-  "https://protoburn-server-nathanialhenniges.mrdemonwolf.workers.dev";
+  "https://protoburn-api.mrdemonwolf.workers.dev";
 
 const API_KEY = process.env.PROTOBURN_API_KEY ?? "";
 

@@ -17,6 +17,7 @@ const db = await D1Database("database", {
 // Deploy server first so we know its URL for the web build.
 // CORS_ORIGIN will be updated on the next deploy once we know the web URL.
 export const server = await Worker("server", {
+  name: "protoburn-api",
   cwd: "../../apps/server",
   entrypoint: "src/index.ts",
   compatibility: "node",
@@ -24,6 +25,7 @@ export const server = await Worker("server", {
     DB: db,
     CORS_ORIGIN: "*",
     API_KEY: alchemy.env.API_KEY ?? "",
+    OWNER_SITE: alchemy.env.OWNER_SITE ?? "mrdemonwolf.com",
   },
   dev: {
     port: 3000,
