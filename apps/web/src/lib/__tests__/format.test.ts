@@ -71,8 +71,13 @@ describe("getFireLevel", () => {
     expect(getFireLevel(99.99).flames).toBe(4);
   });
 
-  it("returns 5 flames for cost >= 100", () => {
-    expect(getFireLevel(100).flames).toBe(5);
+  it("returns 4 flames for cost >= 100 but < 200", () => {
+    expect(getFireLevel(100).flames).toBe(4);
+    expect(getFireLevel(199.99).flames).toBe(4);
+  });
+
+  it("returns 5 flames for cost >= 200", () => {
+    expect(getFireLevel(200).flames).toBe(5);
     expect(getFireLevel(1000).flames).toBe(5);
   });
 });

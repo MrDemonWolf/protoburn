@@ -23,7 +23,7 @@ export const TIERS: Record<string, BurnTier> = {
 };
 
 export function getBurnTier(monthlyTokens: number): BurnTier {
-  if (monthlyTokens >= 50_000_000) return TIERS.meltdown;
+  if (monthlyTokens >= 20_000_000) return TIERS.meltdown;
   if (monthlyTokens >= 10_000_000) return TIERS.inferno;
   if (monthlyTokens >= 5_000_000)  return TIERS.blazing;
   if (monthlyTokens >= 1_000_000)  return TIERS.burning;

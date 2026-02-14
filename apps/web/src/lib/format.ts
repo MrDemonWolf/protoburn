@@ -11,7 +11,7 @@ export function cleanModelName(model: string) {
 }
 
 export function getFireLevel(cost: number): { flames: number; color: string } {
-  if (cost >= 100) return { flames: 5, color: "text-red-500" };
+  if (cost >= 200) return { flames: 5, color: "text-red-500" };
   if (cost >= 50) return { flames: 4, color: "text-red-500" };
   if (cost >= 20) return { flames: 3, color: "text-orange-500" };
   if (cost >= 5) return { flames: 2, color: "text-orange-400" };

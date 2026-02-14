@@ -87,7 +87,7 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 | Burning | 1M+ | 25 | 14 | Yes (3.5vw) | No | — |
 | Blazing | 5M+ | 32 | 18 | Yes (5vw) | No | — |
 | Inferno | 10M+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
-| Meltdown | 50M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
+| Meltdown | 20M+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
 
 - Inferno tier has: light pulsing vignette (3.5s cycle), top edge glow, wider side glows reaching higher up the screen
 - Meltdown tier is nuclear emergency: 120 embers (bigger/faster/brighter), 60 large flames, 75vh bottom glow at 90% opacity, full-height 10vw side glows, fast pulsing red vignette (1.2s cycle), top edge glow, heat shimmer distortion, flashing "⚠ MELTDOWN ⚠" warning text, yellow/black hazard stripe bars (top/bottom), rotating red beacon searchlights from corners, 4px strobing red edge lines, scrolling scanline overlay, 1-2px screen shake on the burn overlay, and screen shake on main content via `MeltdownShake` wrapper
@@ -122,8 +122,7 @@ Ambient fire particle effects based on monthly token usage (`apps/web/src/compon
 - **Projects**: `web` (unit tests for pricing, format, burn tiers), `server` (integration tests with in-memory SQLite), `scripts` (sync utility unit tests)
 - **Server test strategy**: `@protoburn/db` aliased to `packages/db/src/test-utils.ts` (better-sqlite3 in-memory), `@protoburn/env/server` aliased to a stub — avoids `cloudflare:workers` runtime dependency
 - **Pure utility extraction**: `getBurnTier` in `apps/web/src/lib/burn-tiers.ts`, `formatNumber`/`cleanModelName`/`getFireLevel` in `apps/web/src/lib/format.ts` — testable without React/trpc imports
-- **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`) — 3 parallel jobs (type-check, test, build) on push/PR to `main`, plus a deploy job on push to `main` that runs `pnpm cf:deploy` after all checks pass
-- **Deploy secrets** (GitHub repo secrets): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ALCHEMY_PASSWORD`, `API_KEY`
+- **CI**: GitHub Actions (`.github/workflows/ci.yml`) — 3 parallel jobs: type-check, test, build; triggers on push/PR to `main`
 
 ## Commit Preferences
 

@@ -63,8 +63,8 @@ describe("getBurnTier", () => {
     expect(tier.isInferno).toBe(true);
   });
 
-  it("returns meltdown for >= 50M tokens", () => {
-    const tier = getBurnTier(50_000_000);
+  it("returns meltdown for >= 20M tokens", () => {
+    const tier = getBurnTier(20_000_000);
     expect(tier.name).toBe("meltdown");
     expect(tier.embers).toBe(120);
     expect(tier.flames).toBe(60);
