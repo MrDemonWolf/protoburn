@@ -96,17 +96,20 @@ Ambient fire particle effects based on monthly total token usage including cache
 | Tier | Monthly Tokens | Embers | Flames | Side Glow | Top Glow | Special Effects |
 |------|---------------|--------|--------|-----------|----------|-----------------|
 | Cold | < 20M | 0 | 0 | No | No | — |
-| Spark | 20M+ | 8 | 2 | No | No | — |
-| Warm | 100M+ | 14 | 6 | Yes (2vw) | No | — |
-| Burning | 200M+ | 25 | 14 | Yes (3.5vw) | No | — |
-| Blazing | 1B+ | 32 | 18 | Yes (5vw) | No | — |
-| Inferno | 2B+ | 35 | 18 | Yes (6vw) | Yes (12vh) | Light pulsing vignette |
+| Spark | 20M+ | 16 | 6 | No | No | Bottom glow (12vh) |
+| Warm | 100M+ | 22 | 10 | Yes (2.5vw) | No | Amber glow with 6s breathing pulse |
+| Burning | 200M+ | 32 | 16 | Yes (3.5vw) | No | Pulsing bottom glow (4s), bright ember ground strip |
+| Blazing | 1B+ | 40 | 20 | Yes (5vw, pulsing) | No | Heat shimmer, orange vignette, 3s pulsing glow |
+| Inferno | 2B+ | 45 | 22 | Yes (6vw) | Yes (12vh) | Light pulsing vignette (3.5s cycle) |
 | Meltdown | 4B+ | 120 | 60 | Yes (10vw) | Yes (20vh) | Nuclear alarm mode |
 
 - Tier thresholds are defined in `apps/web/src/lib/burn-tiers.ts` (web) and `apps/server/src/lib/burn-tiers.ts` (server) — both must be kept in sync
 - Monthly tokens for tier calculation uses `m.totalTokens` (includes cache tokens) — NOT just input+output
+- Particles are boosted for visibility: larger sizes (3-8px embers, 16-38px flames), higher opacity, shorter 6s delay cycle so screen stays populated
+- Each tier has distinct visual identity: spark is minimal particles + glow, warm adds amber-tinted pulsing glow, burning adds concentrated ground glow strip, blazing adds heat shimmer + orange vignette + pulsing side glows
 - Inferno tier has: light pulsing vignette (3.5s cycle), top edge glow, wider side glows reaching higher up the screen
 - Meltdown tier is nuclear emergency: 120 embers (bigger/faster/brighter), 60 large flames, 75vh bottom glow at 90% opacity, full-height 10vw side glows, fast pulsing red vignette (1.2s cycle), top edge glow, heat shimmer distortion, flashing "⚠ MELTDOWN ⚠" warning text, yellow/black hazard stripe bars (top/bottom), rotating red beacon searchlights from corners, 4px strobing red edge lines, scrolling scanline overlay, 1-2px screen shake on the burn overlay, and screen shake on main content via `MeltdownShake` wrapper
+- Fire level on monthly cost card (`getFireLevel`) scales from $100 (2 flames) to $4000 (10 flames)
 - Toggle on/off via flame button in header (persists to localStorage)
 - Current tier name displayed in header with color-coded label
 - Preview any tier with `?flametier=meltdown` (or any tier name) query param
