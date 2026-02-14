@@ -26,6 +26,7 @@ export const server = await Worker("server", {
     CORS_ORIGIN: "*",
     API_KEY: alchemy.env.API_KEY ?? "",
     OWNER_SITE: alchemy.env.OWNER_SITE ?? "mrdemonwolf.com",
+    API_PLAN: process.env.API_PLAN ?? "Build",
   },
   dev: {
     port: 3000,
@@ -42,6 +43,7 @@ export const web = await Website("protoburn", {
     command: "pnpm build",
     env: {
       NEXT_PUBLIC_SERVER_URL: serverUrl,
+      NEXT_PUBLIC_API_PLAN: process.env.API_PLAN ?? "Build",
     },
   },
   assets: "out",

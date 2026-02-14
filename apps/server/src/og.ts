@@ -171,7 +171,7 @@ function buildElement(data: Awaited<ReturnType<typeof fetchData>>) {
                 props: {
                   style: { display: "flex", flexDirection: "column", flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 16, padding: 24, gap: 4 },
                   children: [
-                    { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 600, fontSize: 15, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }, children: "Monthly Cost" } },
+                    { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 600, fontSize: 15, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }, children: `Est. Monthly Cost (${env.API_PLAN} plan)` } },
                     { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 800, fontSize: 48, color: theme.accent }, children: costDisplay } },
                     ...(fireBar ? [{ type: "div", props: { style: { display: "flex", fontSize: 22, letterSpacing: 2, marginTop: 2 }, children: fireBar } }] : []),
                     ...(!hasData ? [{ type: "div", props: { style: { display: "flex", fontFamily: "Roboto", fontSize: 14, color: "#64748b", marginTop: 2 }, children: "No data yet" } }] : []),

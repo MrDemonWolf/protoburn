@@ -398,8 +398,9 @@ function printDashboard(data: Awaited<ReturnType<typeof fetchDashboard>>) {
       );
     }
 
+    const apiPlan = process.env.API_PLAN ?? "Build";
     console.log("");
-    console.log(`  Monthly Cost: $${monthlyTotalCost.toFixed(2)}`);
+    console.log(`  Est. Monthly Cost: $${monthlyTotalCost.toFixed(2)} (${apiPlan} plan)`);
   }
 
   console.log("---");

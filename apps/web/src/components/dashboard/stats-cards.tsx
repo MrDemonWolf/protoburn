@@ -9,6 +9,7 @@ import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
 import { calculateCost } from "@/lib/pricing";
 import { formatNumber, getFireLevel } from "@/lib/format";
+import { env } from "@protoburn/env/web";
 
 export function StatsCards() {
   const { data: totals, isLoading: totalsLoading } = useQuery(
@@ -88,10 +89,11 @@ export function StatsCards() {
       <Card className="relative overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            Monthly Cost
+            Est. Monthly Cost
             {currentMonth && (
               <span className="ml-1 text-xs font-normal">({currentMonth})</span>
             )}
+            <span className="ml-1 text-xs font-normal text-primary">({env.NEXT_PUBLIC_API_PLAN} plan)</span>
           </CardTitle>
           <div className="flex items-center">
             {Array.from({ length: fire.flames }).map((_, i) => (
