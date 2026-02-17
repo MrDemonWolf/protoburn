@@ -2,6 +2,10 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Flame } from "lucide-react";
+import { createFireProgram, type FireProgram } from "@/lib/fire-shaders";
+import { renderFireShader, renderParticles, renderFallback } from "@/lib/fire-renderer";
+import { FireEngine, tierToConfig, type TierConfig } from "@/lib/fire-engine";
+import { TIERS } from "@/lib/burn-tiers";
 
 const KONAMI_CODE = [
   "ArrowUp",
@@ -16,83 +20,26 @@ const KONAMI_CODE = [
   "a",
 ];
 
-const FIRE_COLORS = [
-  "text-yellow-300",
-  "text-yellow-400",
-  "text-orange-400",
-  "text-orange-500",
-  "text-red-500",
-  "text-red-600",
-];
-
-const GLOW_COLORS = [
-  "drop-shadow-[0_0_12px_rgba(253,224,71,0.9)]",
-  "drop-shadow-[0_0_12px_rgba(251,191,36,0.9)]",
-  "drop-shadow-[0_0_12px_rgba(249,115,22,0.9)]",
-  "drop-shadow-[0_0_12px_rgba(239,68,68,0.9)]",
-];
-
-function FireParticle({ wave }: { wave: number }) {
-  const left = Math.random() * 100;
-  const delay = Math.random() * 1.5;
-  const size = 20 + Math.random() * 44;
-  const duration = 1.5 + Math.random() * 2.5;
-  const drift = (Math.random() - 0.5) * 200;
-  const spin = (Math.random() - 0.5) * 720;
-  const color = FIRE_COLORS[Math.floor(Math.random() * FIRE_COLORS.length)];
-  const glow = GLOW_COLORS[Math.floor(Math.random() * GLOW_COLORS.length)];
-  // Stagger waves: later waves start later
-  const waveDelay = wave * 0.8 + delay;
-
-  return (
-    <div
-      className="fixed pointer-events-none"
-      style={{
-        left: `${left}%`,
-        bottom: `-${size}px`,
-        animation: `fireRise ${duration}s ease-out ${waveDelay}s forwards`,
-      }}
-    >
-      <Flame
-        className={`${color} ${glow}`}
-        style={{
-          width: size,
-          height: size,
-          ["--drift" as string]: `${drift}px`,
-          ["--spin" as string]: `${spin}deg`,
-        }}
-      />
-    </div>
-  );
-}
-
-function Ember({ delay }: { delay: number }) {
-  const left = Math.random() * 100;
-  const size = 3 + Math.random() * 6;
-  const duration = 2 + Math.random() * 3;
-  const drift = (Math.random() - 0.5) * 300;
-
-  return (
-    <div
-      className="fixed pointer-events-none rounded-full bg-orange-400"
-      style={{
-        left: `${left}%`,
-        bottom: "0px",
-        width: size,
-        height: size,
-        boxShadow: "0 0 6px 2px rgba(251,191,36,0.8)",
-        animation: `emberRise ${duration}s ease-out ${delay}s forwards`,
-        ["--drift" as string]: `${drift}px`,
-      }}
-    />
-  );
-}
+// Configs for each phase of the easter egg, ramping up intensity
+const PHASE_TIERS = [
+  TIERS.spark,
+  TIERS.blazing,
+  TIERS.meltdown,
+] as const;
 
 export function KonamiEasterEgg() {
   const [sequence, setSequence] = useState<string[]>([]);
   const [activated, setActivated] = useState(false);
   const [phase, setPhase] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // WebGL refs
+  const glCanvasRef = useRef<HTMLCanvasElement>(null);
+  const particleCanvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+  const engineRef = useRef<FireEngine | null>(null);
+  const webglRef = useRef<{ gl: WebGL2RenderingContext; prog: FireProgram } | null>(null);
+  const phaseRef = useRef(0);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -107,15 +54,17 @@ export function KonamiEasterEgg() {
       ) {
         setActivated(true);
         setPhase(0);
+        phaseRef.current = 0;
 
         // Phase transitions for dramatic timing
-        setTimeout(() => setPhase(1), 300);
-        setTimeout(() => setPhase(2), 1200);
-        setTimeout(() => setPhase(3), 2500);
+        setTimeout(() => { setPhase(1); phaseRef.current = 1; }, 300);
+        setTimeout(() => { setPhase(2); phaseRef.current = 2; }, 1200);
+        setTimeout(() => { setPhase(3); phaseRef.current = 3; }, 2500);
 
         timerRef.current = setTimeout(() => {
           setActivated(false);
           setPhase(0);
+          phaseRef.current = 0;
         }, 5500);
         setSequence([]);
       }
@@ -131,41 +80,113 @@ export function KonamiEasterEgg() {
     };
   }, [handleKeyDown]);
 
+  // WebGL fire animation when activated
+  useEffect(() => {
+    if (!activated) {
+      // Cleanup on deactivation
+      cancelAnimationFrame(rafRef.current);
+      if (webglRef.current) {
+        const { gl, prog } = webglRef.current;
+        gl.deleteProgram(prog.program);
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+        webglRef.current = null;
+      }
+      engineRef.current = null;
+      return;
+    }
+
+    const glCanvas = glCanvasRef.current;
+    const particleCanvas = particleCanvasRef.current;
+    if (!glCanvas || !particleCanvas) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    glCanvas.width = width * dpr;
+    glCanvas.height = height * dpr;
+    particleCanvas.width = width * dpr;
+    particleCanvas.height = height * dpr;
+
+    // Try WebGL2
+    let gl: WebGL2RenderingContext | null = null;
+    let prog: FireProgram | null = null;
+    let ctx2d: CanvasRenderingContext2D | null = null;
+    let particleCtx: CanvasRenderingContext2D | null = null;
+
+    try {
+      gl = glCanvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false });
+      if (gl) {
+        prog = createFireProgram(gl);
+        webglRef.current = { gl, prog };
+      }
+    } catch {
+      gl = null;
+      prog = null;
+    }
+
+    const useWebGL = gl !== null && prog !== null;
+
+    if (!useWebGL) {
+      ctx2d = glCanvas.getContext("2d", { alpha: true });
+      if (!ctx2d) return;
+      ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
+    } else {
+      particleCtx = particleCanvas.getContext("2d", { alpha: true });
+      particleCtx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // Start with spark config
+    const initialConfig = tierToConfig(PHASE_TIERS[0]);
+    engineRef.current = new FireEngine(initialConfig);
+    const engine = engineRef.current;
+
+    let lastTime = performance.now();
+
+    function frame(now: number) {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+
+      // Update config based on current phase
+      const currentPhase = phaseRef.current;
+      let config: TierConfig;
+      if (currentPhase >= 2) {
+        config = tierToConfig(PHASE_TIERS[2]);
+      } else if (currentPhase >= 1) {
+        config = tierToConfig(PHASE_TIERS[1]);
+      } else {
+        config = tierToConfig(PHASE_TIERS[0]);
+      }
+      engine.configure(config);
+
+      engine.update(dt, width, height);
+      const engineConfig = engine.getConfig();
+      const engineTime = engine.getTime();
+
+      if (useWebGL && gl && prog) {
+        renderFireShader(gl, prog, engineConfig, engineTime, width, height);
+        if (particleCtx) {
+          renderParticles(particleCtx, engine.getPool(), width, height);
+        }
+      } else if (ctx2d) {
+        renderFallback(ctx2d, engine.getPool(), engineConfig, engineTime, width, height);
+      }
+
+      rafRef.current = requestAnimationFrame(frame);
+    }
+
+    rafRef.current = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [activated]);
+
   if (!activated) return null;
 
   return (
     <>
       <style>{`
-        @keyframes fireRise {
-          0% {
-            transform: translateY(0) scale(0.5) rotate(0deg);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-            transform: translateY(-10vh) scale(1.2) rotate(5deg);
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-110vh) translateX(var(--drift, 0px)) scale(0.2) rotate(var(--spin, 30deg));
-            opacity: 0;
-          }
-        }
-        @keyframes emberRise {
-          0% {
-            transform: translateY(0) scale(1);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-100vh) translateX(var(--drift, 0px)) scale(0);
-            opacity: 0;
-          }
-        }
         @keyframes screenShake {
           0%, 100% { transform: translate(0, 0); }
           10% { transform: translate(-3px, -2px); }
@@ -203,10 +224,6 @@ export function KonamiEasterEgg() {
             text-shadow: 0 0 40px rgba(249,115,22,0.9), 0 0 80px rgba(249,115,22,0.5), 0 0 120px rgba(239,68,68,0.4);
           }
         }
-        @keyframes fadeOut {
-          0% { opacity: 1; }
-          100% { opacity: 0; }
-        }
         .konami-shake {
           animation: screenShake 0.4s ease-in-out;
         }
@@ -216,37 +233,17 @@ export function KonamiEasterEgg() {
           phase >= 1 ? "bg-black/40" : "bg-transparent"
         } ${phase >= 3 ? "opacity-0 transition-opacity duration-1000" : ""}`}
       >
-        {/* Wave 1: initial burst */}
-        {Array.from({ length: 30 }).map((_, i) => (
-          <FireParticle key={`w1-${i}`} wave={0} />
-        ))}
-
-        {/* Wave 2: bigger burst */}
-        {phase >= 1 &&
-          Array.from({ length: 40 }).map((_, i) => (
-            <FireParticle key={`w2-${i}`} wave={1} />
-          ))}
-
-        {/* Wave 3: final inferno */}
-        {phase >= 2 &&
-          Array.from({ length: 50 }).map((_, i) => (
-            <FireParticle key={`w3-${i}`} wave={2} />
-          ))}
-
-        {/* Embers throughout */}
-        {Array.from({ length: 60 }).map((_, i) => (
-          <Ember key={`e-${i}`} delay={Math.random() * 3} />
-        ))}
-
-        {/* Bottom fire glow */}
-        <div
-          className="absolute bottom-0 left-0 right-0 transition-opacity duration-700"
-          style={{
-            height: "30vh",
-            background:
-              "linear-gradient(to top, rgba(249,115,22,0.4), rgba(239,68,68,0.15), transparent)",
-            opacity: phase >= 1 ? 1 : 0,
-          }}
+        {/* WebGL fire canvas (back layer) */}
+        <canvas
+          ref={glCanvasRef}
+          className="absolute inset-0 w-full h-full"
+          style={{ pointerEvents: "none" }}
+        />
+        {/* Particle canvas (front layer) */}
+        <canvas
+          ref={particleCanvasRef}
+          className="absolute inset-0 w-full h-full"
+          style={{ pointerEvents: "none" }}
         />
 
         {/* Title slam */}
@@ -262,7 +259,7 @@ export function KonamiEasterEgg() {
               }}
             />
             <div
-              className="text-5xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 via-orange-500 to-red-600"
+              className="text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 via-orange-500 to-red-600 md:text-5xl"
               style={{
                 animation: "titleSlam 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both, glowPulse 1s ease-in-out infinite 0.75s",
                 WebkitTextStroke: "1px rgba(249,115,22,0.3)",

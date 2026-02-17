@@ -87,7 +87,7 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 - **Number formatting**: `formatNumber()` in `apps/web/src/lib/format.ts` and `apps/server/src/lib/format.ts` — supports K (thousands), M (millions), B (billions), T (trillions)
 - **Footer**: Auto-updating year with linked MrDemonWolf branding, backdrop blur
 - **SEO**: Title, description (mentions prompt caching), keywords, and OpenGraph metadata in layout
-- **Konami code easter egg**: Up Up Down Down Left Right Left Right B A triggers a multi-wave fire animation with phased timing, ember particles, gradient "PROTOBURN" title slam, and "EVERYTHING BURNS" tagline (`apps/web/src/components/konami-easter-egg.tsx`)
+- **Konami code easter egg**: Up Up Down Down Left Right Left Right B A triggers a WebGL fire animation using the same procedural fire shader as `BurnCanvas`, phasing through spark → blazing → meltdown intensity tiers with gradient "PROTOBURN" title slam and "EVERYTHING BURNS" tagline; falls back to Canvas 2D `renderFallback()` if WebGL2 unavailable (`apps/web/src/components/konami-easter-egg.tsx`)
 
 ## Burn Intensity System
 
@@ -126,7 +126,7 @@ Ambient fire particle effects based on monthly total token usage including cache
 
 ## UI Details
 
-- **Layout**: No-scroll desktop viewport (`h-svh overflow-hidden`), chart flexes to fill remaining space
+- **Layout**: Mobile-friendly responsive — scrollable on mobile (`min-h-svh`), fixed no-scroll viewport on desktop (`md:h-svh md:overflow-hidden`); stats cards stack single-column on narrow screens (`grid-cols-1 sm:grid-cols-2`); chart has `min-h-[250px]` on mobile, `md:flex-1` on desktop; spacing/fonts reduce on mobile (`gap-3 p-3 md:gap-4 md:p-4`)
 - **Header**: Backdrop blur (`bg-background/80 backdrop-blur-md`), z-20 above burn embers; contains refresh button, fire toggle with tier label, and dark/light mode toggle
 - **Mode toggle**: Pill-style switch (sun/moon), click to toggle between light and dark
 - **Refresh button**: Invalidates all React Query caches, spinning animation during refresh; triggers odometer roll-up animation on stat cards and top models when refetch completes (skipped if data unchanged)
