@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <MeltdownShake>
-        <main className="container mx-auto flex flex-1 flex-col gap-4 overflow-hidden p-4">
+        <main className="container mx-auto flex flex-1 flex-col gap-3 overflow-auto p-3 md:gap-4 md:overflow-hidden md:p-4">
           <StatsCards />
           <TopModels />
           <UsageChart />

@@ -46,7 +46,7 @@ export function UsageChart() {
   );
 
   return (
-    <Card className="flex min-h-0 flex-1 flex-col">
+    <Card className="flex min-h-[250px] flex-col md:flex-1">
       <CardHeader className="pb-2">
         <CardTitle>Daily Token Usage</CardTitle>
       </CardHeader>
@@ -102,7 +102,7 @@ export function UsageChart() {
                   }
                   tickLine={false}
                   axisLine={false}
-                  width={48}
+                  width={40}
                   fontSize={11}
                 />
                 <Tooltip content={<ChartTooltipContent />} />

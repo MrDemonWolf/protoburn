@@ -41,8 +41,8 @@ export default function Header() {
 
   return (
     <div className="relative z-20 border-b bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex items-center justify-between px-4 py-2.5">
-        <Link href="/" className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight">
+      <div className="container mx-auto flex items-center justify-between px-4 py-2 md:py-2.5">
+        <Link href="/" className="flex items-center gap-2 font-heading text-base font-bold tracking-tight md:text-lg">
           <Flame className="h-5 w-5 text-primary" />
           ProtoBurn
         </Link>

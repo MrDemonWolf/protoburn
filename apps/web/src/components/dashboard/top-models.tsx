@@ -106,7 +106,7 @@ export function TopModels() {
           <Trophy className="h-4 w-4 text-yellow-500" />
           <h2 className="font-heading text-sm font-semibold tracking-tight">Top Models</h2>
         </div>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-2 md:gap-3 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
               <CardContent className="py-3">
@@ -129,7 +129,7 @@ export function TopModels() {
         <Trophy className="h-4 w-4 text-yellow-500" />
         <h2 className="font-heading text-sm font-semibold tracking-tight">Top Models</h2>
       </div>
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-2 md:gap-3 md:grid-cols-3">
         {models.map((model, index) => {
           const cost = calculateCost(model.model, model.inputTokens, model.outputTokens, model.cacheCreationTokens, model.cacheReadTokens);
           const medal = MEDALS[index]!;
@@ -150,7 +150,7 @@ export function TopModels() {
                   <AnimatedNumber
                     value={formatNumber(model.totalTokens)}
                     animateKey={animateKey}
-                    className="text-xl font-bold"
+                    className="text-lg font-bold md:text-xl"
                   />
                   <AnimatedNumber
                     value={`$${cost.toFixed(2)}`}

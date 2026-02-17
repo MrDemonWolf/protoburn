@@ -74,9 +74,9 @@ export function StatsCards() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {/* Top row: Total Tokens + Est. Monthly Cost */}
-      <div className="grid gap-4 grid-cols-2">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-muted-foreground">Total Tokens</CardTitle>
@@ -86,7 +86,7 @@ export function StatsCards() {
             {isLoading ? (
               <Skeleton className="h-8 w-24" />
             ) : (
-              <AnimatedNumber value={formatNumber(totals?.totalTokens ?? 0)} animateKey={animateKey} className="text-2xl font-bold" />
+              <AnimatedNumber value={formatNumber(totals?.totalTokens ?? 0)} animateKey={animateKey} className="text-xl font-bold sm:text-2xl" />
             )}
           </CardContent>
         </Card>
@@ -116,13 +116,13 @@ export function StatsCards() {
             {isLoading ? (
               <Skeleton className="h-8 w-24" />
             ) : (
-              <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-2xl font-bold" />
+              <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-xl font-bold sm:text-2xl" />
             )}
           </CardContent>
         </Card>
       </div>
       {/* Bottom row: breakdown cards */}
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 md:gap-4 md:grid-cols-4">
         {breakdownCards.map((card) => (
           <Card key={card.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -135,7 +135,7 @@ export function StatsCards() {
               {isLoading ? (
                 <Skeleton className="h-8 w-24" />
               ) : (
-                <AnimatedNumber value={card.display} animateKey={animateKey} className="text-2xl font-bold" />
+                <AnimatedNumber value={card.display} animateKey={animateKey} className="text-xl font-bold sm:text-2xl" />
               )}
             </CardContent>
           </Card>

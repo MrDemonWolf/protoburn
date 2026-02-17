@@ -63,7 +63,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} ${roboto.variable} antialiased`}>
         <Providers>
-          <div className="flex h-svh flex-col overflow-hidden bg-background md:h-svh md:overflow-hidden">
+          <div className="flex min-h-svh flex-col bg-background md:h-svh md:overflow-hidden">
             <Header />
             {children}
           </div>

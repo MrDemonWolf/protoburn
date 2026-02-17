@@ -55,7 +55,7 @@ function MeltdownOverlays() {
     <>
       {/* Flashing warning text */}
       <div
-        className="meltdown-warning-text absolute top-16 left-0 right-0 flex justify-center"
+        className="meltdown-warning-text absolute top-12 left-0 right-0 flex justify-center md:top-16"
         style={{
           animation: "warningFlash 0.6s step-end infinite",
           zIndex: 1,
@@ -105,7 +105,7 @@ function MeltdownOverlays() {
         style={{
           bottom: 0,
           left: 0,
-          width: "200px",
+          width: "clamp(100px, 40vw, 200px)",
           height: "60vh",
           background: "linear-gradient(to top, rgba(239,68,68,0.25), transparent 70%)",
           transformOrigin: "bottom left",
@@ -120,7 +120,7 @@ function MeltdownOverlays() {
         style={{
           bottom: 0,
           right: 0,
-          width: "200px",
+          width: "clamp(100px, 40vw, 200px)",
           height: "60vh",
           background: "linear-gradient(to top, rgba(239,68,68,0.25), transparent 70%)",
           transformOrigin: "bottom right",
