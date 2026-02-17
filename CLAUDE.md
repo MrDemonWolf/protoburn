@@ -105,6 +105,13 @@ Ambient fire particle effects based on monthly total token usage including cache
 
 - Tier thresholds are defined in `apps/web/src/lib/burn-tiers.ts` (web) and `apps/server/src/lib/burn-tiers.ts` (server) — both must be kept in sync
 - Monthly tokens for tier calculation uses `m.totalTokens` (includes cache tokens) — NOT just input+output
+- **Rendering architecture**: Two-layer canvas system in `BurnCanvas` (`apps/web/src/components/burn-canvas.tsx`):
+  - **Back layer** (WebGL2): Fullscreen fragment shader renders procedural fire using FBM noise (4 octaves of simplex noise). Handles bottom fire, side fire, top glow, vignettes, heat shimmer. Fire edges are organic and noise-driven — no hard rectangular cutoffs. Shader source in `apps/web/src/lib/fire-shaders.ts`.
+  - **Front layer** (Canvas 2D): Particle system (embers + flames with additive blending). Particles float over the procedural fire. Rendering in `apps/web/src/lib/fire-renderer.ts`.
+  - **WebGL2 fallback**: If `getContext("webgl2")` returns null, falls back to single-canvas Canvas 2D renderer with the original linear/radial gradient glows (`renderFallback()` in `fire-renderer.ts`)
+  - Fullscreen quad uses vertex ID trick (no buffer needed, 3 vertices)
+  - Shader uniforms map directly from `TierConfig` fields (e.g. `bottomGlowHeight` → `u_bottomHeight`)
+- **Fire engine**: `apps/web/src/lib/fire-engine.ts` — struct-of-arrays `ParticlePool` for zero GC, simplex noise wind fields, spawn/despawn with natural decay on tier change
 - Particles are boosted for visibility: larger sizes (3-8px embers, 16-38px flames), higher opacity, shorter 6s delay cycle so screen stays populated
 - Each tier has distinct visual identity: spark is minimal particles + glow, warm adds amber-tinted pulsing glow, burning adds concentrated ground glow strip, blazing adds heat shimmer + orange vignette + pulsing side glows
 - Inferno tier has: light pulsing vignette (3.5s cycle), top edge glow, wider side glows reaching higher up the screen
@@ -152,11 +159,10 @@ Ambient fire particle effects based on monthly total token usage including cache
 - **Runner**: Vitest with workspace projects (`vitest.config.ts` at root)
 - **Projects**: `web` (unit tests for pricing, format, burn tiers), `server` (integration tests with in-memory SQLite), `scripts` (sync utility unit tests)
 - **Server test strategy**: `@protoburn/db` aliased to `packages/db/src/test-utils.ts` (better-sqlite3 in-memory), `@protoburn/env/server` aliased to a stub — avoids `cloudflare:workers` runtime dependency; the test-utils CREATE TABLE must include `cache_creation_tokens` and `cache_read_tokens` columns
-- **Pure utility extraction**: `getBurnTier` in `apps/web/src/lib/burn-tiers.ts`, `formatNumber`/`cleanModelName`/`getFireLevel` in `apps/web/src/lib/format.ts` — testable without React/trpc imports
+- **Pure utility extraction**: `getBurnTier` in `apps/web/src/lib/burn-tiers.ts`, `formatNumber`/`cleanModelName`/`getFireLevel` in `apps/web/src/lib/format.ts`, `FireEngine`/`ParticlePool`/`tierToConfig` in `apps/web/src/lib/fire-engine.ts` — testable without React/DOM/WebGL imports
 - **CI**: GitHub Actions (`.github/workflows/ci.yml`) — 3 parallel jobs: type-check, test, build; triggers on push/PR to `main`
 
 ## Commit Preferences
 
 - No co-author lines
 - Multiple logical commits preferred
-- User pushes manually
