@@ -75,7 +75,7 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
   - **Top row**: Total Tokens + Est. Monthly Cost (with fire intensity indicator, month label, and API plan name)
   - **Bottom row**: Input Tokens, Output Tokens, Cache Write (amber), Cache Read (purple)
   - All values animate with odometer roll-up on page load and on refresh when data changes (digits cascade up to final value via `AnimatedNumber` component)
-- **Most Used Model**: Compact single-card display (`apps/web/src/components/dashboard/most-used-model.tsx`) showing the #1 model by total token usage with model name, token count, estimated cost, and per-type breakdown (In/Out/CW/CR); all numbers use odometer animation on page load and refresh
+- **Top Models**: Ranked display (`apps/web/src/components/dashboard/most-used-model.tsx`) showing top 3 models by total token usage with medal indicators (🥇🥈🥉), model name, token count, and estimated cost; #1 is prominent, #2/#3 are smaller and muted with border dividers; all numbers use odometer animation on page load and refresh
 - **Usage chart**: Time-series token usage (Recharts) with 4 stacked areas — Input (#00ACED), Output (#0B7CC1), Cache Write (#F59E0B amber), Cache Read (#8B5CF6 purple); Y-axis supports K/M/B suffixes; flexes to fill remaining viewport height
 - **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers with prompt caching support, pattern-matched by model name, unknown models default to Sonnet rates. Pricing copies also exist in `apps/server/src/lib/pricing.ts` and `scripts/sync.ts` — all three must be kept in sync
 
@@ -127,7 +127,7 @@ Ambient fire particle effects based on monthly total token usage including cache
 
 ## UI Details
 
-- **Layout**: Mobile-friendly responsive — scrollable on mobile (`min-h-svh`), fixed no-scroll viewport on desktop (`md:h-svh md:overflow-hidden`); stats cards stack single-column on narrow screens (`grid-cols-1 sm:grid-cols-2`); chart has `min-h-[250px]` on mobile, `md:flex-1` on desktop; spacing/fonts reduce on mobile (`gap-3 p-3 md:gap-4 md:p-4`)
+- **Layout**: Mobile-friendly responsive — scrollable on mobile (`min-h-svh`), fixed no-scroll viewport on desktop (`md:h-svh md:overflow-hidden`); 3-row desktop layout: StatsCards → [Most Used Model | Heatmap Calendar] side-by-side (`md:grid-cols-[auto_1fr]`) → UsageChart (`md:flex-1`); stats cards stack single-column on narrow screens (`grid-cols-1 sm:grid-cols-2`); on mobile all sections stack vertically; chart has `min-h-[250px]` on mobile, `md:flex-1` on desktop; spacing/fonts reduce on mobile (`gap-3 p-3 md:gap-4 md:p-4`)
 - **Header**: Backdrop blur (`bg-background/80 backdrop-blur-md`), z-20 above burn embers; contains refresh button, fire toggle with tier label, and dark/light mode toggle
 - **Mode toggle**: Pill-style switch (sun/moon), click to toggle between light and dark
 - **Refresh button**: Invalidates all React Query caches, spinning animation during refresh; triggers odometer roll-up animation on stat cards and top models when refetch completes (skipped if data unchanged)

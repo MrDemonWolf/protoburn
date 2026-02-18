@@ -78,6 +78,11 @@ export function AnimatedNumber({ value, animateKey, className, animateOnMount = 
     return <div className={className}>{value}</div>;
   }
 
+  // Render plain text when idle for natural font rendering
+  if (phase === "idle") {
+    return <div className={className}>{value}</div>;
+  }
+
   const chars = value.split("");
 
   return (
