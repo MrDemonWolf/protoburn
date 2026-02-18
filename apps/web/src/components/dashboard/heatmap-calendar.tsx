@@ -171,7 +171,7 @@ export function HeatmapCalendar() {
       <CardContent>
         <div className="overflow-x-auto">
           <div
-            className="inline-grid gap-[2px]"
+            className="grid gap-[2px]"
             style={{
               gridTemplateColumns: `auto repeat(${weeks}, 1fr)`,
               gridTemplateRows: "auto repeat(7, 1fr)",

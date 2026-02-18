@@ -33,7 +33,7 @@ export function MostUsedModel() {
 
   if (isLoading) {
     return (
-      <Card size="sm">
+      <Card size="sm" className="md:w-fit md:shrink-0">
         <CardContent className="py-3">
           <Skeleton className="h-10 w-full" />
         </CardContent>
@@ -52,7 +52,7 @@ export function MostUsedModel() {
   );
 
   return (
-    <Card size="sm">
+    <Card size="sm" className="md:w-fit md:shrink-0">
       <CardContent className="py-3">
         <div className="flex items-center gap-2">
           <Cpu className="size-4 text-primary" />

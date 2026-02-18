@@ -14,8 +14,10 @@ export default function Home() {
       <MeltdownShake>
         <main className="container mx-auto flex flex-1 flex-col gap-3 overflow-auto p-3 md:gap-4 md:overflow-hidden md:p-4">
           <StatsCards />
-          <MostUsedModel />
-          <HeatmapCalendar />
+          <div className="grid gap-3 md:grid-cols-[auto_1fr] md:gap-4">
+            <MostUsedModel />
+            <HeatmapCalendar />
+          </div>
           <UsageChart />
         </main>
         <footer className="relative z-20 border-t bg-background/80 backdrop-blur-md py-3">
