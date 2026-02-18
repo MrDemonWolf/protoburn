@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar } from "lucide-react";
+import { Tooltip } from "@base-ui/react/tooltip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
@@ -15,13 +16,27 @@ const MONTH_NAMES = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
+const HEAT_LEVELS = [
+  "var(--heat-1)",
+  "var(--heat-2)",
+  "var(--heat-3)",
+  "var(--heat-4)",
+] as const;
+
 function getHeatColor(tokens: number, maxTokens: number): string | undefined {
   if (tokens === 0 || maxTokens === 0) return undefined;
   const ratio = tokens / maxTokens;
-  if (ratio < 0.25) return "hsl(200, 70%, 50%)";
-  if (ratio < 0.5) return "hsl(210, 80%, 45%)";
-  if (ratio < 0.75) return "hsl(30, 90%, 50%)";
-  return "hsl(0, 80%, 50%)";
+  if (ratio < 0.25) return HEAT_LEVELS[0];
+  if (ratio < 0.5) return HEAT_LEVELS[1];
+  if (ratio < 0.75) return HEAT_LEVELS[2];
+  return HEAT_LEVELS[3];
+}
+
+function toLocalDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 interface DayData {
@@ -60,20 +75,21 @@ function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLa
   let col = 0;
 
   while (current <= today) {
-    const dateStr = current.toISOString().split("T")[0]!;
+    const dateStr = toLocalDateStr(current);
     const isBeforeRange = current < start;
 
-    // Month labels at row 0 (Monday)
+    // Advance column on each new Monday (except the first)
+    if (current.getDay() === 1 && cells.length > 0 && cells.length % 7 === 0) {
+      col++;
+    }
+
+    // Month labels at row 0 (Monday) — after col is incremented
     if (current.getDay() === 1) {
       const monthKey = `${current.getFullYear()}-${current.getMonth()}`;
       if (!seenMonths.has(monthKey)) {
         seenMonths.add(monthKey);
         monthLabels.push({ label: MONTH_NAMES[current.getMonth()]!, col });
       }
-    }
-
-    if (current.getDay() === 1 && cells.length > 0 && cells.length % 7 === 0) {
-      col++;
     }
 
     if (isBeforeRange) {
@@ -199,17 +215,27 @@ export function HeatmapCalendar() {
                   const totalTokens = d?.totalTokens ?? 0;
                   const bgColor = getHeatColor(totalTokens, maxTokens);
 
-                  const tooltip = d
+                  const tooltipText = d
                     ? `${formatDate(cell.date)}: ${formatNumber(totalTokens)} tokens ($${estimateCost(d).toFixed(2)})\nIn: ${formatNumber(d.inputTokens)} | Out: ${formatNumber(d.outputTokens)} | CW: ${formatNumber(d.cacheCreationTokens)} | CR: ${formatNumber(d.cacheReadTokens)}`
                     : `${formatDate(cell.date)}: No usage`;
 
                   return (
-                    <div
-                      key={`${row}-${col}`}
-                      className="size-[10px] md:size-[14px] rounded-sm bg-muted"
-                      style={bgColor ? { backgroundColor: bgColor } : undefined}
-                      title={tooltip}
-                    />
+                    <Tooltip.Root key={`${row}-${col}`}>
+                      <Tooltip.Trigger
+                        className="size-[10px] md:size-[14px] rounded-sm bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                        style={bgColor ? { backgroundColor: bgColor } : undefined}
+                        aria-label={tooltipText.replace("\n", ", ")}
+                        tabIndex={0}
+                        render={<div />}
+                      />
+                      <Tooltip.Portal>
+                        <Tooltip.Positioner sideOffset={4}>
+                          <Tooltip.Popup className="rounded-md bg-popover px-2 py-1.5 text-[11px] text-popover-foreground shadow-md ring-1 ring-border whitespace-pre-line max-w-[220px]">
+                            {tooltipText}
+                          </Tooltip.Popup>
+                        </Tooltip.Positioner>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
                   );
                 }),
               ];
@@ -220,11 +246,11 @@ export function HeatmapCalendar() {
         {/* Legend */}
         <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
           <span>Less</span>
-          <div className="size-[10px] rounded-sm bg-muted" />
-          <div className="size-[10px] rounded-sm" style={{ backgroundColor: "hsl(200, 70%, 50%)" }} />
-          <div className="size-[10px] rounded-sm" style={{ backgroundColor: "hsl(210, 80%, 45%)" }} />
-          <div className="size-[10px] rounded-sm" style={{ backgroundColor: "hsl(30, 90%, 50%)" }} />
-          <div className="size-[10px] rounded-sm" style={{ backgroundColor: "hsl(0, 80%, 50%)" }} />
+          <div className="size-[10px] md:size-[14px] rounded-sm bg-muted" />
+          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[0] }} />
+          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[1] }} />
+          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[2] }} />
+          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[3] }} />
           <span>More</span>
         </div>
       </CardContent>
