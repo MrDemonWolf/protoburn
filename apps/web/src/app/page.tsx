@@ -1,6 +1,6 @@
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { UsageChart } from "@/components/dashboard/usage-chart";
-import { TopModels } from "@/components/dashboard/top-models";
+import { MostUsedModel } from "@/components/dashboard/most-used-model";
 import { HeatmapCalendar } from "@/components/dashboard/heatmap-calendar";
 import { KonamiEasterEgg } from "@/components/konami-easter-egg";
 import { BurnIntensity, MeltdownShake } from "@/components/burn-intensity";
@@ -14,7 +14,7 @@ export default function Home() {
       <MeltdownShake>
         <main className="container mx-auto flex flex-1 flex-col gap-3 overflow-auto p-3 md:gap-4 md:overflow-hidden md:p-4">
           <StatsCards />
-          <TopModels />
+          <MostUsedModel />
           <HeatmapCalendar />
           <UsageChart />
         </main>
