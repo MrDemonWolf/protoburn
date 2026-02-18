@@ -38,6 +38,10 @@
   --sidebar-accent-foreground: oklch(0.2 0.04 255);
   --sidebar-border: oklch(0.91 0.02 230);
   --sidebar-ring: oklch(0.65 0.17 230);
+  --heat-1: oklch(0.62 0.14 230);
+  --heat-2: oklch(0.52 0.16 240);
+  --heat-3: oklch(0.68 0.18 65);
+  --heat-4: oklch(0.58 0.22 27);
 }
 
 /* Dark theme — #091533 backgrounds, #00ACED accents */
@@ -73,6 +77,10 @@
   --sidebar-accent-foreground: oklch(0.95 0.01 230);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.68 0.17 230);
+  --heat-1: oklch(0.65 0.17 230);
+  --heat-2: oklch(0.55 0.18 240);
+  --heat-3: oklch(0.72 0.17 65);
+  --heat-4: oklch(0.65 0.22 27);
 }
 
 @theme inline {

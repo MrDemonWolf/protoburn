@@ -1,6 +1,7 @@
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { UsageChart } from "@/components/dashboard/usage-chart";
 import { TopModels } from "@/components/dashboard/top-models";
+import { HeatmapCalendar } from "@/components/dashboard/heatmap-calendar";
 import { KonamiEasterEgg } from "@/components/konami-easter-egg";
 import { BurnIntensity, MeltdownShake } from "@/components/burn-intensity";
 import { env } from "@protoburn/env/web";
@@ -14,6 +15,7 @@ export default function Home() {
         <main className="container mx-auto flex flex-1 flex-col gap-3 overflow-auto p-3 md:gap-4 md:overflow-hidden md:p-4">
           <StatsCards />
           <TopModels />
+          <HeatmapCalendar />
           <UsageChart />
         </main>
         <footer className="relative z-20 border-t bg-background/80 backdrop-blur-md py-3">

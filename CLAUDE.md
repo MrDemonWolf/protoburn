@@ -87,6 +87,7 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 - **Number formatting**: `formatNumber()` in `apps/web/src/lib/format.ts` and `apps/server/src/lib/format.ts` — supports K (thousands), M (millions), B (billions), T (trillions)
 - **Footer**: Auto-updating year with linked MrDemonWolf branding, backdrop blur
 - **SEO**: Title, description (mentions prompt caching), keywords, and OpenGraph metadata in layout
+- **Heatmap calendar**: GitHub-contribution-style grid showing daily token usage over the past 90 days (`apps/web/src/components/dashboard/heatmap-calendar.tsx`); 7-row (Mon–Sun) × ~13-column (weeks) CSS grid; 5-level color scale from `bg-muted` (no data) through cool blue → deep blue → orange → red (hot); hover tooltip shows date, total tokens, estimated cost (Sonnet rates), and per-type breakdown (In/Out/CW/CR); uses `timeSeries({ days: 90 })` endpoint; responsive cell sizes (10px mobile, 14px desktop); includes day labels (Mon/Wed/Fri) and month labels
 - **Konami code easter egg**: Up Up Down Down Left Right Left Right B A triggers a WebGL fire animation using the same procedural fire shader as `BurnCanvas`, phasing through spark → blazing → meltdown intensity tiers with gradient "PROTOBURN" title slam and "EVERYTHING BURNS" tagline; falls back to Canvas 2D `renderFallback()` if WebGL2 unavailable (`apps/web/src/components/konami-easter-egg.tsx`)
 
 ## Burn Intensity System

@@ -6,4 +6,9 @@ export default defineConfig({
   outDir: "./dist",
   clean: true,
   noExternal: [/@protoburn\/.*/],
+  inputOptions: {
+    moduleTypes: {
+      ".wasm": "binary",
+    },
+  },
 });
