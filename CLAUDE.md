@@ -75,7 +75,7 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
   - **Top row**: Total Tokens + Est. Monthly Cost (with fire intensity indicator, month label, and API plan name)
   - **Bottom row**: Input Tokens, Output Tokens, Cache Write (amber), Cache Read (purple)
   - All values animate with odometer roll-up on page load and on refresh when data changes (digits cascade up to final value via `AnimatedNumber` component)
-- **Most Used Model**: Compact single-card display (`apps/web/src/components/dashboard/most-used-model.tsx`) showing the #1 model by total token usage with model name, token count, estimated cost, and per-type breakdown (In/Out/CW/CR); all numbers use odometer animation on page load and refresh
+- **Top Models**: Ranked display (`apps/web/src/components/dashboard/most-used-model.tsx`) showing top 3 models by total token usage with medal indicators (🥇🥈🥉), model name, token count, and estimated cost; #1 is prominent, #2/#3 are smaller and muted with border dividers; all numbers use odometer animation on page load and refresh
 - **Usage chart**: Time-series token usage (Recharts) with 4 stacked areas — Input (#00ACED), Output (#0B7CC1), Cache Write (#F59E0B amber), Cache Read (#8B5CF6 purple); Y-axis supports K/M/B suffixes; flexes to fill remaining viewport height
 - **Cost calculation**: `apps/web/src/lib/pricing.ts` — per-model pricing tiers with prompt caching support, pattern-matched by model name, unknown models default to Sonnet rates. Pricing copies also exist in `apps/server/src/lib/pricing.ts` and `scripts/sync.ts` — all three must be kept in sync
 
