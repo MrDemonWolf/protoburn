@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, gte, lt, sum } from "drizzle-orm";
+import { and, gte, lt, sum, sql } from "drizzle-orm";
 import db, { schema } from "@protoburn/db";
 import { publicProcedure, router } from "../index";
 import { calculateVelocity } from "../lib/velocity";
@@ -157,6 +157,57 @@ const tokenUsageRouter = router({
 
       return results.map((r) => ({
         date: r.date,
+        inputTokens: r.inputTokens ?? 0,
+        outputTokens: r.outputTokens ?? 0,
+        cacheCreationTokens: r.cacheCreationTokens ?? 0,
+        cacheReadTokens: r.cacheReadTokens ?? 0,
+      }));
+    }),
+
+  availableMonths: publicProcedure.query(async () => {
+    const results = await db
+      .selectDistinct({
+        month: sql<string>`substr(${schema.tokenUsage.date}, 1, 7)`,
+      })
+      .from(schema.tokenUsage)
+      .orderBy(sql`substr(${schema.tokenUsage.date}, 1, 7) desc`);
+
+    return results.map((r) => r.month);
+  }),
+
+  timeSeriesMonthly: publicProcedure
+    .input(
+      z.object({
+        month: z.string().regex(/^\d{4}-\d{2}$/),
+      }),
+    )
+    .query(async ({ input }) => {
+      const [year, month] = input.month.split("-").map(Number) as [number, number];
+      const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+      const nextMonth = month === 12 ? 1 : month + 1;
+      const nextYear = month === 12 ? year + 1 : year;
+      const endDate = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
+
+      const results = await db
+        .select({
+          day: sql<number>`cast(substr(${schema.tokenUsage.date}, 9, 2) as integer)`,
+          inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
+          outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+          cacheCreationTokens: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+          cacheReadTokens: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
+        })
+        .from(schema.tokenUsage)
+        .where(
+          and(
+            gte(schema.tokenUsage.date, startDate),
+            lt(schema.tokenUsage.date, endDate),
+          ),
+        )
+        .groupBy(sql`substr(${schema.tokenUsage.date}, 9, 2)`)
+        .orderBy(sql`substr(${schema.tokenUsage.date}, 9, 2)`);
+
+      return results.map((r) => ({
+        day: r.day,
         inputTokens: r.inputTokens ?? 0,
         outputTokens: r.outputTokens ?? 0,
         cacheCreationTokens: r.cacheCreationTokens ?? 0,

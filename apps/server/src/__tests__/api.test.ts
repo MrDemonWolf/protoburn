@@ -222,6 +222,70 @@ describe("tokenUsage.velocity", () => {
   });
 });
 
+describe("tokenUsage.availableMonths", () => {
+  it("returns empty array when no data", async () => {
+    const result = await caller.tokenUsage.availableMonths();
+    expect(result).toEqual([]);
+  });
+
+  it("returns distinct months sorted desc", async () => {
+    await caller.tokenUsage.push({
+      records: [
+        { model: "claude-sonnet-4-5", inputTokens: 1000, outputTokens: 500, date: "2025-01-15" },
+        { model: "claude-sonnet-4-5", inputTokens: 2000, outputTokens: 1000, date: "2025-01-20" },
+        { model: "claude-sonnet-4-5", inputTokens: 500, outputTokens: 250, date: "2025-03-10" },
+        { model: "claude-haiku-4-5", inputTokens: 800, outputTokens: 400, date: "2025-02-05" },
+      ],
+    });
+
+    const result = await caller.tokenUsage.availableMonths();
+    expect(result).toEqual(["2025-03", "2025-02", "2025-01"]);
+  });
+});
+
+describe("tokenUsage.timeSeriesMonthly", () => {
+  it("returns daily data keyed by day-of-month", async () => {
+    await caller.tokenUsage.push({
+      records: [
+        { model: "claude-sonnet-4-5", inputTokens: 1000, outputTokens: 500, date: "2025-01-05" },
+        { model: "claude-haiku-4-5", inputTokens: 2000, outputTokens: 1000, date: "2025-01-05" },
+        { model: "claude-sonnet-4-5", inputTokens: 3000, outputTokens: 1500, date: "2025-01-15" },
+      ],
+    });
+
+    const result = await caller.tokenUsage.timeSeriesMonthly({ month: "2025-01" });
+    expect(result).toHaveLength(2);
+
+    const day5 = result.find((r) => r.day === 5);
+    expect(day5).toBeDefined();
+    expect(day5!.inputTokens).toBe(3000);
+    expect(day5!.outputTokens).toBe(1500);
+
+    const day15 = result.find((r) => r.day === 15);
+    expect(day15).toBeDefined();
+    expect(day15!.inputTokens).toBe(3000);
+  });
+
+  it("returns empty for month with no data", async () => {
+    const result = await caller.tokenUsage.timeSeriesMonthly({ month: "2020-06" });
+    expect(result).toEqual([]);
+  });
+
+  it("excludes data from other months", async () => {
+    await caller.tokenUsage.push({
+      records: [
+        { model: "claude-sonnet-4-5", inputTokens: 1000, outputTokens: 500, date: "2025-01-15" },
+        { model: "claude-sonnet-4-5", inputTokens: 2000, outputTokens: 1000, date: "2025-02-15" },
+      ],
+    });
+
+    const result = await caller.tokenUsage.timeSeriesMonthly({ month: "2025-01" });
+    expect(result).toHaveLength(1);
+    expect(result[0]!.day).toBe(15);
+    expect(result[0]!.inputTokens).toBe(1000);
+  });
+});
+
 describe("healthCheck", () => {
   it("returns OK", async () => {
     const result = await caller.healthCheck();
