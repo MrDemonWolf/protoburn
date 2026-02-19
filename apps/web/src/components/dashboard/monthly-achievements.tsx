@@ -32,6 +32,8 @@ export function MonthlyAchievements() {
     if (!modelData) return new Set<string>();
     const models = modelData.models.map((m) => ({
       model: m.model,
+      inputTokens: m.inputTokens,
+      outputTokens: m.outputTokens,
       cacheCreationTokens: m.cacheCreationTokens,
       cacheReadTokens: m.cacheReadTokens,
     }));

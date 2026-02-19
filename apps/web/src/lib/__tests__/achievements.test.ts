@@ -8,12 +8,16 @@ import {
 function makeModels(
   overrides: Array<{
     model?: string;
+    inputTokens?: number;
+    outputTokens?: number;
     cacheCreationTokens?: number;
     cacheReadTokens?: number;
   }> = [],
 ) {
   return overrides.map((o) => ({
     model: o.model ?? "claude-sonnet-4-5-20250514",
+    inputTokens: o.inputTokens ?? 0,
+    outputTokens: o.outputTokens ?? 0,
     cacheCreationTokens: o.cacheCreationTokens ?? 0,
     cacheReadTokens: o.cacheReadTokens ?? 0,
   }));
@@ -25,6 +29,7 @@ describe("evaluateBadges", () => {
     expect(earned.size).toBe(0);
   });
 
+  // Token milestones
   it("earns first-million at 1M tokens", () => {
     const earned = evaluateBadges({
       totalTokens: 1_000_000,
@@ -50,8 +55,18 @@ describe("evaluateBadges", () => {
       models: makeModels([{}]),
     });
     expect(earned.has("hundred-million")).toBe(true);
+    expect(earned.has("billion")).toBe(false);
   });
 
+  it("earns billion at 1B tokens", () => {
+    const earned = evaluateBadges({
+      totalTokens: 1_000_000_000,
+      models: makeModels([{}]),
+    });
+    expect(earned.has("billion")).toBe(true);
+  });
+
+  // Cache badges
   it("earns cache-champion with 75%+ hit ratio and 100K+ cache tokens", () => {
     const earned = evaluateBadges({
       totalTokens: 1_000_000,
@@ -83,8 +98,6 @@ describe("evaluateBadges", () => {
   });
 
   it("earns big-saver when cache savings >= $10", () => {
-    // Sonnet cache read: $0.30/M, input: $3/M → savings = $2.70/M
-    // Need $10 savings → ~3.7M cache read tokens
     const earned = evaluateBadges({
       totalTokens: 10_000_000,
       models: makeModels([
@@ -95,6 +108,22 @@ describe("evaluateBadges", () => {
         },
       ]),
     });
+    expect(earned.has("big-saver")).toBe(true);
+    expect(earned.has("mega-saver")).toBe(false);
+  });
+
+  it("earns mega-saver when cache savings >= $100", () => {
+    const earned = evaluateBadges({
+      totalTokens: 50_000_000,
+      models: makeModels([
+        {
+          model: "claude-sonnet-4-5-20250514",
+          cacheReadTokens: 40_000_000,
+          cacheCreationTokens: 100_000,
+        },
+      ]),
+    });
+    expect(earned.has("mega-saver")).toBe(true);
     expect(earned.has("big-saver")).toBe(true);
   });
 
@@ -108,6 +137,7 @@ describe("evaluateBadges", () => {
     expect(earned.has("big-saver")).toBe(false);
   });
 
+  // Model explorer
   it("earns model-explorer with 3+ models", () => {
     const earned = evaluateBadges({
       totalTokens: 1_000_000,
@@ -131,20 +161,72 @@ describe("evaluateBadges", () => {
     expect(earned.has("model-explorer")).toBe(false);
   });
 
+  // Spending milestones (plan tiers)
+  it("earns pro-burner at $20+ estimated cost", () => {
+    // Sonnet output: $15/M → need ~1.34M output tokens for $20
+    const earned = evaluateBadges({
+      totalTokens: 2_000_000,
+      models: makeModels([
+        { model: "claude-sonnet-4-5-20250514", outputTokens: 1_500_000 },
+      ]),
+    });
+    expect(earned.has("pro-burner")).toBe(true);
+    expect(earned.has("max-burner")).toBe(false);
+  });
+
+  it("earns max-burner at $100+ estimated cost", () => {
+    // Sonnet output: $15/M → need ~6.67M output tokens for $100
+    const earned = evaluateBadges({
+      totalTokens: 10_000_000,
+      models: makeModels([
+        { model: "claude-sonnet-4-5-20250514", outputTokens: 7_000_000 },
+      ]),
+    });
+    expect(earned.has("max-burner")).toBe(true);
+    expect(earned.has("pro-burner")).toBe(true);
+    expect(earned.has("ultra-burner")).toBe(false);
+  });
+
+  it("earns ultra-burner at $200+ estimated cost", () => {
+    // Sonnet output: $15/M → need ~13.3M output tokens for $200
+    const earned = evaluateBadges({
+      totalTokens: 15_000_000,
+      models: makeModels([
+        { model: "claude-sonnet-4-5-20250514", outputTokens: 14_000_000 },
+      ]),
+    });
+    expect(earned.has("ultra-burner")).toBe(true);
+    expect(earned.has("max-burner")).toBe(true);
+    expect(earned.has("pro-burner")).toBe(true);
+  });
+
+  // Burn tier progression
+  it("earns spark-starter at 5M+ tokens", () => {
+    const earned = evaluateBadges({
+      totalTokens: 5_000_000,
+      models: makeModels([{}]),
+    });
+    expect(earned.has("spark-starter")).toBe(true);
+    expect(earned.has("on-fire")).toBe(false);
+  });
+
   it("earns on-fire at 400M+ tokens (burning tier)", () => {
     const earned = evaluateBadges({
       totalTokens: 400_000_000,
       models: makeModels([{}]),
     });
     expect(earned.has("on-fire")).toBe(true);
+    expect(earned.has("blazing-glory")).toBe(false);
   });
 
-  it("does not earn on-fire below burning tier", () => {
+  it("earns blazing-glory at 1B+ tokens", () => {
     const earned = evaluateBadges({
-      totalTokens: 200_000_000,
+      totalTokens: 1_000_000_000,
       models: makeModels([{}]),
     });
-    expect(earned.has("on-fire")).toBe(false);
+    expect(earned.has("blazing-glory")).toBe(true);
+    expect(earned.has("on-fire")).toBe(true);
+    expect(earned.has("inferno-survivor")).toBe(false);
   });
 
   it("earns inferno-survivor at 2B+ tokens", () => {
@@ -154,15 +236,35 @@ describe("evaluateBadges", () => {
     });
     expect(earned.has("inferno-survivor")).toBe(true);
     expect(earned.has("on-fire")).toBe(true);
+    expect(earned.has("meltdown")).toBe(false);
   });
 
-  it("does not earn inferno-survivor below inferno tier", () => {
+  it("earns meltdown at 3B+ tokens", () => {
     const earned = evaluateBadges({
-      totalTokens: 1_500_000_000,
+      totalTokens: 3_000_000_000,
       models: makeModels([{}]),
     });
-    expect(earned.has("inferno-survivor")).toBe(false);
-    expect(earned.has("on-fire")).toBe(true);
+    expect(earned.has("meltdown")).toBe(true);
+    expect(earned.has("inferno-survivor")).toBe(true);
+    expect(earned.has("beyond-meltdown")).toBe(false);
+  });
+
+  it("earns beyond-meltdown at 5B+ tokens", () => {
+    const earned = evaluateBadges({
+      totalTokens: 5_000_000_000,
+      models: makeModels([{}]),
+    });
+    expect(earned.has("beyond-meltdown")).toBe(true);
+    expect(earned.has("meltdown")).toBe(true);
+  });
+
+  it("does not earn beyond-meltdown below 5B", () => {
+    const earned = evaluateBadges({
+      totalTokens: 4_500_000_000,
+      models: makeModels([{}]),
+    });
+    expect(earned.has("meltdown")).toBe(true);
+    expect(earned.has("beyond-meltdown")).toBe(false);
   });
 });
 
@@ -178,8 +280,8 @@ describe("getEarnedCount", () => {
 });
 
 describe("BADGE_DEFINITIONS", () => {
-  it("has 8 badges", () => {
-    expect(BADGE_DEFINITIONS).toHaveLength(8);
+  it("has 17 badges", () => {
+    expect(BADGE_DEFINITIONS).toHaveLength(17);
   });
 
   it("all badges have unique ids", () => {
