@@ -140,3 +140,48 @@
     font-family: var(--font-heading);
   }
 }
+
+/* Flame animations for fire level indicators */
+@keyframes flame-flicker {
+  0%, 100% { opacity: 0.85; transform: scaleY(1) translateY(0); }
+  25% { opacity: 1; transform: scaleY(1.08) translateY(-1px); }
+  50% { opacity: 0.75; transform: scaleY(0.95) translateY(0.5px); }
+  75% { opacity: 0.95; transform: scaleY(1.04) translateY(-0.5px); }
+}
+
+@keyframes flame-dance {
+  0%, 100% { opacity: 0.8; transform: scaleY(1) translateY(0) rotate(0deg); }
+  20% { opacity: 1; transform: scaleY(1.12) translateY(-1.5px) rotate(-2deg); }
+  40% { opacity: 0.7; transform: scaleY(0.92) translateY(0.5px) rotate(1deg); }
+  60% { opacity: 1; transform: scaleY(1.08) translateY(-1px) rotate(-1deg); }
+  80% { opacity: 0.85; transform: scaleY(0.96) translateY(0) rotate(2deg); }
+}
+
+@keyframes flame-rage {
+  0%, 100% { opacity: 0.8; transform: scaleY(1) translateY(0) rotate(0deg); }
+  15% { opacity: 1; transform: scaleY(1.18) translateY(-2px) rotate(-3deg); }
+  30% { opacity: 0.65; transform: scaleY(0.88) translateY(1px) rotate(2deg); }
+  50% { opacity: 1; transform: scaleY(1.15) translateY(-2.5px) rotate(-2deg); }
+  70% { opacity: 0.7; transform: scaleY(0.9) translateY(0) rotate(3deg); }
+  85% { opacity: 1; transform: scaleY(1.1) translateY(-1.5px) rotate(-1deg); }
+}
+
+.animate-flame-flicker {
+  animation: flame-flicker 2.5s ease-in-out infinite;
+}
+
+.animate-flame-dance {
+  animation: flame-dance 1.8s ease-in-out infinite;
+}
+
+.animate-flame-rage {
+  animation: flame-rage 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-flame-flicker,
+  .animate-flame-dance,
+  .animate-flame-rage {
+    animation: none;
+  }
+}

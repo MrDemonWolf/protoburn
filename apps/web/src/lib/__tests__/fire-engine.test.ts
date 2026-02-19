@@ -12,9 +12,9 @@ describe("tierToConfig", () => {
 
   it("maps spark tier correctly", () => {
     const cfg = tierToConfig(TIERS.spark);
-    expect(cfg.emberCount).toBe(16);
-    expect(cfg.flameCount).toBe(6);
-    expect(cfg.sideGlow).toBe(false);
+    expect(cfg.emberCount).toBe(20);
+    expect(cfg.flameCount).toBe(8);
+    expect(cfg.sideGlow).toBe(true);
     expect(cfg.bottomGlowHeight).toBeGreaterThan(0);
   });
 
@@ -42,10 +42,10 @@ describe("tierToConfig", () => {
     expect(cfg.heatShimmer).toBe(true);
   });
 
-  it("inferno has vignette but no shimmer", () => {
+  it("inferno has vignette and shimmer", () => {
     const cfg = tierToConfig(TIERS.inferno);
     expect(cfg.vignetteType).toBe("inferno");
-    expect(cfg.heatShimmer).toBe(false);
+    expect(cfg.heatShimmer).toBe(true);
   });
 });
 
