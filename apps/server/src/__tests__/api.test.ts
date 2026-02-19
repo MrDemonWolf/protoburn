@@ -121,6 +121,107 @@ describe("tokenUsage.timeSeries", () => {
   });
 });
 
+describe("tokenUsage.velocity", () => {
+  it("returns insufficient data when no records exist", async () => {
+    const result = await caller.tokenUsage.velocity();
+    expect(result.hasEnoughData).toBe(false);
+    expect(result.tokensPerDay).toBe(0);
+    expect(result.tokensPerHour).toBe(0);
+  });
+
+  it("returns correct velocity with uniform daily data", async () => {
+    const today = new Date();
+    const records = [];
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0]!;
+      records.push({
+        model: "claude-sonnet-4-5",
+        inputTokens: 500000,
+        outputTokens: 500000,
+        date: dateStr,
+      });
+    }
+
+    await caller.tokenUsage.push({ records });
+    const result = await caller.tokenUsage.velocity();
+
+    expect(result.hasEnoughData).toBe(true);
+    expect(result.tokensPerDay).toBe(1000000);
+    expect(result.tokensPerHour).toBeCloseTo(1000000 / 24);
+  });
+
+  it("returns 'up' trend with increasing data", async () => {
+    const today = new Date();
+    const records = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0]!;
+      // Older days: low tokens, recent days: high tokens
+      const tokens = i >= 3 ? 100000 : 500000;
+      records.push({
+        model: "claude-sonnet-4-5",
+        inputTokens: tokens,
+        outputTokens: 0,
+        date: dateStr,
+      });
+    }
+
+    await caller.tokenUsage.push({ records });
+    const result = await caller.tokenUsage.velocity();
+
+    expect(result.hasEnoughData).toBe(true);
+    expect(result.trend).toBe("up");
+  });
+
+  it("returns sparkData array", async () => {
+    const today = new Date();
+    const records = [];
+    for (let i = 2; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0]!;
+      records.push({
+        model: "claude-sonnet-4-5",
+        inputTokens: (3 - i) * 100000,
+        outputTokens: 0,
+        date: dateStr,
+      });
+    }
+
+    await caller.tokenUsage.push({ records });
+    const result = await caller.tokenUsage.velocity();
+
+    expect(result.sparkData.length).toBeGreaterThanOrEqual(2);
+    expect(result.sparkData.every((n: number) => typeof n === "number")).toBe(true);
+  });
+
+  it("projects month-end correctly", async () => {
+    const today = new Date();
+    const records = [];
+    for (let i = 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0]!;
+      records.push({
+        model: "claude-sonnet-4-5",
+        inputTokens: 1000000,
+        outputTokens: 0,
+        date: dateStr,
+      });
+    }
+
+    await caller.tokenUsage.push({ records });
+    const result = await caller.tokenUsage.velocity();
+
+    expect(result.hasEnoughData).toBe(true);
+    expect(result.projectedMonthEnd).toBeGreaterThan(0);
+    expect(result.remainingDays).toBeGreaterThanOrEqual(0);
+  });
+});
+
 describe("healthCheck", () => {
   it("returns OK", async () => {
     const result = await caller.healthCheck();

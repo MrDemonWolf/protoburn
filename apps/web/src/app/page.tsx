@@ -1,4 +1,5 @@
 import { StatsCards } from "@/components/dashboard/stats-cards";
+import { VelocityTicker } from "@/components/dashboard/velocity-ticker";
 import { UsageChart } from "@/components/dashboard/usage-chart";
 import { MostUsedModel } from "@/components/dashboard/most-used-model";
 import { HeatmapCalendar } from "@/components/dashboard/heatmap-calendar";
@@ -14,6 +15,7 @@ export default function Home() {
       <MeltdownShake>
         <main className="container mx-auto flex flex-1 flex-col gap-3 overflow-auto p-3 md:gap-4 md:overflow-hidden md:p-4">
           <StatsCards />
+          <VelocityTicker />
           <div className="grid gap-3 md:grid-cols-[auto_1fr] md:gap-4">
             <MostUsedModel />
             <HeatmapCalendar />

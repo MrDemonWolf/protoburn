@@ -2,6 +2,7 @@ import { z } from "zod";
 import { and, gte, lt, sum } from "drizzle-orm";
 import db, { schema } from "@protoburn/db";
 import { publicProcedure, router } from "../index";
+import { calculateVelocity } from "../lib/velocity";
 
 const tokenUsageRouter = router({
   push: publicProcedure
@@ -162,6 +163,68 @@ const tokenUsageRouter = router({
         cacheReadTokens: r.cacheReadTokens ?? 0,
       }));
     }),
+
+  velocity: publicProcedure.query(async () => {
+    const now = new Date();
+
+    // Last 14 days of daily data
+    const since = new Date();
+    since.setDate(since.getDate() - 14);
+    const sinceStr = since.toISOString().split("T")[0]!;
+
+    const dailyResults = await db
+      .select({
+        date: schema.tokenUsage.date,
+        inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
+        outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+        cacheCreationTokens: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+        cacheReadTokens: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
+      })
+      .from(schema.tokenUsage)
+      .where(gte(schema.tokenUsage.date, sinceStr))
+      .groupBy(schema.tokenUsage.date)
+      .orderBy(schema.tokenUsage.date);
+
+    const dailyPoints = dailyResults.map((r) => ({
+      date: r.date,
+      totalTokens:
+        (r.inputTokens ?? 0) +
+        (r.outputTokens ?? 0) +
+        (r.cacheCreationTokens ?? 0) +
+        (r.cacheReadTokens ?? 0),
+    }));
+
+    // Current month totals
+    const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const [year, month] = monthStr.split("-").map(Number) as [number, number];
+    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    const endDate = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
+
+    const [monthResult] = await db
+      .select({
+        totalInput: sum(schema.tokenUsage.inputTokens).mapWith(Number),
+        totalOutput: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+        totalCacheCreation: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+        totalCacheRead: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
+      })
+      .from(schema.tokenUsage)
+      .where(
+        and(
+          gte(schema.tokenUsage.date, startDate),
+          lt(schema.tokenUsage.date, endDate),
+        ),
+      );
+
+    const monthlyTotal =
+      (monthResult?.totalInput ?? 0) +
+      (monthResult?.totalOutput ?? 0) +
+      (monthResult?.totalCacheCreation ?? 0) +
+      (monthResult?.totalCacheRead ?? 0);
+
+    return calculateVelocity(dailyPoints, monthlyTotal, now);
+  }),
 });
 
 export const appRouter = router({

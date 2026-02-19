@@ -32,6 +32,13 @@ export default defineConfig({
       },
       {
         test: {
+          name: "api",
+          root: "packages/api",
+          include: ["src/**/*.test.ts"],
+        },
+      },
+      {
+        test: {
           name: "scripts",
           root: "scripts",
           include: ["__tests__/**/*.test.ts"],
