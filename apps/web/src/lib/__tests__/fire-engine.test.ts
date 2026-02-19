@@ -12,16 +12,16 @@ describe("tierToConfig", () => {
 
   it("maps spark tier correctly", () => {
     const cfg = tierToConfig(TIERS.spark);
-    expect(cfg.emberCount).toBe(22);
-    expect(cfg.flameCount).toBe(9);
+    expect(cfg.emberCount).toBe(24);
+    expect(cfg.flameCount).toBe(10);
     expect(cfg.sideGlow).toBe(true);
     expect(cfg.bottomGlowHeight).toBeGreaterThan(0);
   });
 
   it("maps meltdown tier to max particles", () => {
     const cfg = tierToConfig(TIERS.meltdown);
-    expect(cfg.emberCount).toBe(132);
-    expect(cfg.flameCount).toBe(66);
+    expect(cfg.emberCount).toBe(145);
+    expect(cfg.flameCount).toBe(73);
     expect(cfg.sideGlow).toBe(true);
     expect(cfg.topGlow).toBe(true);
     expect(cfg.vignetteType).toBe("meltdown");
