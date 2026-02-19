@@ -36,15 +36,32 @@ export function MostUsedModel() {
 
   if (isLoading) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0">
+      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[180px]">
         <CardContent className="py-3">
-          <Skeleton className="h-[88px] w-full" />
+          <div className="flex items-center gap-2 mb-2">
+            <Cpu className="size-4 text-primary" />
+            <span className="text-xs text-muted-foreground">Top Models</span>
+          </div>
+          <Skeleton className="h-5 w-32 mb-1.5" />
+          <Skeleton className="h-4 w-24" />
         </CardContent>
       </Card>
     );
   }
 
-  if (topModels.length === 0) return null;
+  if (topModels.length === 0) {
+    return (
+      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[180px]">
+        <CardContent className="py-3">
+          <div className="flex items-center gap-2">
+            <Cpu className="size-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Top Models</span>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">No usage data yet</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card size="sm" className="md:w-fit md:shrink-0">

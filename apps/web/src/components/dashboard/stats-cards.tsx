@@ -77,21 +77,21 @@ export function StatsCards() {
     <div className="space-y-3 md:space-y-4">
       {/* Top row: Total Tokens + Est. Monthly Cost */}
       <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card size="sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-1">
             <CardTitle className="text-muted-foreground">Total Tokens</CardTitle>
             <Zap className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-7 w-24" />
             ) : (
-              <AnimatedNumber value={formatNumber(totals?.totalTokens ?? 0)} animateKey={animateKey} className="text-xl font-bold sm:text-2xl" />
+              <AnimatedNumber value={formatNumber(totals?.totalTokens ?? 0)} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />
             )}
           </CardContent>
         </Card>
-        <Card className="relative overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card size="sm" className="relative overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-1">
             <CardTitle className="text-muted-foreground">
               Est. Monthly Cost
               {currentMonth && (
@@ -114,9 +114,9 @@ export function StatsCards() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-7 w-24" />
             ) : (
-              <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-xl font-bold sm:text-2xl" />
+              <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />
             )}
           </CardContent>
         </Card>
@@ -124,8 +124,8 @@ export function StatsCards() {
       {/* Bottom row: breakdown cards */}
       <div className="grid gap-3 grid-cols-2 md:gap-4 md:grid-cols-4">
         {breakdownCards.map((card) => (
-          <Card key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <Card size="sm" key={card.title}>
+            <CardHeader className="flex flex-row items-center justify-between pb-1">
               <CardTitle className="text-muted-foreground">
                 {card.title}
               </CardTitle>
@@ -133,9 +133,9 @@ export function StatsCards() {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-7 w-24" />
               ) : (
-                <AnimatedNumber value={card.display} animateKey={animateKey} className="text-xl font-bold sm:text-2xl" />
+                <AnimatedNumber value={card.display} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />
               )}
             </CardContent>
           </Card>

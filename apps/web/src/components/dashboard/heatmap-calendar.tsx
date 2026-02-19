@@ -151,7 +151,9 @@ export function HeatmapCalendar() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-xs">No data yet</p>
+          <div className="flex min-h-[100px] items-center justify-center">
+            <p className="text-muted-foreground text-sm">No usage data yet</p>
+          </div>
         </CardContent>
       </Card>
     );

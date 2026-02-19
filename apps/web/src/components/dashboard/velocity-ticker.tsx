@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { Gauge, TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
@@ -12,10 +12,10 @@ import { formatNumber } from "@/lib/format";
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
   if (trend === "up")
-    return <TrendingUp className="h-4 w-4 text-green-500" />;
+    return <TrendingUp className="h-3.5 w-3.5 text-green-500" />;
   if (trend === "down")
-    return <TrendingDown className="h-4 w-4 text-orange-500" />;
-  return <Minus className="h-4 w-4 text-muted-foreground" />;
+    return <TrendingDown className="h-3.5 w-3.5 text-orange-500" />;
+  return <Minus className="h-3.5 w-3.5 text-muted-foreground" />;
 }
 
 export function VelocityTicker() {
@@ -38,15 +38,13 @@ export function VelocityTicker() {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-muted-foreground">
-            Token Velocity
-          </CardTitle>
-          <Gauge className="h-4 w-4 text-primary" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-6 w-full max-w-xs" />
+      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+        <CardContent className="py-3">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+            <Gauge className="h-3.5 w-3.5 text-primary" />
+            <span className="font-heading font-semibold">Token Velocity</span>
+          </div>
+          <Skeleton className="h-5 w-24" />
         </CardContent>
       </Card>
     );
@@ -54,16 +52,14 @@ export function VelocityTicker() {
 
   if (!data?.hasEnoughData) {
     return (
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-muted-foreground">
-            Token Velocity
-          </CardTitle>
-          <Gauge className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Not enough data — need at least 2 active days
+      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+        <CardContent className="py-3">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+            <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="font-heading font-semibold">Token Velocity</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Need 2+ active days
           </p>
         </CardContent>
       </Card>
@@ -79,39 +75,34 @@ export function VelocityTicker() {
   const monthName = monthEnd.toLocaleDateString("en-US", { month: "short" });
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-muted-foreground">Token Velocity</CardTitle>
-        <Gauge className="h-4 w-4 text-primary" />
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-          {/* Rate + sparkline */}
-          <div className="flex items-center gap-3">
-            <AnimatedNumber
-              value={`~${formatNumber(data.tokensPerHour)}/hr`}
-              animateKey={animateKey}
-              className="text-lg font-bold sm:text-xl"
-            />
-            <SparkLine
-              data={data.sparkData}
-              width={80}
-              height={24}
-              className="text-primary"
-            />
+    <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+      <CardContent className="py-3">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Gauge className="h-3.5 w-3.5 text-primary" />
+            <span className="font-heading font-semibold">Token Velocity</span>
           </div>
-
-          <span className="hidden text-muted-foreground sm:inline">|</span>
-
-          {/* Projection + trend */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Projected:</span>
+          <AnimatedNumber
+            value={`~${formatNumber(data.tokensPerHour)}/hr`}
+            animateKey={animateKey}
+            className="text-lg font-bold"
+          />
+          <SparkLine
+            data={data.sparkData}
+            width={80}
+            height={20}
+            className="text-primary"
+          />
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">Proj:</span>
             <AnimatedNumber
               value={`~${formatNumber(data.projectedMonthEnd)}`}
               animateKey={animateKey}
-              className="text-sm font-semibold"
+              className="text-xs font-semibold"
             />
-            <span className="text-sm text-muted-foreground">
+          </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <span>
               by {monthName} {lastDay}
             </span>
             <TrendIcon trend={data.trend} />
