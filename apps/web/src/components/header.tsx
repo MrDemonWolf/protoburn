@@ -18,6 +18,16 @@ const TIER_COLORS: Record<string, string> = {
   meltdown: "text-red-600",
 };
 
+const TIER_ANIMATIONS: Record<string, string> = {
+  cold: "",
+  spark: "",
+  warm: "animate-flame-flicker",
+  burning: "animate-flame-flicker",
+  blazing: "animate-flame-dance",
+  inferno: "animate-flame-dance",
+  meltdown: "animate-flame-rage",
+};
+
 export default function Header() {
   const { enabled, toggle } = useBurnEnabled();
   const queryClient = useQueryClient();
@@ -62,7 +72,7 @@ export default function Header() {
             aria-label="Toggle fire effects"
             title={enabled ? "Disable fire effects" : "Enable fire effects"}
           >
-            <Flame className={`h-3.5 w-3.5 ${enabled ? "text-orange-500" : "text-muted-foreground"}`} />
+            <Flame className={`h-3.5 w-3.5 ${enabled ? `${TIER_COLORS[tier.name] ?? "text-orange-500"} ${TIER_ANIMATIONS[tier.name] ?? ""}` : "text-muted-foreground"}`} />
             {tier.name !== "cold" && enabled ? (
               <span className={`font-medium capitalize ${TIER_COLORS[tier.name] ?? "text-muted-foreground"}`}>
                 {tier.name}

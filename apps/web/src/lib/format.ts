@@ -12,16 +12,16 @@ export function cleanModelName(model: string) {
     .replace(/-\d{8}$/, "");
 }
 
-export function getFireLevel(cost: number): { flames: number; color: string } {
-  if (cost >= 4000) return { flames: 10, color: "text-red-600" };
-  if (cost >= 3000) return { flames: 9, color: "text-red-500" };
-  if (cost >= 2000) return { flames: 8, color: "text-red-500" };
-  if (cost >= 1500) return { flames: 7, color: "text-red-400" };
-  if (cost >= 1000) return { flames: 6, color: "text-orange-500" };
-  if (cost >= 700) return { flames: 5, color: "text-orange-500" };
-  if (cost >= 400) return { flames: 4, color: "text-orange-400" };
-  if (cost >= 200) return { flames: 3, color: "text-orange-400" };
-  if (cost >= 100) return { flames: 2, color: "text-yellow-500" };
-  if (cost > 0) return { flames: 1, color: "text-yellow-500" };
-  return { flames: 0, color: "text-muted-foreground" };
+export function getFireLevel(cost: number): { flames: number; color: string; animation: string } {
+  if (cost >= 2500) return { flames: 10, color: "text-red-600", animation: "animate-flame-rage" };
+  if (cost >= 2000) return { flames: 9, color: "text-red-500", animation: "animate-flame-rage" };
+  if (cost >= 1500) return { flames: 8, color: "text-red-500", animation: "animate-flame-dance" };
+  if (cost >= 1100) return { flames: 7, color: "text-red-400", animation: "animate-flame-dance" };
+  if (cost >= 800) return { flames: 6, color: "text-orange-500", animation: "animate-flame-dance" };
+  if (cost >= 500) return { flames: 5, color: "text-orange-500", animation: "animate-flame-flicker" };
+  if (cost >= 300) return { flames: 4, color: "text-orange-400", animation: "animate-flame-flicker" };
+  if (cost >= 125) return { flames: 3, color: "text-orange-400", animation: "animate-flame-flicker" };
+  if (cost >= 25) return { flames: 2, color: "text-yellow-500", animation: "" };
+  if (cost > 0) return { flames: 1, color: "text-yellow-500", animation: "" };
+  return { flames: 0, color: "text-muted-foreground", animation: "" };
 }

@@ -59,55 +59,47 @@ describe("getFireLevel", () => {
     const result = getFireLevel(0);
     expect(result.flames).toBe(0);
     expect(result.color).toBe("text-muted-foreground");
+    expect(result.animation).toBe("");
   });
 
   it("returns 1 flame for cost > $0", () => {
     expect(getFireLevel(0.01).flames).toBe(1);
-    expect(getFireLevel(99.99).flames).toBe(1);
+    expect(getFireLevel(0.01).animation).toBe("");
+    expect(getFireLevel(24.99).flames).toBe(1);
   });
 
-  it("returns 2 flames for cost >= $100", () => {
-    expect(getFireLevel(100).flames).toBe(2);
-    expect(getFireLevel(199.99).flames).toBe(2);
+  it("returns 2 flames for cost >= $25", () => {
+    expect(getFireLevel(25).flames).toBe(2);
+    expect(getFireLevel(124.99).flames).toBe(2);
   });
 
-  it("returns 3 flames for cost >= $200", () => {
-    expect(getFireLevel(200).flames).toBe(3);
-    expect(getFireLevel(399.99).flames).toBe(3);
+  it("returns flicker animation for cost >= $125", () => {
+    expect(getFireLevel(125).animation).toBe("animate-flame-flicker");
+    expect(getFireLevel(300).animation).toBe("animate-flame-flicker");
+    expect(getFireLevel(500).animation).toBe("animate-flame-flicker");
   });
 
-  it("returns 4 flames for cost >= $400", () => {
-    expect(getFireLevel(400).flames).toBe(4);
-    expect(getFireLevel(699.99).flames).toBe(4);
+  it("returns dance animation for cost >= $800", () => {
+    expect(getFireLevel(800).animation).toBe("animate-flame-dance");
+    expect(getFireLevel(1100).animation).toBe("animate-flame-dance");
+    expect(getFireLevel(1500).animation).toBe("animate-flame-dance");
   });
 
-  it("returns 5 flames for cost >= $700", () => {
-    expect(getFireLevel(700).flames).toBe(5);
-    expect(getFireLevel(999.99).flames).toBe(5);
+  it("returns rage animation for cost >= $2000", () => {
+    expect(getFireLevel(2000).animation).toBe("animate-flame-rage");
+    expect(getFireLevel(2500).animation).toBe("animate-flame-rage");
   });
 
-  it("returns 6 flames for cost >= $1000", () => {
-    expect(getFireLevel(1000).flames).toBe(6);
-    expect(getFireLevel(1499.99).flames).toBe(6);
-  });
-
-  it("returns 7 flames for cost >= $1500", () => {
-    expect(getFireLevel(1500).flames).toBe(7);
-    expect(getFireLevel(1999.99).flames).toBe(7);
-  });
-
-  it("returns 8 flames for cost >= $2000", () => {
-    expect(getFireLevel(2000).flames).toBe(8);
-    expect(getFireLevel(2999.99).flames).toBe(8);
-  });
-
-  it("returns 9 flames for cost >= $3000", () => {
-    expect(getFireLevel(3000).flames).toBe(9);
-    expect(getFireLevel(3999.99).flames).toBe(9);
-  });
-
-  it("returns 10 flames for cost >= $4000", () => {
-    expect(getFireLevel(4000).flames).toBe(10);
+  it("returns correct flame counts at each threshold", () => {
+    expect(getFireLevel(25).flames).toBe(2);
+    expect(getFireLevel(125).flames).toBe(3);
+    expect(getFireLevel(300).flames).toBe(4);
+    expect(getFireLevel(500).flames).toBe(5);
+    expect(getFireLevel(800).flames).toBe(6);
+    expect(getFireLevel(1100).flames).toBe(7);
+    expect(getFireLevel(1500).flames).toBe(8);
+    expect(getFireLevel(2000).flames).toBe(9);
+    expect(getFireLevel(2500).flames).toBe(10);
     expect(getFireLevel(10000).flames).toBe(10);
   });
 });
