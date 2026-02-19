@@ -6,7 +6,7 @@ export const MODEL_PRICING: Record<string, { inputPerMillion: number; outputPerM
 
 const DEFAULT_PRICING = MODEL_PRICING["sonnet-4-5"]!;
 
-function getTier(model: string): { inputPerMillion: number; outputPerMillion: number; cacheWritePerMillion: number; cacheReadPerMillion: number } {
+export function getTier(model: string): { inputPerMillion: number; outputPerMillion: number; cacheWritePerMillion: number; cacheReadPerMillion: number } {
   for (const [pattern, pricing] of Object.entries(MODEL_PRICING)) {
     if (model.includes(pattern)) return pricing;
   }
