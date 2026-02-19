@@ -63,7 +63,7 @@ export function CacheEfficiency() {
     );
   }
 
-  const models = (modelData ?? []).map((m) => ({
+  const models = (modelData?.models ?? []).map((m) => ({
     model: m.model,
     cacheCreationTokens: m.cacheCreationTokens,
     cacheReadTokens: m.cacheReadTokens,
