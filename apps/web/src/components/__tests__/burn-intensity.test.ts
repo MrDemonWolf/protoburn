@@ -18,62 +18,62 @@ describe("getBurnTier", () => {
   it("returns spark for >= 5M tokens", () => {
     const tier = getBurnTier(5_000_000);
     expect(tier.name).toBe("spark");
-    expect(tier.embers).toBe(20);
-    expect(tier.flames).toBe(8);
+    expect(tier.embers).toBe(22);
+    expect(tier.flames).toBe(9);
     expect(tier.sideGlow).toBe(true);
-    expect(tier.sideGlowWidth).toBe("1.5vw");
+    expect(tier.sideGlowWidth).toBe("2vw");
   });
 
   it("returns warm for >= 100M tokens", () => {
     const tier = getBurnTier(100_000_000);
     expect(tier.name).toBe("warm");
-    expect(tier.embers).toBe(28);
-    expect(tier.flames).toBe(14);
+    expect(tier.embers).toBe(31);
+    expect(tier.flames).toBe(15);
     expect(tier.sideGlow).toBe(true);
-    expect(tier.sideGlowWidth).toBe("3vw");
+    expect(tier.sideGlowWidth).toBe("3.5vw");
   });
 
   it("returns burning for >= 400M tokens", () => {
     const tier = getBurnTier(400_000_000);
     expect(tier.name).toBe("burning");
-    expect(tier.embers).toBe(38);
-    expect(tier.flames).toBe(18);
+    expect(tier.embers).toBe(42);
+    expect(tier.flames).toBe(20);
     expect(tier.sideGlow).toBe(true);
-    expect(tier.sideGlowWidth).toBe("4vw");
+    expect(tier.sideGlowWidth).toBe("4.5vw");
   });
 
   it("returns blazing for >= 1B tokens", () => {
     const tier = getBurnTier(1_000_000_000);
     expect(tier.name).toBe("blazing");
-    expect(tier.embers).toBe(48);
-    expect(tier.flames).toBe(24);
+    expect(tier.embers).toBe(53);
+    expect(tier.flames).toBe(26);
     expect(tier.sideGlow).toBe(true);
-    expect(tier.sideGlowWidth).toBe("5.5vw");
+    expect(tier.sideGlowWidth).toBe("6vw");
     expect(tier.topGlow).toBe(true);
-    expect(tier.topGlowHeight).toBe("8vh");
+    expect(tier.topGlowHeight).toBe("9vh");
   });
 
   it("returns inferno for >= 2B tokens", () => {
     const tier = getBurnTier(2_000_000_000);
     expect(tier.name).toBe("inferno");
-    expect(tier.embers).toBe(55);
-    expect(tier.flames).toBe(28);
+    expect(tier.embers).toBe(60);
+    expect(tier.flames).toBe(31);
     expect(tier.sideGlow).toBe(true);
-    expect(tier.sideGlowWidth).toBe("7vw");
+    expect(tier.sideGlowWidth).toBe("7.5vw");
     expect(tier.topGlow).toBe(true);
-    expect(tier.topGlowHeight).toBe("14vh");
+    expect(tier.topGlowHeight).toBe("15vh");
     expect(tier.isInferno).toBe(true);
   });
 
   it("returns meltdown for >= 3B tokens", () => {
     const tier = getBurnTier(3_000_000_000);
     expect(tier.name).toBe("meltdown");
-    expect(tier.embers).toBe(120);
-    expect(tier.flames).toBe(60);
+    expect(tier.embers).toBe(132);
+    expect(tier.flames).toBe(66);
     expect(tier.sideGlow).toBe(true);
-    expect(tier.sideGlowWidth).toBe("10vw");
+    expect(tier.sideGlowWidth).toBe("11vw");
     expect(tier.topGlow).toBe(true);
-    expect(tier.topGlowHeight).toBe("20vh");
+    expect(tier.topGlowHeight).toBe("22vh");
     expect(tier.isMeltdown).toBe(true);
   });
 

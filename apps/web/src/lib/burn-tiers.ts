@@ -13,12 +13,12 @@ export interface BurnTier {
 }
 
 export const TIERS: Record<string, BurnTier> = {
-  meltdown: { name: "meltdown", embers: 120, flames: 60, glowOpacity: 0.9, glowHeight: "75vh", sideGlow: true, sideGlowWidth: "10vw", topGlow: true, topGlowHeight: "20vh", isMeltdown: true },
-  inferno:  { name: "inferno",  embers: 55,  flames: 28, glowOpacity: 0.6,  glowHeight: "40vh", sideGlow: true, sideGlowWidth: "7vw",  topGlow: true, topGlowHeight: "14vh", isInferno: true },
-  blazing:  { name: "blazing",  embers: 48,  flames: 24, glowOpacity: 0.5,  glowHeight: "35vh", sideGlow: true, sideGlowWidth: "5.5vw", topGlow: true, topGlowHeight: "8vh" },
-  burning:  { name: "burning",  embers: 38,  flames: 18, glowOpacity: 0.42, glowHeight: "28vh", sideGlow: true, sideGlowWidth: "4vw",  topGlow: false, topGlowHeight: "0" },
-  warm:     { name: "warm",     embers: 28,  flames: 14, glowOpacity: 0.35, glowHeight: "22vh", sideGlow: true, sideGlowWidth: "3vw",  topGlow: false, topGlowHeight: "0" },
-  spark:    { name: "spark",    embers: 20,  flames: 8,  glowOpacity: 0.25, glowHeight: "15vh", sideGlow: true, sideGlowWidth: "1.5vw", topGlow: false, topGlowHeight: "0" },
+  meltdown: { name: "meltdown", embers: 132, flames: 66, glowOpacity: 0.95, glowHeight: "80vh", sideGlow: true, sideGlowWidth: "11vw", topGlow: true, topGlowHeight: "22vh", isMeltdown: true },
+  inferno:  { name: "inferno",  embers: 60,  flames: 31, glowOpacity: 0.66, glowHeight: "44vh", sideGlow: true, sideGlowWidth: "7.5vw", topGlow: true, topGlowHeight: "15vh", isInferno: true },
+  blazing:  { name: "blazing",  embers: 53,  flames: 26, glowOpacity: 0.55, glowHeight: "38vh", sideGlow: true, sideGlowWidth: "6vw",  topGlow: true, topGlowHeight: "9vh" },
+  burning:  { name: "burning",  embers: 42,  flames: 20, glowOpacity: 0.46, glowHeight: "31vh", sideGlow: true, sideGlowWidth: "4.5vw", topGlow: false, topGlowHeight: "0" },
+  warm:     { name: "warm",     embers: 31,  flames: 15, glowOpacity: 0.38, glowHeight: "24vh", sideGlow: true, sideGlowWidth: "3.5vw", topGlow: false, topGlowHeight: "0" },
+  spark:    { name: "spark",    embers: 22,  flames: 9,  glowOpacity: 0.28, glowHeight: "17vh", sideGlow: true, sideGlowWidth: "2vw",  topGlow: false, topGlowHeight: "0" },
   cold:     { name: "cold",     embers: 0,   flames: 0,  glowOpacity: 0,    glowHeight: "0",    sideGlow: false, sideGlowWidth: "0",   topGlow: false, topGlowHeight: "0" },
 };
 
