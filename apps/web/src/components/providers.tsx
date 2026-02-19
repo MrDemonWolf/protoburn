@@ -9,6 +9,7 @@ import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "./ui/sonner";
 import { BurnEnabledProvider } from "./burn-intensity";
 import { TabTitle } from "./tab-title";
+import { KeyboardShortcuts } from "./keyboard-shortcuts";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +17,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <BurnEnabledProvider>
           <TabTitle />
+          <KeyboardShortcuts />
           {children}
         </BurnEnabledProvider>
         <ReactQueryDevtools />
