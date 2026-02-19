@@ -43,7 +43,15 @@ export function KonamiEasterEgg() {
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (activated) return;
+      if (activated) {
+        if (e.key === "Escape") {
+          if (timerRef.current) clearTimeout(timerRef.current);
+          setActivated(false);
+          setPhase(0);
+          phaseRef.current = 0;
+        }
+        return;
+      }
 
       const newSequence = [...sequence, e.key].slice(-KONAMI_CODE.length);
       setSequence(newSequence);

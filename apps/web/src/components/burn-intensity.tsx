@@ -6,8 +6,13 @@ import { trpc } from "@/utils/trpc";
 import { getBurnTier, TIERS, type BurnTier } from "@/lib/burn-tiers";
 import { BurnCanvas } from "@/components/burn-canvas";
 
-// Context for toggle state
-const BurnEnabledContext = createContext({ enabled: true, toggle: () => {} });
+// Context for toggle state + tier override
+const BurnEnabledContext = createContext({
+  enabled: true,
+  toggle: () => {},
+  tierOverride: null as string | null,
+  setTierOverride: (_tier: string | null) => {},
+});
 
 export function useBurnEnabled() {
   return useContext(BurnEnabledContext);
@@ -20,6 +25,8 @@ export function BurnEnabledProvider({ children }: { children: React.ReactNode })
     return stored === null ? true : stored === "true";
   });
 
+  const [tierOverride, setTierOverride] = useState<string | null>(null);
+
   const toggle = () => {
     setEnabled((prev) => {
       const next = !prev;
@@ -29,7 +36,7 @@ export function BurnEnabledProvider({ children }: { children: React.ReactNode })
   };
 
   return (
-    <BurnEnabledContext value={{ enabled, toggle }}>
+    <BurnEnabledContext value={{ enabled, toggle, tierOverride, setTierOverride }}>
       {children}
     </BurnEnabledContext>
   );
@@ -46,8 +53,10 @@ function getQueryParamTier(): BurnTier | null {
 }
 
 export function useEffectiveTier(monthlyTokens: number): BurnTier {
-  const override = useMemo(() => getQueryParamTier(), []);
-  return override ?? getBurnTier(monthlyTokens);
+  const queryParamOverride = useMemo(() => getQueryParamTier(), []);
+  const { tierOverride } = useBurnEnabled();
+  const contextOverride = tierOverride && tierOverride in TIERS ? TIERS[tierOverride] : null;
+  return queryParamOverride ?? contextOverride ?? getBurnTier(monthlyTokens);
 }
 
 function MeltdownOverlays() {

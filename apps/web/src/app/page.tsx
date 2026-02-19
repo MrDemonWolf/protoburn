@@ -33,6 +33,9 @@ export default function Home() {
             >
               {env.NEXT_PUBLIC_OWNER_NAME}
             </a>
+            <span className="hidden sm:inline">
+              {" · "}Press <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">?</kbd> for shortcuts
+            </span>
           </div>
         </footer>
       </MeltdownShake>
