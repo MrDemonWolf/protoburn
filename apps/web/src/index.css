@@ -167,6 +167,24 @@
     inset 0 1px 0 0 var(--glass-highlight);
 }
 
+/* Glass bar: header/footer chrome — more opaque, no card bg, luminous edge */
+.glass-bar {
+  --_bar-bg: oklch(0.97 0.005 250 / 72%);
+  --_bar-border: oklch(0 0 0 / 6%);
+  --_bar-edge: oklch(1 0 0 / 50%);
+  background: var(--_bar-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    0 1px 3px oklch(0 0 0 / 4%),
+    inset 0 1px 0 0 var(--_bar-edge);
+}
+:is(.dark) .glass-bar {
+  --_bar-bg: oklch(0.14 0.02 260 / 65%);
+  --_bar-border: oklch(1 0 0 / 8%);
+  --_bar-edge: oklch(1 0 0 / 12%);
+}
+
 /* Specular top-edge highlight */
 .glass-specular {
   position: relative;

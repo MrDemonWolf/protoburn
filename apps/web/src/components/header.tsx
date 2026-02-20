@@ -50,7 +50,7 @@ export default function Header() {
   };
 
   return (
-    <div className="sticky top-0 z-20 border-b border-[var(--glass-border)] bg-card backdrop-blur-xl backdrop-saturate-[180%]">
+    <div className="glass-bar sticky top-0 z-20 border-b border-[var(--_bar-border)]">
       <div className="container mx-auto flex items-center justify-between px-4 py-2 md:py-2.5">
         <Link href="/" className="flex items-center gap-2 font-heading text-base font-bold tracking-tight md:text-lg">
           <Flame className="h-5 w-5 text-primary" />

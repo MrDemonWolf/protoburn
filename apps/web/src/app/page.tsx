@@ -28,7 +28,7 @@ export default function Home() {
             <HeatmapCalendar />
           </div>
         </main>
-        <footer className="relative z-20 border-t border-[var(--glass-border)] bg-card backdrop-blur-xl backdrop-saturate-[180%] py-3">
+        <footer className="glass-bar relative z-20 border-t border-[var(--_bar-border)] py-3">
           <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
             &copy; {year}{" "}
             <a
