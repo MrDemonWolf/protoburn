@@ -333,7 +333,7 @@ export async function generateOgImage(_c: Context): Promise<Response> {
     ],
   });
 
-  const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } });
+  const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 2400 } });
   const png = resvg.render().asPng();
 
   return new Response(png, {
