@@ -20,8 +20,8 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  metadataBase: process.env.NEXT_PUBLIC_SERVER_URL
-    ? new URL(process.env.NEXT_PUBLIC_SERVER_URL)
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
     : undefined,
   title: "ProtoBurn — Claude API Cost & Usage Dashboard",
   description:

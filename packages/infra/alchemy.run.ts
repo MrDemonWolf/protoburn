@@ -45,6 +45,7 @@ export const web = await Website("protoburn", {
     command: "pnpm build",
     env: {
       NEXT_PUBLIC_SERVER_URL: serverUrl,
+      NEXT_PUBLIC_SITE_URL: process.env.SITE_URL ?? "https://protoburn.mrdemonwolf.workers.dev",
       NEXT_PUBLIC_API_PLAN: process.env.API_PLAN ?? "Max",
     },
   },
