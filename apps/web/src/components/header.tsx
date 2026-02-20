@@ -50,7 +50,7 @@ export default function Header() {
   };
 
   return (
-    <div className="relative z-20 border-b bg-background/80 backdrop-blur-md">
+    <div className="glass-bar sticky top-0 z-20 border-b border-[var(--_bar-border)]">
       <div className="container mx-auto flex items-center justify-between px-4 py-2 md:py-2.5">
         <Link href="/" className="flex items-center gap-2 font-heading text-base font-bold tracking-tight md:text-lg">
           <Flame className="h-5 w-5 text-primary" />
@@ -60,7 +60,7 @@ export default function Header() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-border transition-colors hover:bg-accent disabled:opacity-50"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent disabled:opacity-50"
             aria-label="Refresh data"
             title="Refresh data"
           >
@@ -68,7 +68,7 @@ export default function Header() {
           </button>
           <button
             onClick={toggle}
-            className="flex h-8 items-center gap-1.5 rounded-full border border-border px-2.5 text-xs transition-colors hover:bg-accent"
+            className="flex h-8 items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm px-2.5 text-xs transition-colors hover:bg-accent"
             aria-label="Toggle fire effects"
             title={enabled ? "Disable fire effects" : "Enable fire effects"}
           >

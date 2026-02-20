@@ -270,7 +270,7 @@ export function MeltdownShake({ children }: { children: ReactNode }) {
 
   return (
     <div
-      className="flex flex-1 flex-col overflow-hidden"
+      className="flex flex-1 flex-col overflow-auto"
       style={isMeltdown ? { animation: "screenShake 0.15s linear infinite" } : undefined}
     >
       {children}

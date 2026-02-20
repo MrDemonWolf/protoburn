@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
 import { formatNumber } from "@/lib/format";
 import { calculateCost } from "@/lib/pricing";
+import { cn } from "@/lib/utils";
 
 const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
 const MONTH_NAMES = [
@@ -59,7 +60,7 @@ function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLa
 
   const today = new Date();
   const start = new Date(today);
-  start.setDate(start.getDate() - 89);
+  start.setDate(start.getDate() - 179);
 
   // Align start to Monday
   const startDay = start.getDay();
@@ -105,9 +106,9 @@ function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLa
   return { cells, weeks, monthLabels };
 }
 
-export function HeatmapCalendar() {
+export function HeatmapCalendar({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 90 }),
+    trpc.tokenUsage.timeSeries.queryOptions({ days: 180 }),
   );
 
   const processed = useMemo(() => {
@@ -127,7 +128,7 @@ export function HeatmapCalendar() {
 
   if (isLoading) {
     return (
-      <Card size="sm">
+      <Card size="sm" className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="size-4" />
@@ -143,7 +144,7 @@ export function HeatmapCalendar() {
 
   if (!processed || processed.days.length === 0) {
     return (
-      <Card size="sm">
+      <Card size="sm" className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="size-4" />
@@ -162,12 +163,12 @@ export function HeatmapCalendar() {
   const { cells, weeks, maxTokens, monthLabels } = processed;
 
   return (
-    <Card size="sm">
+    <Card size="sm" className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="size-4" />
           Daily Usage
-          <span className="text-muted-foreground text-xs font-normal">Last 90 days</span>
+          <span className="text-muted-foreground text-xs font-normal">Last 6 months</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -208,7 +209,7 @@ export function HeatmapCalendar() {
                     return (
                       <div
                         key={`${row}-${col}`}
-                        className="size-[10px] md:size-[14px] rounded-sm"
+                        className="size-[10px] md:size-[14px] rounded-[3px]"
                       />
                     );
                   }
@@ -224,7 +225,7 @@ export function HeatmapCalendar() {
                   return (
                     <Tooltip.Root key={`${row}-${col}`}>
                       <Tooltip.Trigger
-                        className="size-[10px] md:size-[14px] rounded-sm bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                        className="size-[10px] md:size-[14px] rounded-[3px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                         style={bgColor ? { backgroundColor: bgColor } : undefined}
                         aria-label={tooltipText.replace("\n", ", ")}
                         tabIndex={0}
@@ -232,7 +233,7 @@ export function HeatmapCalendar() {
                       />
                       <Tooltip.Portal>
                         <Tooltip.Positioner sideOffset={4}>
-                          <Tooltip.Popup className="rounded-md bg-popover px-2 py-1.5 text-[11px] text-popover-foreground shadow-md ring-1 ring-border whitespace-pre-line max-w-[220px]">
+                          <Tooltip.Popup className="rounded-xl bg-card px-2 py-1.5 text-[11px] text-popover-foreground shadow-md border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%] whitespace-pre-line max-w-[220px]">
                             {tooltipText}
                           </Tooltip.Popup>
                         </Tooltip.Positioner>
@@ -248,11 +249,11 @@ export function HeatmapCalendar() {
         {/* Legend */}
         <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
           <span>Less</span>
-          <div className="size-[10px] md:size-[14px] rounded-sm bg-muted" />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[0] }} />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[1] }} />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[2] }} />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[3] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px] bg-muted" />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[0] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[1] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[2] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[3] }} />
           <span>More</span>
         </div>
       </CardContent>

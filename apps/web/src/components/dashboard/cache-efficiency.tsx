@@ -15,6 +15,7 @@ import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
 import { trpc } from "@/utils/trpc";
 import { computeCacheAnalytics } from "@/lib/cache-analytics";
+import { cn } from "@/lib/utils";
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
   if (trend === "up")
@@ -24,7 +25,7 @@ function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
   return <Minus className="h-3.5 w-3.5 text-muted-foreground" />;
 }
 
-export function CacheEfficiency() {
+export function CacheEfficiency({ className }: { className?: string }) {
   const { data: modelData, isLoading: modelsLoading } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );
@@ -49,7 +50,7 @@ export function CacheEfficiency() {
 
   if (isLoading) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}>
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Layers className="h-3.5 w-3.5 text-purple-500" />
@@ -79,7 +80,7 @@ export function CacheEfficiency() {
 
   if (!analytics.hasCacheData) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}>
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Layers className="h-3.5 w-3.5 text-muted-foreground" />

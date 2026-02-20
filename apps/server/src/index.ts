@@ -3,6 +3,7 @@ import { createContext } from "@protoburn/api/context";
 import { appRouter } from "@protoburn/api/routers/index";
 import db, { schema } from "@protoburn/db";
 import { env } from "@protoburn/env/server";
+import { sql, lt, sum } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -99,4 +100,74 @@ app.get("/", (c) => {
   return c.text("OK");
 });
 
-export default app;
+export { app };
+
+export default {
+  fetch: app.fetch,
+  async scheduled(
+    _event: ScheduledEvent,
+    env: Env,
+    ctx: ExecutionContext,
+  ) {
+    const renewalDay = parseInt(env.BILLING_RENEWAL_DAY ?? "6", 10);
+    const today = new Date();
+    if (today.getUTCDate() !== renewalDay) return;
+
+    // Calculate the start of the current billing period
+    const periodStart = new Date(
+      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), renewalDay),
+    );
+    const cutoffDate = periodStart.toISOString().split("T")[0]!;
+
+    ctx.waitUntil(
+      (async () => {
+        // 1. Aggregate daily rows older than current billing period into monthlyUsage
+        //    Group by model + YYYY-MM and upsert (INSERT OR REPLACE)
+        const oldRows = await db
+          .select({
+            model: schema.tokenUsage.model,
+            month: sql<string>`substr(${schema.tokenUsage.date}, 1, 7)`,
+            inputTokens: sum(schema.tokenUsage.inputTokens).mapWith(Number),
+            outputTokens: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+            cacheCreationTokens: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+            cacheReadTokens: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
+          })
+          .from(schema.tokenUsage)
+          .where(lt(schema.tokenUsage.date, cutoffDate))
+          .groupBy(schema.tokenUsage.model, sql`substr(${schema.tokenUsage.date}, 1, 7)`);
+
+        // Upsert each aggregated row into monthlyUsage
+        for (const row of oldRows) {
+          await db
+            .insert(schema.monthlyUsage)
+            .values({
+              model: row.model,
+              month: row.month,
+              inputTokens: row.inputTokens ?? 0,
+              outputTokens: row.outputTokens ?? 0,
+              cacheCreationTokens: row.cacheCreationTokens ?? 0,
+              cacheReadTokens: row.cacheReadTokens ?? 0,
+            })
+            .onConflictDoUpdate({
+              target: [schema.monthlyUsage.model, schema.monthlyUsage.month],
+              set: {
+                inputTokens: sql`excluded.input_tokens`,
+                outputTokens: sql`excluded.output_tokens`,
+                cacheCreationTokens: sql`excluded.cache_creation_tokens`,
+                cacheReadTokens: sql`excluded.cache_read_tokens`,
+              },
+            });
+        }
+
+        // 2. Delete daily rows older than the current billing period
+        await db
+          .delete(schema.tokenUsage)
+          .where(lt(schema.tokenUsage.date, cutoffDate));
+
+        console.log(
+          `[scheduled] Aggregated ${oldRows.length} model-month groups and cleaned up daily rows before ${cutoffDate}`,
+        );
+      })(),
+    );
+  },
+};

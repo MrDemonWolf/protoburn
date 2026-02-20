@@ -27,7 +27,9 @@ export const server = await Worker("server", {
     API_KEY: alchemy.env.API_KEY ?? "",
     OWNER_SITE: alchemy.env.OWNER_SITE ?? "mrdemonwolf.com",
     API_PLAN: process.env.API_PLAN ?? "Max",
+    BILLING_RENEWAL_DAY: process.env.BILLING_RENEWAL_DAY ?? "6",
   },
+  crons: ["0 0 * * *"],
   dev: {
     port: 3000,
   },
