@@ -46,7 +46,7 @@ export function UsageChart() {
   );
 
   return (
-    <Card className="flex min-h-[250px] flex-col md:flex-1">
+    <Card className="flex min-h-[250px] flex-col">
       <CardHeader className="pb-2">
         <CardTitle>Daily Token Usage</CardTitle>
       </CardHeader>

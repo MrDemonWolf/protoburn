@@ -21,10 +21,12 @@ export default function Home() {
             <MostUsedModel className="col-span-2 sm:col-span-3 md:col-span-1" />
             <VelocityTicker />
             <CacheEfficiency />
-            <MonthlyAchievements className="col-span-2 sm:col-span-1 md:col-span-3" />
-            <HeatmapCalendar className="col-span-2 sm:col-span-3 md:col-start-4 md:row-start-1 md:row-span-2" />
+            <MonthlyAchievements className="col-span-2 sm:col-span-1 md:col-span-1" />
           </div>
-          <UsageChart />
+          <div className="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-2 md:gap-4 md:flex-1">
+            <UsageChart />
+            <HeatmapCalendar />
+          </div>
         </main>
         <footer className="relative z-20 border-t bg-background/80 backdrop-blur-md py-3">
           <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
