@@ -6,6 +6,7 @@ import { createFireProgram, type FireProgram } from "@/lib/fire-shaders";
 import { renderFireShader, renderParticles, renderFallback } from "@/lib/fire-renderer";
 import { FireEngine, tierToConfig, type TierConfig } from "@/lib/fire-engine";
 import { TIERS } from "@/lib/burn-tiers";
+import { useSoundEnabled } from "./sound-provider";
 
 const KONAMI_CODE = [
   "ArrowUp",
@@ -32,6 +33,7 @@ export function KonamiEasterEgg() {
   const [activated, setActivated] = useState(false);
   const [phase, setPhase] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const { engine: soundEngine } = useSoundEnabled();
 
   // WebGL refs
   const glCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -63,6 +65,7 @@ export function KonamiEasterEgg() {
         setActivated(true);
         setPhase(0);
         phaseRef.current = 0;
+        soundEngine?.playKonamiExplosion();
 
         // Phase transitions for dramatic timing
         setTimeout(() => { setPhase(1); phaseRef.current = 1; }, 300);
@@ -77,7 +80,7 @@ export function KonamiEasterEgg() {
         setSequence([]);
       }
     },
-    [sequence, activated],
+    [sequence, activated, soundEngine],
   );
 
   useEffect(() => {

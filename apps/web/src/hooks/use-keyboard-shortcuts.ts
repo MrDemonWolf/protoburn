@@ -6,6 +6,7 @@ export interface ShortcutActions {
   onRefresh: () => void;
   onToggleTheme: () => void;
   onToggleFire: () => void;
+  onToggleSound: () => void;
   onPreviewTier: (tier: number) => void;
   onToggleHelp: () => void;
   onEscape: () => void;
@@ -37,6 +38,11 @@ export function useKeyboardShortcuts(actions: ShortcutActions) {
         case "F":
           e.preventDefault();
           actions.onToggleFire();
+          break;
+        case "s":
+        case "S":
+          e.preventDefault();
+          actions.onToggleSound();
           break;
         case "1":
         case "2":

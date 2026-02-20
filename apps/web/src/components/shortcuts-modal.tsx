@@ -6,6 +6,7 @@ const SHORTCUTS = [
   { key: "R", description: "Refresh data" },
   { key: "T", description: "Toggle theme" },
   { key: "F", description: "Toggle fire effects" },
+  { key: "S", description: "Toggle sound effects" },
   { key: "1–7", description: "Preview burn tier" },
   { key: "Esc", description: "Clear preview / close" },
   { key: "?", description: "Toggle this help" },

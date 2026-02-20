@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { useKeyboardShortcuts, type ShortcutActions } from "@/hooks/use-keyboard-shortcuts";
 import { useBurnEnabled } from "./burn-intensity";
+import { useSoundEnabled } from "./sound-provider";
 import { ShortcutsModal } from "./shortcuts-modal";
 
 const TIER_NAMES = ["cold", "spark", "warm", "burning", "blazing", "inferno", "meltdown"] as const;
@@ -13,6 +14,7 @@ export function KeyboardShortcuts() {
   const queryClient = useQueryClient();
   const { resolvedTheme, setTheme } = useTheme();
   const { toggle, tierOverride, setTierOverride } = useBurnEnabled();
+  const { toggle: toggleSound } = useSoundEnabled();
   const [helpOpen, setHelpOpen] = useState(false);
 
   const actions: ShortcutActions = useMemo(
@@ -20,6 +22,7 @@ export function KeyboardShortcuts() {
       onRefresh: () => queryClient.invalidateQueries(),
       onToggleTheme: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
       onToggleFire: toggle,
+      onToggleSound: toggleSound,
       onPreviewTier: (n: number) => {
         const name = TIER_NAMES[n - 1];
         if (!name) return;
@@ -34,7 +37,7 @@ export function KeyboardShortcuts() {
         }
       },
     }),
-    [queryClient, resolvedTheme, setTheme, toggle, tierOverride, setTierOverride, helpOpen],
+    [queryClient, resolvedTheme, setTheme, toggle, toggleSound, tierOverride, setTierOverride, helpOpen],
   );
 
   useKeyboardShortcuts(actions);

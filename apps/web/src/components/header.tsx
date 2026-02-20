@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { Flame, RefreshCw } from "lucide-react";
+import { Flame, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { ModeToggle } from "./mode-toggle";
 import { useBurnEnabled, useEffectiveTier } from "./burn-intensity";
+import { useSoundEnabled } from "./sound-provider";
 import { trpc } from "@/utils/trpc";
 
 const TIER_COLORS: Record<string, string> = {
@@ -30,6 +31,7 @@ const TIER_ANIMATIONS: Record<string, string> = {
 
 export default function Header() {
   const { enabled, toggle } = useBurnEnabled();
+  const { enabled: soundEnabled, toggle: toggleSound, engine: soundEngine } = useSoundEnabled();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -45,6 +47,7 @@ export default function Header() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
+    soundEngine?.playClick();
     await queryClient.invalidateQueries();
     setTimeout(() => setRefreshing(false), 600);
   };
@@ -79,6 +82,21 @@ export default function Header() {
               </span>
             ) : (
               <span className="text-muted-foreground">{enabled ? "On" : "Off"}</span>
+            )}
+          </button>
+          <button
+            onClick={() => {
+              soundEngine?.ensureContext();
+              toggleSound();
+            }}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent"
+            aria-label="Toggle sound effects"
+            title={soundEnabled ? "Disable sound effects" : "Enable sound effects"}
+          >
+            {soundEnabled ? (
+              <Volume2 className="h-3.5 w-3.5 text-muted-foreground" />
+            ) : (
+              <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />
             )}
           </button>
           <ModeToggle />
