@@ -12,9 +12,13 @@ import { BADGE_DEFINITIONS, evaluateBadges, getEarnedCount } from "@/lib/achieve
 import { cn } from "@/lib/utils";
 
 export function MonthlyAchievements({ className }: { className?: string }) {
-  const { data: modelData, isLoading } = useQuery(
+  const { data: modelData, isLoading: isLoadingModels } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );
+  const { data: timeSeriesData, isLoading: isLoadingTimeSeries } = useQuery(
+    trpc.tokenUsage.timeSeries.queryOptions({ days: 30 }),
+  );
+  const isLoading = isLoadingModels || isLoadingTimeSeries;
 
   const isFetching = useIsFetching();
   const wasFetchingRef = useRef(false);
@@ -42,8 +46,13 @@ export function MonthlyAchievements({ className }: { className?: string }) {
       (s, m) => s + m.totalTokens,
       0,
     );
-    return evaluateBadges({ totalTokens, models });
-  }, [modelData]);
+    const timeSeries = timeSeriesData?.map((d) => ({
+      date: d.date,
+      inputTokens: d.inputTokens,
+      outputTokens: d.outputTokens,
+    }));
+    return evaluateBadges({ totalTokens, models, timeSeries });
+  }, [modelData, timeSeriesData]);
 
   const earnedCount = getEarnedCount(earned);
 
@@ -74,7 +83,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
             animateKey={animateKey}
             className="text-sm font-bold"
           />
-          <div className="grid grid-cols-6 gap-1.5 md:grid-cols-9">
+          <div className="grid grid-cols-6 gap-1.5 md:grid-cols-10">
             {BADGE_DEFINITIONS.map((badge) => {
               const isEarned = earned.has(badge.id);
               return (
