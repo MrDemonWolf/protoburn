@@ -60,7 +60,7 @@ function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLa
 
   const today = new Date();
   const start = new Date(today);
-  start.setDate(start.getDate() - 89);
+  start.setDate(start.getDate() - 179);
 
   // Align start to Monday
   const startDay = start.getDay();
@@ -108,7 +108,7 @@ function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLa
 
 export function HeatmapCalendar({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 90 }),
+    trpc.tokenUsage.timeSeries.queryOptions({ days: 180 }),
   );
 
   const processed = useMemo(() => {
@@ -168,7 +168,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         <CardTitle className="flex items-center gap-2">
           <Calendar className="size-4" />
           Daily Usage
-          <span className="text-muted-foreground text-xs font-normal">Last 90 days</span>
+          <span className="text-muted-foreground text-xs font-normal">Last 6 months</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
