@@ -30,7 +30,15 @@ export default function Home() {
         </main>
         <footer className="relative z-20 border-t border-[var(--glass-border)] bg-card backdrop-blur-xl backdrop-saturate-[180%] py-3">
           <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
-            &copy; {year} ProtoBurn by{" "}
+            &copy; {year}{" "}
+            <a
+              href="https://github.com/MrDemonWolf/protoburn"
+              className="font-bold text-foreground hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ProtoBurn
+            </a>{" "}by{" "}
             <a
               href={env.NEXT_PUBLIC_OWNER_URL}
               className="font-bold text-foreground hover:underline"
