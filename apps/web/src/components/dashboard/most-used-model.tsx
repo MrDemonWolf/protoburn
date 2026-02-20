@@ -37,7 +37,7 @@ export function MostUsedModel({ className }: { className?: string }) {
 
   if (isLoading) {
     return (
-      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[180px]", className)}>
+      <Card size="sm" className={cn("", className)}>
         <CardContent className="py-3">
           <div className="flex items-center gap-2 mb-2">
             <Cpu className="size-4 text-primary" />
@@ -52,7 +52,7 @@ export function MostUsedModel({ className }: { className?: string }) {
 
   if (topModels.length === 0) {
     return (
-      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[180px]", className)}>
+      <Card size="sm" className={cn("", className)}>
         <CardContent className="py-3">
           <div className="flex items-center gap-2">
             <Cpu className="size-4 text-muted-foreground" />
@@ -65,7 +65,7 @@ export function MostUsedModel({ className }: { className?: string }) {
   }
 
   return (
-    <Card size="sm" className={cn("md:w-fit md:shrink-0", className)}>
+    <Card size="sm" className={cn(className)}>
       <CardContent className="py-3">
         <div className="flex items-center gap-2">
           <Cpu className="size-4 text-primary" />

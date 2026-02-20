@@ -50,7 +50,7 @@ export function CacheEfficiency({ className }: { className?: string }) {
 
   if (isLoading) {
     return (
-      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}>
+      <Card size="sm" className={cn("", className)}>
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Layers className="h-3.5 w-3.5 text-purple-500" />
@@ -80,7 +80,7 @@ export function CacheEfficiency({ className }: { className?: string }) {
 
   if (!analytics.hasCacheData) {
     return (
-      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}>
+      <Card size="sm" className={cn("", className)}>
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Layers className="h-3.5 w-3.5 text-muted-foreground" />
@@ -97,7 +97,7 @@ export function CacheEfficiency({ className }: { className?: string }) {
   const ratioPercent = (analytics.hitRatio * 100).toFixed(1);
 
   return (
-    <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+    <Card size="sm" className="">
       <CardContent className="py-3">
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

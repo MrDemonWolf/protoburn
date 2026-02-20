@@ -76,7 +76,7 @@ export function OutputRatio({ className }: { className?: string }) {
     return (
       <Card
         size="sm"
-        className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}
+        className={cn("", className)}
       >
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -93,7 +93,7 @@ export function OutputRatio({ className }: { className?: string }) {
     return (
       <Card
         size="sm"
-        className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}
+        className={cn("", className)}
       >
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -126,7 +126,7 @@ export function OutputRatio({ className }: { className?: string }) {
   return (
     <Card
       size="sm"
-      className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}
+      className={cn("", className)}
     >
       <CardContent className="py-3">
         <div className="flex flex-col gap-1.5">
