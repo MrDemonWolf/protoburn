@@ -18,6 +18,18 @@ sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_date ON token_usage(date);
   CREATE INDEX IF NOT EXISTS idx_model ON token_usage(model);
   CREATE INDEX IF NOT EXISTS idx_model_date ON token_usage(model, date);
+
+  CREATE TABLE IF NOT EXISTS monthly_usage (
+    id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+    model TEXT NOT NULL,
+    month TEXT NOT NULL,
+    input_tokens INTEGER NOT NULL DEFAULT 0,
+    output_tokens INTEGER NOT NULL DEFAULT 0,
+    cache_creation_tokens INTEGER NOT NULL DEFAULT 0,
+    cache_read_tokens INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_monthly_model_month ON monthly_usage(model, month);
 `);
 
 const db = drizzle(sqlite, { schema });

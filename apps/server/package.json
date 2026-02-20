@@ -13,6 +13,7 @@
     "@protoburn/api": "workspace:*",
     "@protoburn/db": "workspace:*",
     "@protoburn/env": "workspace:*",
+    "drizzle-orm": "^0.45.1",
     "@trpc/server": "catalog:",
     "dotenv": "catalog:",
     "hono": "catalog:",

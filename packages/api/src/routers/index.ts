@@ -164,6 +164,31 @@ const tokenUsageRouter = router({
       }));
     }),
 
+  monthlyHistory: publicProcedure.query(async () => {
+    const results = await db
+      .select({
+        model: schema.monthlyUsage.model,
+        month: schema.monthlyUsage.month,
+        inputTokens: schema.monthlyUsage.inputTokens,
+        outputTokens: schema.monthlyUsage.outputTokens,
+        cacheCreationTokens: schema.monthlyUsage.cacheCreationTokens,
+        cacheReadTokens: schema.monthlyUsage.cacheReadTokens,
+      })
+      .from(schema.monthlyUsage)
+      .orderBy(schema.monthlyUsage.month);
+
+    return results.map((r) => ({
+      model: r.model,
+      month: r.month,
+      inputTokens: r.inputTokens,
+      outputTokens: r.outputTokens,
+      cacheCreationTokens: r.cacheCreationTokens,
+      cacheReadTokens: r.cacheReadTokens,
+      totalTokens:
+        r.inputTokens + r.outputTokens + r.cacheCreationTokens + r.cacheReadTokens,
+    }));
+  }),
+
   velocity: publicProcedure.query(async () => {
     const now = new Date();
 
