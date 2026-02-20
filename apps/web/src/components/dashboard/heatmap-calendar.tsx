@@ -9,9 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
 import { formatNumber } from "@/lib/format";
 import { calculateCost } from "@/lib/pricing";
-import { cn } from "@/lib/utils";
 
-const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTH_NAMES = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -54,7 +53,12 @@ interface GridCell {
   data: DayData | null;
 }
 
-function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLabels: { label: string; col: number }[] } {
+interface WeekRow {
+  cells: GridCell[];
+  monthLabel: string | null;
+}
+
+function buildGrid(days: DayData[]): { weeks: WeekRow[]; maxTokens: number } {
   const lookup = new Map<string, DayData>();
   for (const d of days) lookup.set(d.date, d);
 
@@ -68,42 +72,62 @@ function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLa
   const gridStart = new Date(start);
   gridStart.setDate(gridStart.getDate() + mondayOffset);
 
-  const cells: GridCell[] = [];
-  const monthLabels: { label: string; col: number }[] = [];
-  const seenMonths = new Set<string>();
-
+  // Build week rows (each week = 7 cells, Mon-Sun)
+  const weekRows: WeekRow[] = [];
   const current = new Date(gridStart);
-  let col = 0;
 
   while (current <= today) {
-    const dateStr = toLocalDateStr(current);
-    const isBeforeRange = current < start;
+    const cells: GridCell[] = [];
+    const weekMonday = new Date(current);
 
-    // Advance column on each new Monday (except the first)
-    if (current.getDay() === 1 && cells.length > 0 && cells.length % 7 === 0) {
-      col++;
-    }
+    for (let d = 0; d < 7; d++) {
+      const dateStr = toLocalDateStr(current);
+      const isBeforeRange = current < start;
+      const isPastToday = current > today;
 
-    // Month labels at row 0 (Monday) — after col is incremented
-    if (current.getDay() === 1) {
-      const monthKey = `${current.getFullYear()}-${current.getMonth()}`;
-      if (!seenMonths.has(monthKey)) {
-        seenMonths.add(monthKey);
-        monthLabels.push({ label: MONTH_NAMES[current.getMonth()]!, col });
+      if (isBeforeRange || isPastToday) {
+        cells.push({ date: null, data: null });
+      } else {
+        cells.push({ date: dateStr, data: lookup.get(dateStr) ?? null });
       }
+      current.setDate(current.getDate() + 1);
     }
 
-    if (isBeforeRange) {
-      cells.push({ date: null, data: null });
-    } else {
-      cells.push({ date: dateStr, data: lookup.get(dateStr) ?? null });
-    }
+    // Month label: show if this week's Monday starts a new month
+    // or is the first week
+    const monthLabel = weekRows.length === 0 ||
+      weekMonday.getMonth() !== new Date(weekRows[weekRows.length - 1]!.cells[0]!.date ?? toLocalDateStr(weekMonday)).getMonth()
+      ? MONTH_NAMES[weekMonday.getMonth()]!
+      : null;
 
-    current.setDate(current.getDate() + 1);
+    weekRows.push({ cells, monthLabel });
   }
 
-  const weeks = Math.ceil(cells.length / 7);
-  return { cells, weeks, monthLabels };
+  // Reverse so newest week is at top
+  weekRows.reverse();
+
+  // Fix month labels after reversing — label the first row of each month (reading top-to-bottom = newest-to-oldest)
+  const seenMonths = new Set<string>();
+  for (const row of weekRows) {
+    // Find the first valid date in this week
+    const firstDate = row.cells.find((c) => c.date !== null)?.date;
+    if (!firstDate) {
+      row.monthLabel = null;
+      continue;
+    }
+    const [, m] = firstDate.split("-");
+    const monthKey = firstDate.substring(0, 7);
+    if (!seenMonths.has(monthKey)) {
+      seenMonths.add(monthKey);
+      row.monthLabel = MONTH_NAMES[parseInt(m!, 10) - 1]!;
+    } else {
+      row.monthLabel = null;
+    }
+  }
+
+  const maxTokens = Math.max(0, ...days.map((d) => d.totalTokens));
+
+  return { weeks: weekRows, maxTokens };
 }
 
 export function HeatmapCalendar({ className }: { className?: string }) {
@@ -120,10 +144,9 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         d.inputTokens + d.outputTokens + (d.cacheCreationTokens ?? 0) + (d.cacheReadTokens ?? 0),
     }));
 
-    const maxTokens = Math.max(0, ...days.map((d) => d.totalTokens));
-    const grid = buildGrid(days);
+    const { weeks, maxTokens } = buildGrid(days);
 
-    return { days, maxTokens, ...grid };
+    return { days, maxTokens, weeks };
   }, [data]);
 
   if (isLoading) {
@@ -160,7 +183,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
     );
   }
 
-  const { cells, weeks, maxTokens, monthLabels } = processed;
+  const { weeks, maxTokens } = processed;
 
   return (
     <Card size="sm" className={className}>
@@ -172,77 +195,68 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="overflow-y-auto">
           <div
             className="inline-grid gap-[2px]"
             style={{
-              gridTemplateColumns: `auto repeat(${weeks}, 10px)`,
-              gridTemplateRows: "auto repeat(7, 10px)",
+              gridTemplateColumns: `auto repeat(7, 10px)`,
+              gridTemplateRows: `auto repeat(${weeks.length}, 10px)`,
             }}
           >
-            {/* Month labels row */}
+            {/* Day label header row */}
             <div /> {/* Empty corner */}
-            {Array.from({ length: weeks }, (_, w) => {
-              const ml = monthLabels.find((m) => m.col === w);
-              return (
-                <div key={w} className="text-muted-foreground text-[10px] leading-none px-[1px]">
-                  {ml?.label ?? ""}
-                </div>
-              );
-            })}
+            {DAY_LABELS.map((label) => (
+              <div key={label} className="text-muted-foreground text-[10px] leading-none text-center">
+                {label.charAt(0)}
+              </div>
+            ))}
 
-            {/* Day rows */}
-            {Array.from({ length: 7 }, (_, row) => {
-              const label = DAY_LABELS[row];
-              return [
-                <div
-                  key={`label-${row}`}
-                  className="text-muted-foreground text-[10px] leading-none pr-1 flex items-center"
-                >
-                  {label}
-                </div>,
-                ...Array.from({ length: weeks }, (_, col) => {
-                  const idx = col * 7 + row;
-                  const cell = cells[idx];
-
-                  if (!cell || cell.date === null) {
-                    return (
-                      <div
-                        key={`${row}-${col}`}
-                        className="size-[10px] rounded-[2px]"
-                      />
-                    );
-                  }
-
-                  const d = cell.data;
-                  const totalTokens = d?.totalTokens ?? 0;
-                  const bgColor = getHeatColor(totalTokens, maxTokens);
-
-                  const tooltipText = d
-                    ? `${formatDate(cell.date)}: ${formatNumber(totalTokens)} tokens ($${estimateCost(d).toFixed(2)})\nIn: ${formatNumber(d.inputTokens)} | Out: ${formatNumber(d.outputTokens)} | CW: ${formatNumber(d.cacheCreationTokens)} | CR: ${formatNumber(d.cacheReadTokens)}`
-                    : `${formatDate(cell.date)}: No usage`;
-
+            {/* Week rows (newest first) */}
+            {weeks.map((week, rowIdx) => [
+              <div
+                key={`month-${rowIdx}`}
+                className="text-muted-foreground text-[10px] leading-[10px] pr-1 flex items-center"
+              >
+                {week.monthLabel ?? ""}
+              </div>,
+              ...week.cells.map((cell, colIdx) => {
+                if (!cell || cell.date === null) {
                   return (
-                    <Tooltip.Root key={`${row}-${col}`}>
-                      <Tooltip.Trigger
-                        className="size-[10px] rounded-[2px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
-                        style={bgColor ? { backgroundColor: bgColor } : undefined}
-                        aria-label={tooltipText.replace("\n", ", ")}
-                        tabIndex={0}
-                        render={<div />}
-                      />
-                      <Tooltip.Portal>
-                        <Tooltip.Positioner sideOffset={4}>
-                          <Tooltip.Popup className="rounded-xl bg-card px-2 py-1.5 text-[11px] text-popover-foreground shadow-md border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%] whitespace-pre-line max-w-[220px]">
-                            {tooltipText}
-                          </Tooltip.Popup>
-                        </Tooltip.Positioner>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
+                    <div
+                      key={`${rowIdx}-${colIdx}`}
+                      className="size-[10px] rounded-[2px]"
+                    />
                   );
-                }),
-              ];
-            })}
+                }
+
+                const d = cell.data;
+                const totalTokens = d?.totalTokens ?? 0;
+                const bgColor = getHeatColor(totalTokens, maxTokens);
+
+                const tooltipText = d
+                  ? `${formatDate(cell.date)}: ${formatNumber(totalTokens)} tokens ($${estimateCost(d).toFixed(2)})\nIn: ${formatNumber(d.inputTokens)} | Out: ${formatNumber(d.outputTokens)} | CW: ${formatNumber(d.cacheCreationTokens)} | CR: ${formatNumber(d.cacheReadTokens)}`
+                  : `${formatDate(cell.date)}: No usage`;
+
+                return (
+                  <Tooltip.Root key={`${rowIdx}-${colIdx}`}>
+                    <Tooltip.Trigger
+                      className="size-[10px] rounded-[2px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                      style={bgColor ? { backgroundColor: bgColor } : undefined}
+                      aria-label={tooltipText.replace("\n", ", ")}
+                      tabIndex={0}
+                      render={<div />}
+                    />
+                    <Tooltip.Portal>
+                      <Tooltip.Positioner sideOffset={4}>
+                        <Tooltip.Popup className="rounded-xl bg-card px-2 py-1.5 text-[11px] text-popover-foreground shadow-md border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%] whitespace-pre-line max-w-[220px]">
+                          {tooltipText}
+                        </Tooltip.Popup>
+                      </Tooltip.Positioner>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+                );
+              }),
+            ])}
           </div>
         </div>
 
