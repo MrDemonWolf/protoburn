@@ -80,6 +80,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
               return (
                 <Tooltip.Root key={badge.id}>
                   <Tooltip.Trigger
+                    render={<div />}
                     className={`flex h-7 w-7 items-center justify-center rounded text-base ${
                       isEarned ? "" : "grayscale opacity-25"
                     }`}
