@@ -74,7 +74,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
             animateKey={animateKey}
             className="text-sm font-bold"
           />
-          <div className="grid grid-cols-4 gap-1 md:grid-cols-9">
+          <div className="grid grid-cols-6 gap-1.5 md:grid-cols-9">
             {BADGE_DEFINITIONS.map((badge) => {
               const isEarned = earned.has(badge.id);
               return (
@@ -83,7 +83,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
                     delay={0}
                     render={
                       <div
-                        className={`flex h-7 w-7 items-center justify-center rounded text-base ${
+                        className={`flex h-8 w-8 items-center justify-center rounded text-base ${
                           isEarned ? "" : "grayscale opacity-25"
                         }`}
                       >
