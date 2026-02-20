@@ -51,7 +51,7 @@ export function UsageChart() {
   );
 
   return (
-    <Card className="flex min-h-[300px] flex-col">
+    <Card className="flex min-h-[250px] flex-col">
       <CardHeader className="pb-2">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <CardTitle>Usage Trend</CardTitle>
