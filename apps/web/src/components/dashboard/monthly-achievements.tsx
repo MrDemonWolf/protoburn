@@ -49,7 +49,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
 
   if (isLoading) {
     return (
-      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[160px]", className)}>
+      <Card size="sm" className={cn(className)}>
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Trophy className="h-3.5 w-3.5 text-amber-500" />
@@ -62,7 +62,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
   }
 
   return (
-    <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[160px]">
+    <Card size="sm" className={className}>
       <CardContent className="py-3">
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -74,7 +74,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
             animateKey={animateKey}
             className="text-sm font-bold"
           />
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid grid-cols-4 gap-1 md:grid-cols-9">
             {BADGE_DEFINITIONS.map((badge) => {
               const isEarned = earned.has(badge.id);
               return (
