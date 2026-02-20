@@ -197,16 +197,16 @@ export function HeatmapCalendar({ className }: { className?: string }) {
       <CardContent>
         <div className="overflow-y-auto">
           <div
-            className="inline-grid gap-[2px]"
+            className="inline-grid gap-[2px] [--cell:10px] md:[--cell:14px]"
             style={{
-              gridTemplateColumns: `auto repeat(7, 10px)`,
-              gridTemplateRows: `auto repeat(${weeks.length}, 10px)`,
+              gridTemplateColumns: `auto repeat(7, var(--cell))`,
+              gridTemplateRows: `auto repeat(${weeks.length}, var(--cell))`,
             }}
           >
             {/* Day label header row */}
             <div /> {/* Empty corner */}
             {DAY_LABELS.map((label) => (
-              <div key={label} className="text-muted-foreground text-[10px] leading-none text-center">
+              <div key={label} className="text-muted-foreground text-[10px] md:text-[11px] leading-none text-center">
                 {label.charAt(0)}
               </div>
             ))}
@@ -215,7 +215,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
             {weeks.map((week, rowIdx) => [
               <div
                 key={`month-${rowIdx}`}
-                className="text-muted-foreground text-[10px] leading-[10px] pr-1 flex items-center"
+                className="text-muted-foreground text-[10px] md:text-[11px] leading-[var(--cell)] pr-1 flex items-center"
               >
                 {week.monthLabel ?? ""}
               </div>,
@@ -224,7 +224,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                   return (
                     <div
                       key={`${rowIdx}-${colIdx}`}
-                      className="size-[10px] rounded-[2px]"
+                      className="size-[var(--cell)] rounded-[2px]"
                     />
                   );
                 }
@@ -240,14 +240,14 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                 return (
                   <Tooltip.Root key={`${rowIdx}-${colIdx}`}>
                     <Tooltip.Trigger
-                      className="size-[10px] rounded-[2px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                      className="size-[var(--cell)] rounded-[2px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                       style={bgColor ? { backgroundColor: bgColor } : undefined}
                       aria-label={tooltipText.replace("\n", ", ")}
                       tabIndex={0}
                       render={<div />}
                     />
                     <Tooltip.Portal>
-                      <Tooltip.Positioner sideOffset={4}>
+                      <Tooltip.Positioner sideOffset={4} className="z-50">
                         <Tooltip.Popup className="rounded-xl bg-card px-2 py-1.5 text-[11px] text-popover-foreground shadow-md border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%] whitespace-pre-line max-w-[220px]">
                           {tooltipText}
                         </Tooltip.Popup>
@@ -263,11 +263,11 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         {/* Legend */}
         <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
           <span>Less</span>
-          <div className="size-[10px] rounded-[2px] bg-muted" />
-          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[0] }} />
-          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[1] }} />
-          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[2] }} />
-          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[3] }} />
+          <div className="size-[var(--cell)] rounded-[2px] bg-muted" />
+          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[0] }} />
+          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[1] }} />
+          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[2] }} />
+          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[3] }} />
           <span>More</span>
         </div>
       </CardContent>

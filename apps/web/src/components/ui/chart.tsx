@@ -88,6 +88,7 @@ function ChartTooltipContent({
   label,
   className,
   hideLabel = false,
+  showTotal = false,
   labelFormatter,
 }: {
   active?: boolean;
@@ -100,6 +101,7 @@ function ChartTooltipContent({
   label?: string;
   className?: string;
   hideLabel?: boolean;
+  showTotal?: boolean;
   labelFormatter?: (label: string) => string;
 }) {
   const { config } = useChart();
@@ -107,6 +109,10 @@ function ChartTooltipContent({
   if (!active || !payload?.length) {
     return null;
   }
+
+  const total = showTotal
+    ? payload.reduce((sum, item) => sum + (item.value ?? 0), 0)
+    : 0;
 
   return (
     <div
@@ -146,6 +152,17 @@ function ChartTooltipContent({
             </div>
           );
         })}
+        {showTotal && (
+          <div className="flex w-full items-center gap-2 border-t border-border pt-1.5">
+            <div className="h-2.5 w-2.5 shrink-0" />
+            <div className="flex flex-1 justify-between leading-none">
+              <span className="font-medium text-foreground">Total</span>
+              <span className="font-mono font-medium tabular-nums text-foreground">
+                {total.toLocaleString()}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -108,7 +108,7 @@ export function UsageChart() {
                   width={40}
                   fontSize={11}
                 />
-                <Tooltip content={<ChartTooltipContent />} />
+                <Tooltip content={<ChartTooltipContent showTotal />} />
                 <Legend content={<ChartLegendContent />} />
                 <Area
                   type="monotone"

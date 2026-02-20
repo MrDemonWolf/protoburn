@@ -20,6 +20,9 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
+  metadataBase: process.env.NEXT_PUBLIC_SERVER_URL
+    ? new URL(process.env.NEXT_PUBLIC_SERVER_URL)
+    : undefined,
   title: "ProtoBurn — Claude API Cost & Usage Dashboard",
   description:
     "Track your Claude API spending, token usage, and prompt caching costs. Monitor monthly costs including cache write/read tokens, see your top models leaderboard, and visualize usage trends — self-hosted on Cloudflare.",
@@ -37,21 +40,12 @@ export const metadata: Metadata = {
     description:
       "Track your Claude API spending, token usage, and prompt caching costs with a personal dashboard.",
     type: "website",
-    images: [
-      {
-        url: `${process.env.NEXT_PUBLIC_SERVER_URL}/api/og`,
-        width: 1200,
-        height: 630,
-        alt: "ProtoBurn — Claude API Cost & Usage Dashboard",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "ProtoBurn — Claude API Cost & Usage Dashboard",
     description:
       "Track your Claude API spending, token usage, and prompt caching costs with a personal dashboard.",
-    images: [`${process.env.NEXT_PUBLIC_SERVER_URL}/api/og`],
   },
 };
 
