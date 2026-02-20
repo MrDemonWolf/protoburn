@@ -180,8 +180,8 @@
     inset 0 1px 0 0 var(--_bar-edge);
 }
 :is(.dark) .glass-bar {
-  --_bar-bg: oklch(0.14 0.02 260 / 65%);
-  --_bar-border: oklch(1 0 0 / 8%);
+  --_bar-bg: oklch(0.12 0.02 260 / 85%);
+  --_bar-border: oklch(1 0 0 / 10%);
   --_bar-edge: oklch(1 0 0 / 12%);
 }
 
