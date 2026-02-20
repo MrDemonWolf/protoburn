@@ -246,10 +246,38 @@
   animation: flame-rage 1.2s ease-in-out infinite;
 }
 
+/* Heatmap cell interactions */
+.heatmap-cell {
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+  cursor: default;
+}
+.heatmap-cell:hover {
+  transform: scale(1.3);
+  z-index: 1;
+  position: relative;
+  box-shadow: 0 0 8px oklch(0 0 0 / 15%);
+  filter: brightness(1.15);
+}
+
+/* Subtle pulse on hottest cells */
+@keyframes heat-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.58 0.22 27 / 0); }
+  50% { box-shadow: 0 0 6px 1px oklch(0.58 0.22 27 / 30%); }
+}
+.heatmap-cell-hot {
+  animation: heat-pulse 3s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-flame-flicker,
   .animate-flame-dance,
   .animate-flame-rage {
+    animation: none;
+  }
+  .heatmap-cell:hover {
+    transform: none;
+  }
+  .heatmap-cell-hot {
     animation: none;
   }
 }

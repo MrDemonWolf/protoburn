@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar } from "lucide-react";
+import { Calendar, Flame, Zap } from "lucide-react";
 import { Tooltip } from "@base-ui/react/tooltip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,6 +30,15 @@ function getHeatColor(tokens: number, maxTokens: number): string | undefined {
   if (ratio < 0.5) return HEAT_LEVELS[1];
   if (ratio < 0.75) return HEAT_LEVELS[2];
   return HEAT_LEVELS[3];
+}
+
+function getHeatLevel(tokens: number, maxTokens: number): number {
+  if (tokens === 0 || maxTokens === 0) return 0;
+  const ratio = tokens / maxTokens;
+  if (ratio < 0.25) return 1;
+  if (ratio < 0.5) return 2;
+  if (ratio < 0.75) return 3;
+  return 4;
 }
 
 function toLocalDateStr(d: Date): string {
@@ -106,10 +115,9 @@ function buildGrid(days: DayData[]): { weeks: WeekRow[]; maxTokens: number } {
   // Reverse so newest week is at top
   weekRows.reverse();
 
-  // Fix month labels after reversing — label the first row of each month (reading top-to-bottom = newest-to-oldest)
+  // Fix month labels after reversing
   const seenMonths = new Set<string>();
   for (const row of weekRows) {
-    // Find the first valid date in this week
     const firstDate = row.cells.find((c) => c.date !== null)?.date;
     if (!firstDate) {
       row.monthLabel = null;
@@ -130,6 +138,39 @@ function buildGrid(days: DayData[]): { weeks: WeekRow[]; maxTokens: number } {
   return { weeks: weekRows, maxTokens };
 }
 
+function computeStats(days: DayData[]) {
+  const activeDays = days.filter((d) => d.totalTokens > 0).length;
+
+  // Current streak (consecutive days ending at today or yesterday with usage)
+  let streak = 0;
+  const today = new Date();
+  const todayStr = toLocalDateStr(today);
+  const sorted = [...days].sort((a, b) => b.date.localeCompare(a.date));
+
+  // Find the most recent day with data
+  let checkDate = new Date(today);
+  for (let i = 0; i < 180; i++) {
+    const dateStr = toLocalDateStr(checkDate);
+    const dayData = sorted.find((d) => d.date === dateStr);
+    if (dayData && dayData.totalTokens > 0) {
+      streak++;
+    } else if (dateStr === todayStr) {
+      // Today might not have data yet, skip
+    } else {
+      break;
+    }
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  // Find the peak day
+  const peakDay = days.reduce(
+    (max, d) => (d.totalTokens > max.totalTokens ? d : max),
+    { date: "", totalTokens: 0, inputTokens: 0, outputTokens: 0, cacheCreationTokens: 0, cacheReadTokens: 0 },
+  );
+
+  return { activeDays, streak, peakDay };
+}
+
 export function HeatmapCalendar({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
     trpc.tokenUsage.timeSeries.queryOptions({ days: 180 }),
@@ -145,8 +186,9 @@ export function HeatmapCalendar({ className }: { className?: string }) {
     }));
 
     const { weeks, maxTokens } = buildGrid(days);
+    const stats = computeStats(days);
 
-    return { days, maxTokens, weeks };
+    return { days, maxTokens, weeks, stats };
   }, [data]);
 
   if (isLoading) {
@@ -183,7 +225,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
     );
   }
 
-  const { weeks, maxTokens } = processed;
+  const { weeks, maxTokens, stats } = processed;
 
   return (
     <Card size="sm" className={className}>
@@ -195,9 +237,30 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Activity stats bar */}
+        <div className="mb-3 flex flex-wrap items-center gap-3 text-xs">
+          <div className="flex items-center gap-1.5">
+            <Zap className="h-3 w-3 text-primary" />
+            <span className="text-muted-foreground">{stats.activeDays} active days</span>
+          </div>
+          {stats.streak > 0 && (
+            <div className="flex items-center gap-1.5">
+              <Flame className="h-3 w-3 text-orange-500" />
+              <span className="text-muted-foreground">{stats.streak} day streak</span>
+            </div>
+          )}
+          {stats.peakDay.totalTokens > 0 && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">
+                Peak: {formatNumber(stats.peakDay.totalTokens)} on {formatDate(stats.peakDay.date)}
+              </span>
+            </div>
+          )}
+        </div>
+
         <div className="overflow-y-auto">
           <div
-            className="inline-grid gap-[2px] [--cell:10px] md:[--cell:14px]"
+            className="inline-grid gap-[3px] [--cell:11px] md:[--cell:14px]"
             style={{
               gridTemplateColumns: `auto repeat(7, var(--cell))`,
               gridTemplateRows: `auto repeat(${weeks.length}, var(--cell))`,
@@ -215,7 +278,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
             {weeks.map((week, rowIdx) => [
               <div
                 key={`month-${rowIdx}`}
-                className="text-muted-foreground text-[10px] md:text-[11px] leading-[var(--cell)] pr-1 flex items-center"
+                className="text-muted-foreground text-[10px] md:text-[11px] leading-[var(--cell)] pr-1.5 flex items-center font-medium"
               >
                 {week.monthLabel ?? ""}
               </div>,
@@ -224,7 +287,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                   return (
                     <div
                       key={`${rowIdx}-${colIdx}`}
-                      className="size-[var(--cell)] rounded-[2px]"
+                      className="size-[var(--cell)] rounded-[3px]"
                     />
                   );
                 }
@@ -232,6 +295,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                 const d = cell.data;
                 const totalTokens = d?.totalTokens ?? 0;
                 const bgColor = getHeatColor(totalTokens, maxTokens);
+                const heatLevel = getHeatLevel(totalTokens, maxTokens);
 
                 const tooltipText = d
                   ? `${formatDate(cell.date)}: ${formatNumber(totalTokens)} tokens ($${estimateCost(d).toFixed(2)})\nIn: ${formatNumber(d.inputTokens)} | Out: ${formatNumber(d.outputTokens)} | CW: ${formatNumber(d.cacheCreationTokens)} | CR: ${formatNumber(d.cacheReadTokens)}`
@@ -240,7 +304,9 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                 return (
                   <Tooltip.Root key={`${rowIdx}-${colIdx}`}>
                     <Tooltip.Trigger
-                      className="size-[var(--cell)] rounded-[2px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                      className={`heatmap-cell size-[var(--cell)] rounded-[3px] bg-muted focus-visible:outline-2 focus-visible:outline-ring ${
+                        heatLevel === 4 ? "heatmap-cell-hot" : ""
+                      }`}
                       style={bgColor ? { backgroundColor: bgColor } : undefined}
                       aria-label={tooltipText.replace("\n", ", ")}
                       tabIndex={0}
@@ -248,7 +314,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                     />
                     <Tooltip.Portal>
                       <Tooltip.Positioner sideOffset={4} className="z-50">
-                        <Tooltip.Popup className="rounded-xl bg-card px-2 py-1.5 text-[11px] text-popover-foreground shadow-md border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%] whitespace-pre-line max-w-[220px]">
+                        <Tooltip.Popup className="rounded-xl bg-card px-2.5 py-2 text-[11px] text-popover-foreground shadow-lg border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%] whitespace-pre-line max-w-[220px] leading-relaxed">
                           {tooltipText}
                         </Tooltip.Popup>
                       </Tooltip.Positioner>
@@ -261,13 +327,16 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         </div>
 
         {/* Legend */}
-        <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
+        <div className="mt-2.5 flex items-center justify-end gap-1.5 text-[10px] text-muted-foreground">
           <span>Less</span>
-          <div className="size-[var(--cell)] rounded-[2px] bg-muted" />
-          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[0] }} />
-          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[1] }} />
-          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[2] }} />
-          <div className="size-[var(--cell)] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[3] }} />
+          <div className="size-[var(--cell)] rounded-[3px] bg-muted" />
+          {HEAT_LEVELS.map((color, i) => (
+            <div
+              key={i}
+              className="size-[var(--cell)] rounded-[3px] transition-transform duration-150 hover:scale-125"
+              style={{ backgroundColor: color }}
+            />
+          ))}
           <span>More</span>
         </div>
       </CardContent>
