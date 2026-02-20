@@ -108,7 +108,17 @@ export function UsageChart() {
                   width={40}
                   fontSize={11}
                 />
-                <Tooltip content={<ChartTooltipContent showTotal />} />
+                <Tooltip
+                  content={
+                    <ChartTooltipContent
+                      showTotal
+                      labelFormatter={(label: string) => {
+                        const d = new Date(label + "T00:00:00");
+                        return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                      }}
+                    />
+                  }
+                />
                 <Legend content={<ChartLegendContent />} />
                 <Area
                   type="linear"
