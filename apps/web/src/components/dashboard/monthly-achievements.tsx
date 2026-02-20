@@ -92,8 +92,8 @@ export function MonthlyAchievements({ className }: { className?: string }) {
                     }
                   />
                   <Tooltip.Portal>
-                    <Tooltip.Positioner sideOffset={4}>
-                      <Tooltip.Popup className="max-w-[200px] rounded-md bg-popover px-2 py-1.5 text-[11px] text-popover-foreground shadow-md ring-1 ring-border">
+                    <Tooltip.Positioner sideOffset={4} className="z-50">
+                      <Tooltip.Popup className="max-w-[200px] rounded-xl bg-card px-2 py-1.5 text-[11px] text-popover-foreground shadow-md border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%]">
                         <p className="font-semibold">{badge.name}</p>
                         <p className="text-muted-foreground">
                           {badge.requirement}
