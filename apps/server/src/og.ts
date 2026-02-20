@@ -3,21 +3,31 @@ import { appRouter } from "@protoburn/api/routers/index";
 import satori, { init as initSatori } from "satori/standalone";
 // @ts-expect-error -- yoga WASM binary import for Cloudflare Workers
 import yogaWasm from "./yoga.wasm";
+import { initWasm, Resvg } from "@resvg/resvg-wasm";
+// @ts-expect-error -- resvg WASM binary import for Cloudflare Workers
+import resvgWasm from "../node_modules/@resvg/resvg-wasm/index_bg.wasm";
 import { calculateCost } from "./lib/pricing";
 import { formatNumber, cleanModelName } from "./lib/format";
 import { getBurnTierName } from "./lib/burn-tiers";
 import { env } from "cloudflare:workers";
 
-let initPromise: Promise<void> | null = null;
+let satoriReady: Promise<void> | null = null;
+let resvgReady: Promise<void> | null = null;
 
 function ensureInitialized(): Promise<void> {
-  if (!initPromise) {
-    initPromise = initSatori(yogaWasm).catch((e) => {
-      initPromise = null;
+  if (!satoriReady) {
+    satoriReady = initSatori(yogaWasm).catch((e) => {
+      satoriReady = null;
       throw e;
     });
   }
-  return initPromise;
+  if (!resvgReady) {
+    resvgReady = initWasm(resvgWasm).catch((e) => {
+      resvgReady = null;
+      throw e;
+    });
+  }
+  return Promise.all([satoriReady, resvgReady]).then(() => {});
 }
 
 const caller = appRouter.createCaller({ session: null });
@@ -83,11 +93,19 @@ async function loadGoogleFont(family: string, weight: number): Promise<ArrayBuff
   return fetch(fontUrl).then((r) => r.arrayBuffer());
 }
 
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
 function buildElement(data: Awaited<ReturnType<typeof fetchData>>) {
   const theme = TIER_THEMES[data.tierName] ?? TIER_THEMES.cold!;
   const hasData = data.totalTokens > 0;
   const fireEmoji = data.tierName === "cold" ? "" : "\u{1F525}";
   const tierLabel = data.tierName.toUpperCase();
+
+  const now = new Date();
+  const monthYear = `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
 
   const costDisplay = hasData ? `$${data.monthlyCost.toFixed(2)}` : "$0.00";
   const totalDisplay = hasData ? formatNumber(data.totalTokens) : "0";
@@ -171,7 +189,7 @@ function buildElement(data: Awaited<ReturnType<typeof fetchData>>) {
                 props: {
                   style: { display: "flex", flexDirection: "column", flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 16, padding: 24, gap: 4 },
                   children: [
-                    { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 600, fontSize: 15, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }, children: `Est. Monthly Cost (${env.API_PLAN} plan)` } },
+                    { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 600, fontSize: 15, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }, children: `${monthYear} \u00B7 Est. Cost (${env.API_PLAN} plan)` } },
                     { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 800, fontSize: 48, color: theme.accent }, children: costDisplay } },
                     ...(fireBar ? [{ type: "div", props: { style: { display: "flex", fontSize: 22, letterSpacing: 2, marginTop: 2 }, children: fireBar } }] : []),
                     ...(!hasData ? [{ type: "div", props: { style: { display: "flex", fontFamily: "Roboto", fontSize: 14, color: "#64748b", marginTop: 2 }, children: "No data yet" } }] : []),
@@ -278,9 +296,12 @@ export async function generateOgImage(_c: Context): Promise<Response> {
     ],
   });
 
-  return new Response(svg, {
+  const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } });
+  const png = resvg.render().asPng();
+
+  return new Response(png, {
     headers: {
-      "Content-Type": "image/svg+xml",
+      "Content-Type": "image/png",
       "Cache-Control": "public, s-maxage=3600, max-age=300, stale-while-revalidate=86400",
     },
   });

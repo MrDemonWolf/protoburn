@@ -13,9 +13,10 @@
     "@protoburn/api": "workspace:*",
     "@protoburn/db": "workspace:*",
     "@protoburn/env": "workspace:*",
-    "drizzle-orm": "^0.45.1",
+    "@resvg/resvg-wasm": "^2.6.2",
     "@trpc/server": "catalog:",
     "dotenv": "catalog:",
+    "drizzle-orm": "^0.45.1",
     "hono": "catalog:",
     "satori": "^0.19.2",
     "zod": "catalog:"
