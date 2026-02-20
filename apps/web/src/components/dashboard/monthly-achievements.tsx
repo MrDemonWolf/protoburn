@@ -84,7 +84,11 @@ export function MonthlyAchievements({ className }: { className?: string }) {
             className="text-sm font-bold"
           />
           <div className="grid grid-cols-6 gap-1.5 md:grid-cols-10">
-            {BADGE_DEFINITIONS.map((badge) => {
+            {[...BADGE_DEFINITIONS].sort((a, b) => {
+              const aEarned = earned.has(a.id) ? 0 : 1;
+              const bEarned = earned.has(b.id) ? 0 : 1;
+              return aEarned - bEarned;
+            }).map((badge) => {
               const isEarned = earned.has(badge.id);
               return (
                 <Tooltip.Root key={badge.id}>
