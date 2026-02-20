@@ -209,7 +209,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                     return (
                       <div
                         key={`${row}-${col}`}
-                        className="size-[10px] md:size-[14px] rounded-sm"
+                        className="size-[10px] md:size-[14px] rounded-[3px]"
                       />
                     );
                   }
@@ -225,7 +225,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                   return (
                     <Tooltip.Root key={`${row}-${col}`}>
                       <Tooltip.Trigger
-                        className="size-[10px] md:size-[14px] rounded-sm bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                        className="size-[10px] md:size-[14px] rounded-[3px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                         style={bgColor ? { backgroundColor: bgColor } : undefined}
                         aria-label={tooltipText.replace("\n", ", ")}
                         tabIndex={0}
@@ -233,7 +233,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                       />
                       <Tooltip.Portal>
                         <Tooltip.Positioner sideOffset={4}>
-                          <Tooltip.Popup className="rounded-md bg-popover px-2 py-1.5 text-[11px] text-popover-foreground shadow-md ring-1 ring-border whitespace-pre-line max-w-[220px]">
+                          <Tooltip.Popup className="rounded-xl bg-card px-2 py-1.5 text-[11px] text-popover-foreground shadow-md border border-[var(--glass-border)] backdrop-blur-xl backdrop-saturate-[180%] whitespace-pre-line max-w-[220px]">
                             {tooltipText}
                           </Tooltip.Popup>
                         </Tooltip.Positioner>
@@ -249,11 +249,11 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         {/* Legend */}
         <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
           <span>Less</span>
-          <div className="size-[10px] md:size-[14px] rounded-sm bg-muted" />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[0] }} />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[1] }} />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[2] }} />
-          <div className="size-[10px] md:size-[14px] rounded-sm" style={{ backgroundColor: HEAT_LEVELS[3] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px] bg-muted" />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[0] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[1] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[2] }} />
+          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[3] }} />
           <span>More</span>
         </div>
       </CardContent>

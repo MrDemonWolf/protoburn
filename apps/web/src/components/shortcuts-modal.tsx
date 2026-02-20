@@ -47,11 +47,11 @@ export function ShortcutsModal({ open, onClose }: { open: boolean; onClose: () =
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 backdrop-blur-md"
       onClick={onClose}
     >
       <div
-        className="mx-4 w-full max-w-md max-h-[80vh] overflow-y-auto rounded-lg border border-border bg-background p-6 shadow-xl"
+        className="mx-4 w-full max-w-md max-h-[80vh] overflow-y-auto rounded-3xl border border-[var(--glass-border)] bg-card/80 backdrop-blur-xl p-6 shadow-xl glass-specular"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Keyboard Shortcuts */}
@@ -60,14 +60,14 @@ export function ShortcutsModal({ open, onClose }: { open: boolean; onClose: () =
           {SHORTCUTS.map((s) => (
             <div key={s.key} className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{s.description}</span>
-              <kbd className="rounded border border-border bg-muted px-2 py-0.5 font-mono text-xs">
+              <kbd className="rounded-lg border border-[var(--glass-border)] bg-card/50 backdrop-blur-sm px-2 py-0.5 font-mono text-xs">
                 {s.key}
               </kbd>
             </div>
           ))}
         </div>
 
-        <hr className="my-5 border-border" />
+        <hr className="my-5 border-[var(--glass-border)]" />
 
         {/* Achievements */}
         <h2 className="mb-3 font-heading text-lg font-semibold">Achievements</h2>
@@ -96,7 +96,7 @@ export function ShortcutsModal({ open, onClose }: { open: boolean; onClose: () =
           ))}
         </div>
 
-        <hr className="my-5 border-border" />
+        <hr className="my-5 border-[var(--glass-border)]" />
 
         {/* Burn Tiers */}
         <h2 className="mb-3 font-heading text-lg font-semibold">Burn Tiers</h2>
@@ -109,7 +109,7 @@ export function ShortcutsModal({ open, onClose }: { open: boolean; onClose: () =
           ))}
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          Toggle fire effects with <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">F</kbd> or the flame button in the header.
+          Toggle fire effects with <kbd className="rounded-lg border border-[var(--glass-border)] bg-card/50 backdrop-blur-sm px-1 py-0.5 font-mono text-[10px]">F</kbd> or the flame button in the header.
         </p>
       </div>
     </div>

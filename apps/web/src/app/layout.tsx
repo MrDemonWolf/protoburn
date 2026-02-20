@@ -5,11 +5,12 @@ import { Montserrat, Roboto } from "next/font/google";
 import "../index.css";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
+import { WallpaperCanvas } from "@/components/wallpaper-canvas";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const roboto = Roboto({
@@ -63,7 +64,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} ${roboto.variable} antialiased`}>
         <Providers>
-          <div className="flex min-h-svh flex-col bg-background md:h-svh md:overflow-hidden">
+          <WallpaperCanvas />
+          <div className="relative z-10 flex min-h-svh flex-col bg-transparent md:h-svh md:overflow-hidden">
             <Header />
             {children}
           </div>

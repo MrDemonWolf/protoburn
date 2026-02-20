@@ -28,7 +28,7 @@ export default function Home() {
             <HeatmapCalendar />
           </div>
         </main>
-        <footer className="relative z-20 border-t bg-background/80 backdrop-blur-md py-3">
+        <footer className="relative z-20 border-t border-[var(--glass-border)] bg-card backdrop-blur-xl backdrop-saturate-[180%] py-3">
           <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
             &copy; {year} ProtoBurn by{" "}
             <a
@@ -40,7 +40,7 @@ export default function Home() {
               {env.NEXT_PUBLIC_OWNER_NAME}
             </a>
             <span className="hidden sm:inline">
-              {" · "}Press <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">?</kbd> for shortcuts
+              {" · "}Press <kbd className="rounded-lg border border-[var(--glass-border)] bg-card/50 backdrop-blur-sm px-1 py-0.5 font-mono text-[10px]">?</kbd> for shortcuts
             </span>
           </div>
         </footer>
