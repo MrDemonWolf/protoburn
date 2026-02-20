@@ -111,7 +111,7 @@ export function UsageChart() {
                 <Tooltip content={<ChartTooltipContent showTotal />} />
                 <Legend content={<ChartLegendContent />} />
                 <Area
-                  type="monotone"
+                  type="linear"
                   dataKey="inputTokens"
                   stackId="1"
                   stroke="#00ACED"
@@ -119,7 +119,7 @@ export function UsageChart() {
                   strokeWidth={2}
                 />
                 <Area
-                  type="monotone"
+                  type="linear"
                   dataKey="outputTokens"
                   stackId="1"
                   stroke="#0B7CC1"
@@ -127,7 +127,7 @@ export function UsageChart() {
                   strokeWidth={2}
                 />
                 <Area
-                  type="monotone"
+                  type="linear"
                   dataKey="cacheCreationTokens"
                   stackId="1"
                   stroke="#F59E0B"
@@ -135,7 +135,7 @@ export function UsageChart() {
                   strokeWidth={2}
                 />
                 <Area
-                  type="monotone"
+                  type="linear"
                   dataKey="cacheReadTokens"
                   stackId="1"
                   stroke="#8B5CF6"
