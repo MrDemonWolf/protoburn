@@ -132,7 +132,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="size-4" />
-            Daily Usage
+            Activity
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -148,7 +148,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="size-4" />
-            Daily Usage
+            Activity
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -167,7 +167,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="size-4" />
-          Daily Usage
+          Activity
           <span className="text-muted-foreground text-xs font-normal">Last 6 months</span>
         </CardTitle>
       </CardHeader>
