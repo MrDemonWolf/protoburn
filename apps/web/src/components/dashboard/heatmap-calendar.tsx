@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
 import { formatNumber } from "@/lib/format";
 import { calculateCost } from "@/lib/pricing";
+import { cn } from "@/lib/utils";
 
 const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
 const MONTH_NAMES = [
@@ -105,7 +106,7 @@ function buildGrid(days: DayData[]): { cells: GridCell[]; weeks: number; monthLa
   return { cells, weeks, monthLabels };
 }
 
-export function HeatmapCalendar() {
+export function HeatmapCalendar({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
     trpc.tokenUsage.timeSeries.queryOptions({ days: 90 }),
   );
@@ -127,7 +128,7 @@ export function HeatmapCalendar() {
 
   if (isLoading) {
     return (
-      <Card size="sm">
+      <Card size="sm" className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="size-4" />
@@ -143,7 +144,7 @@ export function HeatmapCalendar() {
 
   if (!processed || processed.days.length === 0) {
     return (
-      <Card size="sm">
+      <Card size="sm" className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="size-4" />
@@ -162,7 +163,7 @@ export function HeatmapCalendar() {
   const { cells, weeks, maxTokens, monthLabels } = processed;
 
   return (
-    <Card size="sm">
+    <Card size="sm" className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="size-4" />

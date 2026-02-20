@@ -74,9 +74,9 @@ export function StatsCards() {
   ];
 
   return (
-    <div className="space-y-3 md:space-y-4">
+    <div className="space-y-2 sm:space-y-3 md:space-y-4">
       {/* Top row: Total Tokens + Est. Monthly Cost */}
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:gap-4">
+      <div className="grid gap-2 grid-cols-2 sm:gap-3 md:gap-4">
         <Card size="sm">
           <CardHeader className="flex flex-row items-center justify-between pb-1">
             <CardTitle className="text-muted-foreground">Total Tokens</CardTitle>
@@ -95,9 +95,14 @@ export function StatsCards() {
             <CardTitle className="text-muted-foreground">
               Est. Monthly Cost
               {currentMonth && (
-                <span className="ml-1 text-xs font-normal">({currentMonth})</span>
+                <span className="ml-1 text-xs font-normal hidden sm:inline">({currentMonth})</span>
               )}
-              <span className="ml-1 text-xs font-normal text-primary">({env.NEXT_PUBLIC_API_PLAN} plan)</span>
+              {currentMonth && (
+                <span className="ml-1 text-xs font-normal sm:hidden">
+                  ({new Date(monthly!.month + "-01").toLocaleDateString("en-US", { month: "short" })})
+                </span>
+              )}
+              <span className="ml-1 text-xs font-normal text-primary hidden sm:inline">({env.NEXT_PUBLIC_API_PLAN} plan)</span>
             </CardTitle>
             <div className="flex items-center">
               {Array.from({ length: fire.flames }).map((_, i) => (
@@ -125,7 +130,7 @@ export function StatsCards() {
         </Card>
       </div>
       {/* Bottom row: breakdown cards */}
-      <div className="grid gap-3 grid-cols-2 md:gap-4 md:grid-cols-4">
+      <div className="grid gap-2 grid-cols-2 sm:gap-3 sm:grid-cols-4 md:gap-4">
         {breakdownCards.map((card) => (
           <Card size="sm" key={card.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-1">

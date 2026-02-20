@@ -9,10 +9,11 @@ import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
 import { calculateCost } from "@/lib/pricing";
 import { formatNumber, cleanModelName } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 const MEDALS = ["🥇", "🥈", "🥉"] as const;
 
-export function MostUsedModel() {
+export function MostUsedModel({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
     trpc.tokenUsage.byModel.queryOptions(),
   );
@@ -36,7 +37,7 @@ export function MostUsedModel() {
 
   if (isLoading) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[180px]">
+      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[180px]", className)}>
         <CardContent className="py-3">
           <div className="flex items-center gap-2 mb-2">
             <Cpu className="size-4 text-primary" />
@@ -51,7 +52,7 @@ export function MostUsedModel() {
 
   if (topModels.length === 0) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[180px]">
+      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[180px]", className)}>
         <CardContent className="py-3">
           <div className="flex items-center gap-2">
             <Cpu className="size-4 text-muted-foreground" />
@@ -64,7 +65,7 @@ export function MostUsedModel() {
   }
 
   return (
-    <Card size="sm" className="md:w-fit md:shrink-0">
+    <Card size="sm" className={cn("md:w-fit md:shrink-0", className)}>
       <CardContent className="py-3">
         <div className="flex items-center gap-2">
           <Cpu className="size-4 text-primary" />

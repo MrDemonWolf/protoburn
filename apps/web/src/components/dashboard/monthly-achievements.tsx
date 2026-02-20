@@ -9,8 +9,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
 import { BADGE_DEFINITIONS, evaluateBadges, getEarnedCount } from "@/lib/achievements";
+import { cn } from "@/lib/utils";
 
-export function MonthlyAchievements() {
+export function MonthlyAchievements({ className }: { className?: string }) {
   const { data: modelData, isLoading } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );
@@ -48,7 +49,7 @@ export function MonthlyAchievements() {
 
   if (isLoading) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[160px]">
+      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[160px]", className)}>
         <CardContent className="py-3">
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Trophy className="h-3.5 w-3.5 text-amber-500" />

@@ -9,6 +9,7 @@ import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
 import { trpc } from "@/utils/trpc";
 import { formatNumber } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
   if (trend === "up")
@@ -18,7 +19,7 @@ function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
   return <Minus className="h-3.5 w-3.5 text-muted-foreground" />;
 }
 
-export function VelocityTicker() {
+export function VelocityTicker({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
     trpc.tokenUsage.velocity.queryOptions(),
   );
@@ -38,7 +39,7 @@ export function VelocityTicker() {
 
   if (isLoading) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}>
         <CardContent className="py-3">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
             <Gauge className="h-3.5 w-3.5 text-primary" />
@@ -52,7 +53,7 @@ export function VelocityTicker() {
 
   if (!data?.hasEnoughData) {
     return (
-      <Card size="sm" className="md:w-fit md:shrink-0 md:min-w-[140px]">
+      <Card size="sm" className={cn("md:w-fit md:shrink-0 md:min-w-[140px]", className)}>
         <CardContent className="py-3">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
             <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
