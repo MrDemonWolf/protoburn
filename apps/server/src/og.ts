@@ -42,7 +42,7 @@ const TIER_THEMES: Record<string, { from: string; to: string; accent: string }> 
   meltdown: { from: "#2a0000", to: "#7f1d1d", accent: "#f87171" },
 };
 
-const MEDALS = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
+const MEDAL_COLORS = ["#FFD700", "#C0C0C0", "#CD7F32"];
 
 interface ModelData {
   model: string;
@@ -101,7 +101,6 @@ const MONTH_NAMES = [
 function buildElement(data: Awaited<ReturnType<typeof fetchData>>) {
   const theme = TIER_THEMES[data.tierName] ?? TIER_THEMES.cold!;
   const hasData = data.totalTokens > 0;
-  const fireEmoji = data.tierName === "cold" ? "" : "\u{1F525}";
   const tierLabel = data.tierName.toUpperCase();
 
   const now = new Date();
@@ -112,16 +111,26 @@ function buildElement(data: Awaited<ReturnType<typeof fetchData>>) {
   const inputDisplay = hasData ? formatNumber(data.totalInput) : "0";
   const outputDisplay = hasData ? formatNumber(data.totalOutput) : "0";
 
-  const fireBar = hasData && data.tierName !== "cold"
-    ? fireEmoji.repeat(Math.min(Math.ceil(data.monthlyCost / 10), 10))
-    : "";
+  // Fire bar as small SVG flame icons instead of emoji
+  const fireCount = hasData && data.tierName !== "cold"
+    ? Math.min(Math.ceil(data.monthlyCost / 10), 10)
+    : 0;
 
   const topModels = data.topModels.map((m, i) => ({
     type: "div",
     props: {
       style: { display: "flex", flexDirection: "column", background: "rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 20px", flex: 1, gap: 6 },
       children: [
-        { type: "div", props: { style: { display: "flex", alignItems: "center", gap: 6, fontFamily: "Montserrat", fontSize: 18, fontWeight: 600, color: "#e2e8f0" }, children: `${MEDALS[i] ?? ""} ${cleanModelName(m.model)}` } },
+        {
+          type: "div",
+          props: {
+            style: { display: "flex", alignItems: "center", gap: 8, fontFamily: "Montserrat", fontSize: 18, fontWeight: 600, color: "#e2e8f0" },
+            children: [
+              { type: "div", props: { style: { display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, borderRadius: "50%", background: MEDAL_COLORS[i] ?? "#64748b", fontFamily: "Montserrat", fontSize: 13, fontWeight: 800, color: "#000" }, children: `${i + 1}` } },
+              { type: "span", props: { style: { display: "flex" }, children: cleanModelName(m.model) } },
+            ],
+          },
+        },
         { type: "div", props: { style: { display: "flex", fontFamily: "Roboto", fontSize: 16, color: "#94a3b8" }, children: `${formatNumber(m.totalTokens)} tokens` } },
         { type: "div", props: { style: { display: "flex", fontFamily: "Roboto", fontSize: 15, color: theme.accent }, children: `$${m.cost.toFixed(2)}` } },
       ],
@@ -172,7 +181,19 @@ function buildElement(data: Awaited<ReturnType<typeof fetchData>>) {
                 type: "div",
                 props: {
                   style: { display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.08)", borderRadius: 20, padding: "6px 16px" },
-                  children: { type: "span", props: { style: { fontFamily: "Montserrat", fontWeight: 600, fontSize: 16, color: theme.accent }, children: `${fireEmoji} ${tierLabel}` } },
+                  children: [
+                    data.tierName !== "cold" ? {
+                      type: "svg",
+                      props: {
+                        width: 16, height: 16, viewBox: "0 0 24 24", fill: "none",
+                        children: [
+                          { type: "path", props: { d: "M12 2C6.5 6.5 4 10.5 4 14a8 8 0 0 0 16 0c0-3.5-2.5-7.5-8-12Z", fill: theme.accent, opacity: 0.9 } },
+                          { type: "path", props: { d: "M12 9c-2.5 2.5-4 5-4 7a4 4 0 0 0 8 0c0-2-1.5-4.5-4-7Z", fill: "#fbbf24", opacity: 0.7 } },
+                        ],
+                      },
+                    } : null,
+                    { type: "span", props: { style: { fontFamily: "Montserrat", fontWeight: 600, fontSize: 16, color: theme.accent }, children: tierLabel } },
+                  ].filter(Boolean),
                 },
               },
             ],
@@ -191,7 +212,23 @@ function buildElement(data: Awaited<ReturnType<typeof fetchData>>) {
                   children: [
                     { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 600, fontSize: 15, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1 }, children: `${monthYear} \u00B7 Est. Cost (${env.API_PLAN} plan)` } },
                     { type: "div", props: { style: { display: "flex", fontFamily: "Montserrat", fontWeight: 800, fontSize: 48, color: theme.accent }, children: costDisplay } },
-                    ...(fireBar ? [{ type: "div", props: { style: { display: "flex", fontSize: 22, letterSpacing: 2, marginTop: 2 }, children: fireBar } }] : []),
+                    ...(fireCount > 0 ? [{
+                      type: "div",
+                      props: {
+                        style: { display: "flex", gap: 2, marginTop: 2 },
+                        children: Array.from({ length: fireCount }, (_, i) => ({
+                          type: "svg",
+                          key: i,
+                          props: {
+                            width: 18, height: 18, viewBox: "0 0 24 24", fill: "none",
+                            children: [
+                              { type: "path", props: { d: "M12 2C6.5 6.5 4 10.5 4 14a8 8 0 0 0 16 0c0-3.5-2.5-7.5-8-12Z", fill: theme.accent, opacity: 0.9 } },
+                              { type: "path", props: { d: "M12 9c-2.5 2.5-4 5-4 7a4 4 0 0 0 8 0c0-2-1.5-4.5-4-7Z", fill: "#fbbf24", opacity: 0.7 } },
+                            ],
+                          },
+                        })),
+                      },
+                    }] : []),
                     ...(!hasData ? [{ type: "div", props: { style: { display: "flex", fontFamily: "Roboto", fontSize: 14, color: "#64748b", marginTop: 2 }, children: "No data yet" } }] : []),
                   ],
                 },
