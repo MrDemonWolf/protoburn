@@ -80,13 +80,17 @@ export function MonthlyAchievements({ className }: { className?: string }) {
               return (
                 <Tooltip.Root key={badge.id}>
                   <Tooltip.Trigger
-                    render={<div />}
-                    className={`flex h-7 w-7 items-center justify-center rounded text-base ${
-                      isEarned ? "" : "grayscale opacity-25"
-                    }`}
-                  >
-                    {badge.emoji}
-                  </Tooltip.Trigger>
+                    delay={0}
+                    render={
+                      <div
+                        className={`flex h-7 w-7 items-center justify-center rounded text-base ${
+                          isEarned ? "" : "grayscale opacity-25"
+                        }`}
+                      >
+                        {badge.emoji}
+                      </div>
+                    }
+                  />
                   <Tooltip.Portal>
                     <Tooltip.Positioner sideOffset={4}>
                       <Tooltip.Popup className="max-w-[200px] rounded-md bg-popover px-2 py-1.5 text-[11px] text-popover-foreground shadow-md ring-1 ring-border">
