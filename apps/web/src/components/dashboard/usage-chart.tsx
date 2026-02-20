@@ -48,7 +48,10 @@ export function UsageChart() {
   return (
     <Card className="flex min-h-[150px] max-h-[250px] flex-col">
       <CardHeader className="pb-2">
-        <CardTitle>Usage Trend</CardTitle>
+        <div className="flex items-baseline gap-2">
+          <CardTitle>Usage Trend</CardTitle>
+          <span className="text-xs text-muted-foreground">Last 7 days</span>
+        </div>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col">
         {isLoading ? (

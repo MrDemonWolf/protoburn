@@ -111,18 +111,7 @@ export function StatsCards() {
       {/* Est. Monthly Cost */}
       <Card size="sm" className="relative overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-1">
-          <CardTitle className="text-muted-foreground">
-            Est. Monthly Cost
-            {currentMonth && (
-              <span className="ml-1 text-xs font-normal hidden sm:inline">({currentMonth})</span>
-            )}
-            {currentMonth && (
-              <span className="ml-1 text-xs font-normal sm:hidden">
-                ({new Date(monthly!.month + "-01").toLocaleDateString("en-US", { month: "short" })})
-              </span>
-            )}
-            <span className="ml-1 text-xs font-normal text-primary hidden sm:inline">({env.NEXT_PUBLIC_API_PLAN} plan)</span>
-          </CardTitle>
+          <CardTitle className="text-muted-foreground">Est. Monthly Cost</CardTitle>
           <div className="flex items-center">
             {Array.from({ length: fire.flames }).map((_, i) => (
               <Flame
@@ -143,7 +132,14 @@ export function StatsCards() {
           {isLoading ? (
             <Skeleton className="h-7 w-24" />
           ) : (
-            <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />
+            <>
+              <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />
+              <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                {currentMonth && <span>{currentMonth}</span>}
+                {currentMonth && <span>·</span>}
+                <span className="text-primary">{env.NEXT_PUBLIC_API_PLAN} plan</span>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
