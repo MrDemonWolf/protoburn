@@ -23,7 +23,7 @@ export default function Home() {
             <CacheEfficiency />
             <MonthlyAchievements className="col-span-2 sm:col-span-1 md:col-span-1" />
           </div>
-          <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 md:flex-1">
+          <div className="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-[1fr_auto] md:gap-4 md:flex-1">
             <UsageChart />
             <HeatmapCalendar />
           </div>

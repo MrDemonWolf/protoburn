@@ -42,7 +42,7 @@ const chartConfig = {
 
 export function UsageChart() {
   const { data, isLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions(),
+    trpc.tokenUsage.timeSeries.queryOptions({ days: 7 }),
   );
 
   return (
