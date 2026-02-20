@@ -17,7 +17,7 @@ export default function Home() {
       <MeltdownShake>
         <main className="container mx-auto flex flex-1 flex-col gap-2 p-2 sm:gap-3 sm:p-3 md:gap-4 md:p-4">
           <StatsCards />
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-[auto_auto_auto_1fr] md:gap-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4">
             <MostUsedModel className="col-span-2 sm:col-span-3 md:col-span-1" />
             <VelocityTicker />
             <CacheEfficiency />
