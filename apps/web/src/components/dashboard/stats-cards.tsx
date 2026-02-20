@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
-import { Zap, Flame, DollarSign } from "lucide-react";
+import { Zap, Flame } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
@@ -54,8 +54,8 @@ export function StatsCards() {
   }, [isFetching]);
 
   return (
-    <div className="grid gap-2 grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-4">
-      {/* Total Tokens */}
+    <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 sm:gap-3 md:gap-4">
+      {/* Total Tokens + Breakdown combined */}
       <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between pb-1">
           <CardTitle className="text-muted-foreground">Total Tokens</CardTitle>
@@ -63,9 +63,47 @@ export function StatsCards() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <Skeleton className="h-7 w-24" />
+            <Skeleton className="h-7 w-full" />
           ) : (
-            <AnimatedNumber value={formatNumber(totals?.totalTokens ?? 0)} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <AnimatedNumber
+                value={formatNumber(totals?.totalTokens ?? 0)}
+                animateKey={animateKey}
+                className="text-lg font-bold sm:text-xl shrink-0"
+              />
+              <div className="hidden sm:block h-8 w-px bg-border shrink-0" />
+              <div className="hidden sm:grid grid-cols-2 gap-x-4 gap-y-0.5">
+                {breakdownItems.map((item) => (
+                  <div key={item.key} className="flex items-center gap-1.5">
+                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.dotClass}`} />
+                    <span className="text-[10px] text-muted-foreground">{item.label}</span>
+                    <AnimatedNumber
+                      value={formatNumber(totals?.[item.key] ?? 0)}
+                      animateKey={animateKey}
+                      className="text-xs font-semibold"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Mobile breakdown: horizontal row below the total */}
+          {!isLoading && (
+            <div className="mt-2 grid grid-cols-4 gap-x-2 sm:hidden">
+              {breakdownItems.map((item) => (
+                <div key={item.key} className="flex items-center gap-1 min-w-0">
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.dotClass}`} />
+                  <div className="min-w-0">
+                    <span className="text-[9px] leading-none text-muted-foreground">{item.label}</span>
+                    <AnimatedNumber
+                      value={formatNumber(totals?.[item.key] ?? 0)}
+                      animateKey={animateKey}
+                      className="block text-[11px] font-bold leading-tight"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>
@@ -106,35 +144,6 @@ export function StatsCards() {
             <Skeleton className="h-7 w-24" />
           ) : (
             <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Token Breakdown — compact 2×2 grid */}
-      <Card size="sm" className="col-span-2 md:col-span-1">
-        <CardHeader className="flex flex-row items-center justify-between pb-1">
-          <CardTitle className="text-muted-foreground">Token Breakdown</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-7 w-full" />
-          ) : (
-            <div className="grid grid-cols-4 gap-x-3 gap-y-0.5 md:grid-cols-2">
-              {breakdownItems.map((item) => (
-                <div key={item.key} className="flex items-center gap-1.5 min-w-0">
-                  <span className={`h-2 w-2 shrink-0 rounded-full ${item.dotClass}`} />
-                  <div className="min-w-0">
-                    <span className="text-[10px] leading-none text-muted-foreground">{item.label}</span>
-                    <AnimatedNumber
-                      value={formatNumber(totals?.[item.key] ?? 0)}
-                      animateKey={animateKey}
-                      className="block text-sm font-bold leading-tight"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
           )}
         </CardContent>
       </Card>
