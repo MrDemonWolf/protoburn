@@ -46,19 +46,19 @@ export function UsageChart() {
   );
 
   return (
-    <Card className="flex min-h-[250px] flex-col">
+    <Card className="flex min-h-[150px] max-h-[250px] flex-col">
       <CardHeader className="pb-2">
         <CardTitle>Daily Token Usage</CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col">
         {isLoading ? (
-          <Skeleton className="min-h-[200px] w-full flex-1" />
+          <Skeleton className="min-h-[120px] w-full flex-1" />
         ) : !data?.length ? (
-          <div className="flex min-h-[200px] flex-1 items-center justify-center text-muted-foreground">
+          <div className="flex min-h-[120px] flex-1 items-center justify-center text-muted-foreground">
             No data yet. Push usage data via the API.
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="min-h-[200px] w-full flex-1">
+          <ChartContainer config={chartConfig} className="min-h-[120px] w-full flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data}>
                 <defs>
