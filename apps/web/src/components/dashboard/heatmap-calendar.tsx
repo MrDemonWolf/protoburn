@@ -174,10 +174,10 @@ export function HeatmapCalendar({ className }: { className?: string }) {
       <CardContent>
         <div className="overflow-x-auto">
           <div
-            className="grid gap-[2px]"
+            className="inline-grid gap-[2px]"
             style={{
-              gridTemplateColumns: `auto repeat(${weeks}, 1fr)`,
-              gridTemplateRows: "auto repeat(7, 1fr)",
+              gridTemplateColumns: `auto repeat(${weeks}, 10px)`,
+              gridTemplateRows: "auto repeat(7, 10px)",
             }}
           >
             {/* Month labels row */}
@@ -209,7 +209,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                     return (
                       <div
                         key={`${row}-${col}`}
-                        className="size-[10px] md:size-[14px] rounded-[3px]"
+                        className="size-[10px] rounded-[2px]"
                       />
                     );
                   }
@@ -225,7 +225,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
                   return (
                     <Tooltip.Root key={`${row}-${col}`}>
                       <Tooltip.Trigger
-                        className="size-[10px] md:size-[14px] rounded-[3px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                        className="size-[10px] rounded-[2px] bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                         style={bgColor ? { backgroundColor: bgColor } : undefined}
                         aria-label={tooltipText.replace("\n", ", ")}
                         tabIndex={0}
@@ -249,11 +249,11 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         {/* Legend */}
         <div className="mt-2 flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
           <span>Less</span>
-          <div className="size-[10px] md:size-[14px] rounded-[3px] bg-muted" />
-          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[0] }} />
-          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[1] }} />
-          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[2] }} />
-          <div className="size-[10px] md:size-[14px] rounded-[3px]" style={{ backgroundColor: HEAT_LEVELS[3] }} />
+          <div className="size-[10px] rounded-[2px] bg-muted" />
+          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[0] }} />
+          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[1] }} />
+          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[2] }} />
+          <div className="size-[10px] rounded-[2px]" style={{ backgroundColor: HEAT_LEVELS[3] }} />
           <span>More</span>
         </div>
       </CardContent>
