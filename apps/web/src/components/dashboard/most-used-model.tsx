@@ -45,8 +45,16 @@ export function MostUsedModel({ className }: { className?: string }) {
             <span className="text-xs text-muted-foreground">Top Models</span>
             <InfoTooltip text="Your top 3 most-used Claude models ranked by all-time total token usage, with estimated cost per model." />
           </div>
-          <Skeleton className="h-5 w-32 mb-1.5" />
-          <Skeleton className="h-4 w-24" />
+          {/* Match height of 3 model rows */}
+          <div className="mt-1.5 space-y-0">
+            <Skeleton className="h-6 w-full" />
+            <div className="border-t border-border/50 pt-1.5 mt-1.5">
+              <Skeleton className="h-4 w-full" />
+            </div>
+            <div className="border-t border-border/50 pt-1.5 mt-1.5">
+              <Skeleton className="h-4 w-full" />
+            </div>
+          </div>
         </CardContent>
       </Card>
     );

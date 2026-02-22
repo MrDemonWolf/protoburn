@@ -87,7 +87,9 @@ export function MonthlyBurnHistory({ className }: { className?: string }) {
             <span className="font-heading font-semibold">Monthly Burn</span>
             <InfoTooltip text="Token usage per month over the last 8 months. Bar colors match burn tier intensity. Shows month-over-month change percentage." />
           </div>
-          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-8 w-full mt-1.5" />
+          <Skeleton className="h-3 w-full mt-1.5" />
+          <Skeleton className="h-4 w-20 mt-1.5" />
         </CardContent>
       </Card>
     );

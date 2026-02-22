@@ -66,7 +66,13 @@ export function MonthlyAchievements({ className }: { className?: string }) {
             <span className="font-heading font-semibold">Achievements</span>
             <InfoTooltip text="Badges earned based on your monthly usage patterns — token milestones, model diversity, streak days, and more." />
           </div>
-          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-5 w-24" />
+          {/* Badge grid placeholder — 3 rows of badges */}
+          <div className="grid grid-cols-6 gap-1.5 md:grid-cols-10 mt-1.5">
+            {Array.from({ length: 30 }).map((_, i) => (
+              <Skeleton key={i} className="h-8 w-8 rounded" />
+            ))}
+          </div>
         </CardContent>
       </Card>
     );

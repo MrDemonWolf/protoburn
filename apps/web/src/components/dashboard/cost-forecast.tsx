@@ -132,7 +132,10 @@ export function CostForecast({ className }: { className?: string }) {
             <span className="font-heading font-semibold">Cost Forecast</span>
             <InfoTooltip text="Projected end-of-month cost using linear extrapolation from your current burn rate. Color indicates cost trend vs. last month." />
           </div>
-          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-7 w-20" />
+          <Skeleton className="h-5 w-16 mt-1.5" />
+          <Skeleton className="h-4 w-28 mt-1.5" />
+          <Skeleton className="h-4 w-16 mt-1.5" />
         </CardContent>
       </Card>
     );

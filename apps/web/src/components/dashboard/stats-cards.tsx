@@ -63,47 +63,63 @@ export function StatsCards() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <Skeleton className="h-7 w-full" />
-          ) : (
-            <div className="flex items-center gap-3 sm:gap-4">
-              <AnimatedNumber
-                value={formatNumber(totals?.totalTokens ?? 0)}
-                animateKey={animateKey}
-                className="text-lg font-bold sm:text-xl shrink-0"
-              />
-              <div className="hidden sm:block h-8 w-px bg-border shrink-0" />
-              <div className="hidden sm:grid grid-cols-2 gap-x-4 gap-y-0.5">
+            <>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <Skeleton className="h-7 w-16" />
+                <div className="hidden sm:block h-8 w-px bg-border shrink-0" />
+                <div className="hidden sm:grid grid-cols-2 gap-x-4 gap-y-0.5">
+                  {breakdownItems.map((item) => (
+                    <Skeleton key={item.key} className="h-4 w-20" />
+                  ))}
+                </div>
+              </div>
+              {/* Mobile breakdown placeholder */}
+              <div className="mt-2 grid grid-cols-4 gap-x-2 sm:hidden">
                 {breakdownItems.map((item) => (
-                  <div key={item.key} className="flex items-center gap-1.5">
+                  <Skeleton key={item.key} className="h-7 w-full" />
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <AnimatedNumber
+                  value={formatNumber(totals?.totalTokens ?? 0)}
+                  animateKey={animateKey}
+                  className="text-lg font-bold sm:text-xl shrink-0"
+                />
+                <div className="hidden sm:block h-8 w-px bg-border shrink-0" />
+                <div className="hidden sm:grid grid-cols-2 gap-x-4 gap-y-0.5">
+                  {breakdownItems.map((item) => (
+                    <div key={item.key} className="flex items-center gap-1.5">
+                      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.dotClass}`} />
+                      <span className="text-[10px] text-muted-foreground">{item.label}</span>
+                      <AnimatedNumber
+                        value={formatNumber(totals?.[item.key] ?? 0)}
+                        animateKey={animateKey}
+                        className="text-xs font-semibold"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Mobile breakdown: horizontal row below the total */}
+              <div className="mt-2 grid grid-cols-4 gap-x-2 sm:hidden">
+                {breakdownItems.map((item) => (
+                  <div key={item.key} className="flex items-center gap-1 min-w-0">
                     <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.dotClass}`} />
-                    <span className="text-[10px] text-muted-foreground">{item.label}</span>
-                    <AnimatedNumber
-                      value={formatNumber(totals?.[item.key] ?? 0)}
-                      animateKey={animateKey}
-                      className="text-xs font-semibold"
-                    />
+                    <div className="min-w-0">
+                      <span className="text-[9px] leading-none text-muted-foreground">{item.label}</span>
+                      <AnimatedNumber
+                        value={formatNumber(totals?.[item.key] ?? 0)}
+                        animateKey={animateKey}
+                        className="block text-[11px] font-bold leading-tight"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-          {/* Mobile breakdown: horizontal row below the total */}
-          {!isLoading && (
-            <div className="mt-2 grid grid-cols-4 gap-x-2 sm:hidden">
-              {breakdownItems.map((item) => (
-                <div key={item.key} className="flex items-center gap-1 min-w-0">
-                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.dotClass}`} />
-                  <div className="min-w-0">
-                    <span className="text-[9px] leading-none text-muted-foreground">{item.label}</span>
-                    <AnimatedNumber
-                      value={formatNumber(totals?.[item.key] ?? 0)}
-                      animateKey={animateKey}
-                      className="block text-[11px] font-bold leading-tight"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            </>
           )}
         </CardContent>
       </Card>
@@ -130,7 +146,12 @@ export function StatsCards() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <Skeleton className="h-7 w-24" />
+            <>
+              <Skeleton className="h-7 w-24" />
+              <div className="mt-1">
+                <Skeleton className="h-4 w-28" />
+              </div>
+            </>
           ) : (
             <>
               <AnimatedNumber value={`$${monthlyCost.toFixed(2)}`} animateKey={animateKey} className="text-lg font-bold sm:text-xl" />

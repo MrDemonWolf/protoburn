@@ -46,7 +46,10 @@ export function VelocityTicker({ className }: { className?: string }) {
             <Gauge className="h-3.5 w-3.5 text-primary" />
             <span className="font-heading font-semibold">Token Velocity</span>
           </div>
-          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-7 w-28" />
+          <Skeleton className="h-5 w-20 mt-1.5" />
+          <Skeleton className="h-4 w-20 mt-1.5" />
+          <Skeleton className="h-4 w-16 mt-1.5" />
         </CardContent>
       </Card>
     );

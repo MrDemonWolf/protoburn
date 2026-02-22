@@ -75,12 +75,12 @@ export function AnimatedNumber({ value, animateKey, className, animateOnMount = 
   }, [phase]);
 
   if (prefersReducedMotion) {
-    return <div className={className}>{value}</div>;
+    return <div className={className} style={{ fontVariantNumeric: "tabular-nums" }}>{value}</div>;
   }
 
   // Render plain text when idle for natural font rendering
   if (phase === "idle") {
-    return <div className={className}>{value}</div>;
+    return <div className={className} style={{ fontVariantNumeric: "tabular-nums" }}>{value}</div>;
   }
 
   const chars = value.split("");

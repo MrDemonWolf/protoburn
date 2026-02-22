@@ -201,7 +201,20 @@ export function HeatmapCalendar({ className }: { className?: string }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-[120px] w-full" />
+          {/* Stats bar placeholder */}
+          <div className="mb-3 flex items-center gap-3">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-36" />
+          </div>
+          {/* Grid placeholder: 14 rows × ~17px each + header row */}
+          <Skeleton className="h-[200px] md:h-[255px] w-full" />
+          {/* Legend placeholder */}
+          <div className="mt-2.5 flex items-center justify-end gap-1.5">
+            <Skeleton className="h-3 w-8" />
+            <Skeleton className="h-[14px] w-[84px]" />
+            <Skeleton className="h-3 w-8" />
+          </div>
         </CardContent>
       </Card>
     );
