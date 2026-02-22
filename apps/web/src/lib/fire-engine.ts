@@ -29,6 +29,8 @@ export interface TierConfig {
   driftStrength: number;
   // Glow colors
   glowColorStops: Array<{ r: number; g: number; b: number; a: number }>;
+  // Particle size multiplier (2.5x epic boost)
+  particleSizeMultiplier: number;
 }
 
 const GLOW_WARM = [
@@ -54,75 +56,81 @@ export function tierToConfig(tier: BurnTier): TierConfig {
   switch (name) {
     case "meltdown":
       return {
-        emberCount: 145, flameCount: 73,
-        bottomGlowHeight: 0.88, bottomGlowOpacity: 0.98, bottomGlowPulseSpeed: Math.PI,
-        sideGlow: true, sideGlowWidth: 0.1, sideGlowOpacity: 0.77, sideGlowTop: 0, sideGlowPulse: false,
-        topGlow: true, topGlowHeight: 0.24, topGlowOpacity: 0.36, topGlowPulseSpeed: Math.PI,
+        emberCount: 360, flameCount: 180,
+        bottomGlowHeight: 0.98, bottomGlowOpacity: 0.99, bottomGlowPulseSpeed: Math.PI * 1.8,
+        sideGlow: true, sideGlowWidth: 0.25, sideGlowOpacity: 0.92, sideGlowTop: 0, sideGlowPulse: false,
+        topGlow: true, topGlowHeight: 0.40, topGlowOpacity: 0.55, topGlowPulseSpeed: Math.PI * 1.8,
         vignetteType: "meltdown", heatShimmer: true,
-        emberSpeedMin: 145, emberSpeedMax: 363,
-        flameSpeedMin: 121, flameSpeedMax: 242,
-        driftStrength: 182,
+        emberSpeedMin: 260, emberSpeedMax: 650,
+        flameSpeedMin: 218, flameSpeedMax: 436,
+        driftStrength: 328,
         glowColorStops: GLOW_DEFAULT,
+        particleSizeMultiplier: 2.0,
       };
     case "inferno":
       return {
-        emberCount: 66, flameCount: 34,
-        bottomGlowHeight: 0.48, bottomGlowOpacity: 0.73, bottomGlowPulseSpeed: Math.PI / 3,
-        sideGlow: true, sideGlowWidth: 0.073, sideGlowOpacity: 0.48, sideGlowTop: 0.1, sideGlowPulse: true,
-        topGlow: true, topGlowHeight: 0.17, topGlowOpacity: 0.26, topGlowPulseSpeed: Math.PI / 2,
+        emberCount: 165, flameCount: 85,
+        bottomGlowHeight: 0.80, bottomGlowOpacity: 0.92, bottomGlowPulseSpeed: Math.PI / 1.8,
+        sideGlow: true, sideGlowWidth: 0.17, sideGlowOpacity: 0.72, sideGlowTop: 0.05, sideGlowPulse: true,
+        topGlow: true, topGlowHeight: 0.30, topGlowOpacity: 0.42, topGlowPulseSpeed: Math.PI / 1.2,
         vignetteType: "inferno", heatShimmer: true,
-        emberSpeedMin: 85, emberSpeedMax: 220,
-        flameSpeedMin: 79, flameSpeedMax: 169,
-        driftStrength: 133,
+        emberSpeedMin: 153, emberSpeedMax: 396,
+        flameSpeedMin: 142, flameSpeedMax: 304,
+        driftStrength: 240,
         glowColorStops: GLOW_DEFAULT,
+        particleSizeMultiplier: 1.5,
       };
     case "blazing":
       return {
-        emberCount: 58, flameCount: 29,
-        bottomGlowHeight: 0.42, bottomGlowOpacity: 0.6, bottomGlowPulseSpeed: Math.PI * 2 / 3,
-        sideGlow: true, sideGlowWidth: 0.055, sideGlowOpacity: 0.42, sideGlowTop: 0.2, sideGlowPulse: true,
-        topGlow: true, topGlowHeight: 0.1, topGlowOpacity: 0.14, topGlowPulseSpeed: Math.PI / 3,
+        emberCount: 145, flameCount: 72,
+        bottomGlowHeight: 0.75, bottomGlowOpacity: 0.82, bottomGlowPulseSpeed: Math.PI * 1.2,
+        sideGlow: true, sideGlowWidth: 0.13, sideGlowOpacity: 0.62, sideGlowTop: 0.1, sideGlowPulse: true,
+        topGlow: true, topGlowHeight: 0.20, topGlowOpacity: 0.28, topGlowPulseSpeed: Math.PI / 1.8,
         vignetteType: "blazing", heatShimmer: true,
-        emberSpeedMin: 66, emberSpeedMax: 182,
-        flameSpeedMin: 66, flameSpeedMax: 145,
-        driftStrength: 109,
+        emberSpeedMin: 119, emberSpeedMax: 328,
+        flameSpeedMin: 119, flameSpeedMax: 261,
+        driftStrength: 196,
         glowColorStops: GLOW_BLAZING,
+        particleSizeMultiplier: 1.5,
       };
     case "burning":
       return {
-        emberCount: 46, flameCount: 22,
-        bottomGlowHeight: 0.34, bottomGlowOpacity: 0.5, bottomGlowPulseSpeed: Math.PI / 2,
-        sideGlow: true, sideGlowWidth: 0.042, sideGlowOpacity: 0.36, sideGlowTop: 0.29, sideGlowPulse: false,
+        emberCount: 115, flameCount: 55,
+        bottomGlowHeight: 0.65, bottomGlowOpacity: 0.72, bottomGlowPulseSpeed: Math.PI / 1.2,
+        sideGlow: true, sideGlowWidth: 0.10, sideGlowOpacity: 0.55, sideGlowTop: 0.15, sideGlowPulse: false,
         topGlow: false, topGlowHeight: 0, topGlowOpacity: 0, topGlowPulseSpeed: 0,
         vignetteType: "none", heatShimmer: false,
-        emberSpeedMin: 55, emberSpeedMax: 157,
-        flameSpeedMin: 55, flameSpeedMax: 133,
-        driftStrength: 85,
+        emberSpeedMin: 99, emberSpeedMax: 283,
+        flameSpeedMin: 99, flameSpeedMax: 240,
+        driftStrength: 153,
         glowColorStops: GLOW_BURNING,
+        particleSizeMultiplier: 1.5,
       };
     case "warm":
       return {
-        emberCount: 34, flameCount: 17,
-        bottomGlowHeight: 0.26, bottomGlowOpacity: 0.42, bottomGlowPulseSpeed: Math.PI / 3,
-        sideGlow: true, sideGlowWidth: 0.031, sideGlowOpacity: 0.31, sideGlowTop: 0.4, sideGlowPulse: false,
+        emberCount: 85, flameCount: 42,
+        bottomGlowHeight: 0.50, bottomGlowOpacity: 0.62, bottomGlowPulseSpeed: Math.PI / 1.8,
+        sideGlow: true, sideGlowWidth: 0.075, sideGlowOpacity: 0.48, sideGlowTop: 0.25, sideGlowPulse: false,
         topGlow: false, topGlowHeight: 0, topGlowOpacity: 0, topGlowPulseSpeed: 0,
         vignetteType: "none", heatShimmer: false,
-        emberSpeedMin: 42, emberSpeedMax: 133,
-        flameSpeedMin: 42, flameSpeedMax: 109,
-        driftStrength: 73,
+        emberSpeedMin: 76, emberSpeedMax: 240,
+        flameSpeedMin: 76, flameSpeedMax: 196,
+        driftStrength: 131,
         glowColorStops: GLOW_WARM,
+        particleSizeMultiplier: 1.5,
       };
     case "spark":
       return {
-        emberCount: 24, flameCount: 10,
-        bottomGlowHeight: 0.19, bottomGlowOpacity: 0.31, bottomGlowPulseSpeed: Math.PI / 4,
-        sideGlow: true, sideGlowWidth: 0.018, sideGlowOpacity: 0.19, sideGlowTop: 0.6, sideGlowPulse: false,
+        emberCount: 60, flameCount: 25,
+        bottomGlowHeight: 0.35, bottomGlowOpacity: 0.52, bottomGlowPulseSpeed: Math.PI / 2.4,
+        sideGlow: true, sideGlowWidth: 0.045, sideGlowOpacity: 0.35, sideGlowTop: 0.4, sideGlowPulse: false,
         topGlow: false, topGlowHeight: 0, topGlowOpacity: 0, topGlowPulseSpeed: 0,
         vignetteType: "none", heatShimmer: false,
-        emberSpeedMin: 36, emberSpeedMax: 109,
-        flameSpeedMin: 34, flameSpeedMax: 91,
-        driftStrength: 55,
+        emberSpeedMin: 65, emberSpeedMax: 196,
+        flameSpeedMin: 61, flameSpeedMax: 164,
+        driftStrength: 99,
         glowColorStops: GLOW_DEFAULT,
+        particleSizeMultiplier: 1.5,
       };
     default: // cold
       return {
@@ -135,16 +143,18 @@ export function tierToConfig(tier: BurnTier): TierConfig {
         flameSpeedMin: 0, flameSpeedMax: 0,
         driftStrength: 0,
         glowColorStops: [],
+        particleSizeMultiplier: 1,
       };
   }
 }
 
-// Ember colors: yellow, amber, orange, red
+// Ember colors: yellow, amber, orange, red, white-hot
 const EMBER_COLORS = [
   { r: 253, g: 224, b: 71 },  // yellow
   { r: 251, g: 191, b: 36 },  // amber
   { r: 249, g: 115, b: 22 },  // orange
   { r: 239, g: 68, b: 68 },   // red
+  { r: 255, g: 255, b: 240 }, // white-hot
 ];
 
 // Flame colors: white core → yellow → orange → red
@@ -195,7 +205,7 @@ export class FireEngine {
   private targetFlames = 0;
 
   constructor(config?: TierConfig) {
-    this.pool = new ParticlePool(256); // max meltdown is 180 particles
+    this.pool = new ParticlePool(700); // max meltdown is 540 particles
     this.config = config ?? tierToConfig({ name: "cold", embers: 0, flames: 0, glowOpacity: 0, glowHeight: "0", sideGlow: false, sideGlowWidth: "0", topGlow: false, topGlowHeight: "0" });
     this.noise2D = createNoise2D();
     if (config) {
@@ -226,25 +236,27 @@ export class FireEngine {
   private spawnParticle(i: number, kind: 0 | 1, w: number, h: number) {
     const p = this.pool;
     const cfg = this.config;
+    const sm = cfg.particleSizeMultiplier;
     p.kind[i] = kind;
     p.x[i] = Math.random() * w;
     p.y[i] = h + Math.random() * 20; // start just below bottom
-    p.colorIdx[i] = Math.floor(Math.random() * 4);
+    // Use 5-color palette (including white-hot) when size multiplier > 1.5
+    p.colorIdx[i] = Math.floor(Math.random() * (sm > 1.5 ? 5 : 4));
 
     if (kind === 0) {
       // Ember
-      p.size[i] = 2 + Math.random() * 5;
+      p.size[i] = (2 + Math.random() * 5) * sm;
       p.vy[i] = -(cfg.emberSpeedMin + Math.random() * (cfg.emberSpeedMax - cfg.emberSpeedMin));
       p.vx[i] = (Math.random() - 0.5) * cfg.driftStrength * 0.5;
       p.maxLife[i] = 3 + Math.random() * 5;
-      p.opacity[i] = 0.4 + Math.random() * 0.5;
+      p.opacity[i] = sm > 1.2 ? 0.5 + Math.random() * 0.45 : 0.4 + Math.random() * 0.5;
     } else {
       // Flame
-      p.size[i] = 12 + Math.random() * 20;
+      p.size[i] = (12 + Math.random() * 20) * sm;
       p.vy[i] = -(cfg.flameSpeedMin + Math.random() * (cfg.flameSpeedMax - cfg.flameSpeedMin));
       p.vx[i] = (Math.random() - 0.5) * cfg.driftStrength * 0.3;
       p.maxLife[i] = 2 + Math.random() * 3;
-      p.opacity[i] = 0.15 + Math.random() * 0.2;
+      p.opacity[i] = sm > 1.2 ? 0.2 + Math.random() * 0.25 : 0.15 + Math.random() * 0.2;
     }
     p.life[i] = 0;
   }

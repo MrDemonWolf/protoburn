@@ -187,21 +187,21 @@ void main() {
     vec3 vigColor;
 
     if (u_vignetteType > 2.5) {
-      // Meltdown: fast pulsing red
-      float pulse = 0.4 + 0.15 * sin(u_time * (6.2832 / 1.2));
-      innerR = 0.3;
+      // Meltdown: very fast pulsing red (0.8s cycle)
+      float pulse = 0.55 + 0.25 * sin(u_time * (6.2832 / 0.8));
+      innerR = 0.15;
       vigAlpha = smoothstep(innerR, 1.0, normDist) * pulse;
       vigColor = vec3(0.94, 0.27, 0.27);
     } else if (u_vignetteType > 1.5) {
-      // Inferno: slow pulsing red
-      float pulse = 0.12 + 0.06 * sin(u_time * (6.2832 / 3.5));
-      innerR = 0.5;
+      // Inferno: pulsing red (2.5x boost)
+      float pulse = 0.22 + 0.12 * sin(u_time * (6.2832 / 3.5));
+      innerR = 0.4;
       vigAlpha = smoothstep(innerR, 1.0, normDist) * pulse;
       vigColor = vec3(0.94, 0.27, 0.27);
     } else {
-      // Blazing: gentle pulsing orange
-      float pulse = 0.06 + 0.04 * sin(u_time * (6.2832 / 5.0));
-      innerR = 0.55;
+      // Blazing: pulsing orange (2.5x boost)
+      float pulse = 0.12 + 0.08 * sin(u_time * (6.2832 / 5.0));
+      innerR = 0.45;
       vigAlpha = smoothstep(innerR, 1.0, normDist) * pulse;
       vigColor = vec3(0.98, 0.45, 0.09);
     }
@@ -210,12 +210,14 @@ void main() {
     totalAlpha = max(totalAlpha, vigAlpha);
   }
 
-  // --- Heat shimmer (subtle ripple at bottom) ---
+  // --- Heat shimmer (ripple at bottom, enhanced for meltdown) ---
   if (u_heatShimmer > 0.5) {
-    float shimmerH = 0.15;
+    float shimmerH = u_heatShimmer > 1.5 ? 0.35 : 0.15;
     float shimmerMask = smoothstep(shimmerH, 0.0, uv.y);
     float shimmerNoise = snoise(vec2(uv.x * 10.0, u_time * 4.0));
-    float shimmerAlpha = shimmerMask * (0.06 + 0.04 * shimmerNoise);
+    float shimmerBase = u_heatShimmer > 1.5 ? 0.12 : 0.06;
+    float shimmerAmp = u_heatShimmer > 1.5 ? 0.08 : 0.04;
+    float shimmerAlpha = shimmerMask * (shimmerBase + shimmerAmp * shimmerNoise);
     totalColor += vec3(0.98, 0.45, 0.09) * shimmerAlpha;
     totalAlpha = max(totalAlpha, shimmerAlpha);
   }

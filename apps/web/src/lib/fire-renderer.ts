@@ -45,7 +45,7 @@ export function renderFireShader(
   gl.uniform1f(u.u_topHeight, config.topGlow ? config.topGlowHeight : 0);
   gl.uniform1f(u.u_topIntensity, config.topGlow ? config.topGlowOpacity : 0);
   gl.uniform1f(u.u_pulseSpeed, config.bottomGlowPulseSpeed);
-  gl.uniform1f(u.u_heatShimmer, config.heatShimmer ? 1 : 0);
+  gl.uniform1f(u.u_heatShimmer, config.heatShimmer ? (config.vignetteType === "meltdown" ? 2.0 : 1.0) : 0);
   gl.uniform1f(u.u_vignetteType, vignetteTypeToFloat(config.vignetteType));
   gl.uniform1f(u.u_vignetteIntensity, 1);
 
@@ -165,10 +165,13 @@ export function renderFallback(
     drawVignette(ctx, config.vignetteType, time, width, height);
   }
 
-  // Heat shimmer
+  // Heat shimmer (enhanced for meltdown)
   if (config.heatShimmer) {
-    const shimmerH = 0.15 * height;
-    const shimmerOpacity = 0.06 + 0.04 * Math.sin(time * 4);
+    const isMeltdownShimmer = config.vignetteType === "meltdown";
+    const shimmerH = (isMeltdownShimmer ? 0.35 : 0.15) * height;
+    const shimmerBase = isMeltdownShimmer ? 0.12 : 0.06;
+    const shimmerAmp = isMeltdownShimmer ? 0.08 : 0.04;
+    const shimmerOpacity = shimmerBase + shimmerAmp * Math.sin(time * 4);
     const sg = ctx.createLinearGradient(0, height, 0, height - shimmerH);
     sg.addColorStop(0, `rgba(249,115,22,${shimmerOpacity})`);
     sg.addColorStop(1, "transparent");
@@ -257,22 +260,22 @@ function drawVignette(
 
   switch (type) {
     case "meltdown": {
-      const pulse = 0.4 + 0.15 * Math.sin(time * (Math.PI * 2 / 1.2));
-      innerR = maxR * 0.3;
+      const pulse = 0.55 + 0.25 * Math.sin(time * (Math.PI * 2 / 0.8));
+      innerR = maxR * 0.15;
       baseAlpha = pulse;
       color = "239,68,68";
       break;
     }
     case "inferno": {
-      const pulse = 0.12 + 0.06 * Math.sin(time * (Math.PI * 2 / 3.5));
-      innerR = maxR * 0.5;
+      const pulse = 0.22 + 0.12 * Math.sin(time * (Math.PI * 2 / 3.5));
+      innerR = maxR * 0.4;
       baseAlpha = pulse;
       color = "239,68,68";
       break;
     }
     case "blazing": {
-      const pulse = 0.06 + 0.04 * Math.sin(time * (Math.PI * 2 / 5));
-      innerR = maxR * 0.55;
+      const pulse = 0.12 + 0.08 * Math.sin(time * (Math.PI * 2 / 5));
+      innerR = maxR * 0.45;
       baseAlpha = pulse;
       color = "249,115,22";
       break;
