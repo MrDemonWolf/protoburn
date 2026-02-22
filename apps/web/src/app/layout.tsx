@@ -6,6 +6,7 @@ import "../index.css";
 import Header from "@/components/header";
 import Providers from "@/components/providers";
 import { WallpaperCanvas } from "@/components/wallpaper-canvas";
+import { SwRegister } from "@/components/sw-register";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -53,6 +54,15 @@ export const metadata: Metadata = {
       "Track your Claude API spending, token usage, and prompt caching costs with a personal dashboard.",
     images: [`${process.env.NEXT_PUBLIC_SERVER_URL}/api/og`],
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "ProtoBurn",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default function RootLayout({
@@ -62,8 +72,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="theme-color" content="#00ACED" />
+      </head>
       <body className={`${montserrat.variable} ${roboto.variable} antialiased`}>
         <Providers>
+          <SwRegister />
           <WallpaperCanvas />
           <div className="relative z-10 flex min-h-svh flex-col bg-transparent md:h-svh md:overflow-hidden">
             <Header />
