@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import {
   Area,
   AreaChart,
@@ -9,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -44,15 +46,69 @@ const LEGEND_ITEMS = [
   { key: "cacheReadTokens", label: "Cache Read", color: "#8B5CF6" },
 ] as const;
 
+function formatRangeLabel(start: string, end: string): string {
+  const s = new Date(start + "T00:00:00");
+  const e = new Date(end + "T00:00:00");
+  const sameMonth = s.getMonth() === e.getMonth();
+  const startStr = s.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const endStr = sameMonth
+    ? e.toLocaleDateString("en-US", { day: "numeric" })
+    : e.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${startStr} – ${endStr}`;
+}
+
 export function UsageChart() {
-  const { data, isLoading } = useTimeSeries(7);
+  const { data: allData, isLoading } = useTimeSeries(90);
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  const maxWeekOffset = useMemo(() => {
+    if (!allData?.length) return 0;
+    return Math.max(0, Math.floor((allData.length - 1) / 7));
+  }, [allData]);
+
+  const { data, rangeLabel } = useMemo(() => {
+    if (!allData?.length) return { data: undefined, rangeLabel: "" };
+
+    const end = allData.length - weekOffset * 7;
+    const start = Math.max(0, end - 7);
+    const slice = allData.slice(start, end);
+
+    const label =
+      slice.length > 0
+        ? formatRangeLabel(slice[0]!.date, slice[slice.length - 1]!.date)
+        : "";
+
+    return { data: slice, rangeLabel: label };
+  }, [allData, weekOffset]);
 
   return (
     <Card className="flex min-h-[250px] flex-col">
       <CardHeader className="pb-2">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <CardTitle>Usage Trend</CardTitle>
-          <span className="text-xs text-muted-foreground">Last 7 days</span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setWeekOffset((o) => Math.min(o + 1, maxWeekOffset))}
+              disabled={weekOffset >= maxWeekOffset}
+              className="inline-flex h-5 w-5 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label="Previous week"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <span className="min-w-[90px] text-center text-xs text-muted-foreground">
+              {rangeLabel}
+            </span>
+            <button
+              type="button"
+              onClick={() => setWeekOffset((o) => Math.max(o - 1, 0))}
+              disabled={weekOffset <= 0}
+              className="inline-flex h-5 w-5 items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label="Next week"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
           <div className="ml-auto flex items-center gap-3">
             {LEGEND_ITEMS.map((item) => (
               <div key={item.key} className="flex items-center gap-1.5">
