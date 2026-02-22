@@ -95,21 +95,21 @@ export function MostUsedModel({ className }: { className?: string }) {
             return (
               <div
                 key={model.model}
-                className={`flex items-baseline justify-between gap-4 ${
+                className={`${
                   i > 0 ? "border-t border-border/50 pt-1.5 mt-1.5" : ""
                 } ${!isFirst ? "text-muted-foreground" : ""}`}
               >
-                <div className="flex items-baseline gap-1.5 min-w-0">
+                <div className="flex items-baseline gap-1.5">
                   <span className={isFirst ? "text-sm" : "text-xs"}>{MEDALS[i]}</span>
                   <span
-                    className={`font-heading font-bold tracking-tight truncate ${
+                    className={`font-heading font-bold tracking-tight ${
                       isFirst ? "text-sm md:text-base" : "text-xs"
                     }`}
                   >
                     {cleanModelName(model.model)}
                   </span>
                 </div>
-                <div className="flex items-baseline gap-3 shrink-0">
+                <div className="flex items-baseline gap-3 justify-end">
                   <AnimatedNumber
                     value={formatNumber(model.totalTokens)}
                     animateKey={animateKey}
@@ -118,7 +118,7 @@ export function MostUsedModel({ className }: { className?: string }) {
                   <AnimatedNumber
                     value={`$${cost.toFixed(2)}`}
                     animateKey={animateKey}
-                    className={`font-heading font-bold shrink-0 ${
+                    className={`font-heading font-bold ${
                       isFirst ? "text-sm" : "text-xs"
                     }`}
                   />

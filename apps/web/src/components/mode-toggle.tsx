@@ -9,7 +9,7 @@ export function ModeToggle() {
   return (
     <button
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className="relative flex h-8 w-14 items-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm p-0.5 transition-colors hover:bg-accent"
+      className="relative flex h-8 w-14 items-center rounded-full p-0.5 transition-colors hover:bg-accent"
       aria-label="Toggle theme"
     >
       <span

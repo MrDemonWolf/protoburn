@@ -9,11 +9,13 @@ import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
-import { calculateCost } from "@/lib/pricing";
-import { cleanModelName } from "@/lib/format";
+import { getTier } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
-const COLORS = ["#00ACED", "#0B7CC1", "#F59E0B", "#8B5CF6", "#10B981"];
+const SEGMENTS = [
+  { key: "regular", label: "Regular", color: "#00ACED" },
+  { key: "cached", label: "Cached", color: "#8B5CF6" },
+] as const;
 
 export function CostBreakdown({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
@@ -36,23 +38,29 @@ export function CostBreakdown({ className }: { className?: string }) {
   const { chartData, totalCost } = useMemo(() => {
     if (!data?.models?.length) return { chartData: [], totalCost: 0 };
 
-    const entries = data.models
-      .map((m) => ({
-        name: cleanModelName(m.model),
-        cost: calculateCost(
-          m.model,
-          m.inputTokens,
-          m.outputTokens,
-          m.cacheCreationTokens,
-          m.cacheReadTokens,
-        ),
-      }))
-      .filter((e) => e.cost > 0)
-      .sort((a, b) => b.cost - a.cost);
+    let regularCost = 0;
+    let cachedCost = 0;
+
+    for (const m of data.models) {
+      const tier = getTier(m.model);
+      regularCost += (m.inputTokens / 1_000_000) * tier.inputPerMillion;
+      regularCost += (m.outputTokens / 1_000_000) * tier.outputPerMillion;
+      cachedCost += (m.cacheCreationTokens / 1_000_000) * tier.cacheWritePerMillion;
+      cachedCost += (m.cacheReadTokens / 1_000_000) * tier.cacheReadPerMillion;
+    }
+
+    const costs: Record<string, number> = {
+      regular: regularCost,
+      cached: cachedCost,
+    };
+
+    const entries = SEGMENTS
+      .map((s) => ({ ...s, cost: costs[s.key]! }))
+      .filter((e) => e.cost > 0);
 
     return {
       chartData: entries,
-      totalCost: entries.reduce((sum, e) => sum + e.cost, 0),
+      totalCost: regularCost + cachedCost,
     };
   }, [data]);
 
@@ -91,7 +99,7 @@ export function CostBreakdown({ className }: { className?: string }) {
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <PieChartIcon className="h-3.5 w-3.5 text-primary" />
           <span className="font-heading font-semibold">Cost Split</span>
-          <InfoTooltip text="Per-model cost breakdown for the current month, calculated from actual token usage and model-specific pricing." />
+          <InfoTooltip text="Monthly cost split by token type: regular input/output vs cached (write/read). Shows where your spend goes." />
         </div>
         <div className="relative mx-auto mt-1 h-[72px] w-[72px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -99,7 +107,7 @@ export function CostBreakdown({ className }: { className?: string }) {
               <Pie
                 data={chartData}
                 dataKey="cost"
-                nameKey="name"
+                nameKey="label"
                 cx="50%"
                 cy="50%"
                 innerRadius={20}
@@ -107,8 +115,8 @@ export function CostBreakdown({ className }: { className?: string }) {
                 strokeWidth={1}
                 stroke="var(--background)"
               >
-                {chartData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                {chartData.map((entry) => (
+                  <Cell key={entry.key} fill={entry.color} />
                 ))}
               </Pie>
             </PieChart>
@@ -122,13 +130,13 @@ export function CostBreakdown({ className }: { className?: string }) {
           </div>
         </div>
         <div className="mt-1 space-y-0.5">
-          {chartData.slice(0, 3).map((entry, i) => (
-            <div key={entry.name} className="flex items-center gap-1.5 text-[10px]">
+          {chartData.map((entry) => (
+            <div key={entry.key} className="flex items-center gap-1.5 text-[10px]">
               <span
                 className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
-                style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                style={{ backgroundColor: entry.color }}
               />
-              <span className="truncate text-muted-foreground">{entry.name}</span>
+              <span className="truncate text-muted-foreground">{entry.label}</span>
               <span className="ml-auto shrink-0 font-medium">${entry.cost.toFixed(2)}</span>
             </div>
           ))}

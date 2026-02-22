@@ -61,19 +61,20 @@ export default function Header() {
           ProtoBurn
         </Link>
         <div className="flex items-center gap-2">
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm">
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent disabled:opacity-50"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-accent disabled:opacity-50"
               aria-label="Refresh data"
               title="Refresh data"
             >
               <RefreshCw className={`h-3.5 w-3.5 text-muted-foreground ${refreshing ? "animate-spin" : ""}`} />
             </button>
+            <div className="h-4 w-px bg-[var(--glass-border)]" />
             <button
               onClick={toggle}
-              className="flex h-8 items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm px-2.5 text-xs transition-colors hover:bg-accent"
+              className="flex h-8 items-center gap-1.5 px-2.5 text-xs transition-colors hover:bg-accent"
               aria-label="Toggle fire effects"
               title={enabled ? "Disable fire effects" : "Enable fire effects"}
             >
@@ -86,12 +87,13 @@ export default function Header() {
                 <span className="text-muted-foreground">{enabled ? "On" : "Off"}</span>
               )}
             </button>
+            <div className="h-4 w-px bg-[var(--glass-border)]" />
             <button
               onClick={() => {
                 soundEngine?.ensureContext();
                 toggleSound();
               }}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-accent"
               aria-label="Toggle sound effects"
               title={soundEnabled ? "Disable sound effects" : "Enable sound effects"}
             >
@@ -101,6 +103,7 @@ export default function Header() {
                 <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />
               )}
             </button>
+            <div className="h-4 w-px bg-[var(--glass-border)]" />
             <ModeToggle />
           </div>
           <MobileDrawer />
