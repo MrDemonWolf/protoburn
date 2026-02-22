@@ -7,13 +7,11 @@ import { env } from "@protoburn/env/server";
 import { sql, lt, sum, and, gte } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { logger } from "hono/logger";
 import { z } from "zod";
 import { getBurnTierName } from "./lib/burn-tiers";
 
 const app = new Hono();
 
-app.use(logger());
 app.use(
   "/*",
   cors({
@@ -21,6 +19,17 @@ app.use(
     allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
   }),
 );
+
+// Cache tRPC GET responses at the Cloudflare CDN edge (5 min)
+app.use("/trpc/*", async (c, next) => {
+  await next();
+  if (c.req.method === "GET") {
+    c.header(
+      "Cache-Control",
+      "public, s-maxage=300, max-age=60, stale-while-revalidate=600",
+    );
+  }
+});
 
 app.use(
   "/trpc/*",
@@ -103,10 +112,21 @@ app.post("/api/usage", async (c) => {
     date: r.date,
   }));
 
-  // D1 has a 100 bound-parameter limit per query; batch inserts to stay under
+  // D1 has a 100 bound-parameter limit per query; batch upserts to stay under
   const BATCH_SIZE = 10;
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    await db.insert(schema.tokenUsage).values(rows.slice(i, i + BATCH_SIZE));
+    await db
+      .insert(schema.tokenUsage)
+      .values(rows.slice(i, i + BATCH_SIZE))
+      .onConflictDoUpdate({
+        target: [schema.tokenUsage.model, schema.tokenUsage.date],
+        set: {
+          inputTokens: sql`excluded.input_tokens`,
+          outputTokens: sql`excluded.output_tokens`,
+          cacheCreationTokens: sql`excluded.cache_creation_tokens`,
+          cacheReadTokens: sql`excluded.cache_read_tokens`,
+        },
+      });
   }
 
   // Check if tier changed after insert
