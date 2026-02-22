@@ -13,14 +13,16 @@ export function cleanModelName(model: string) {
 }
 
 export function getFireLevel(cost: number): { flames: number; color: string; animation: string } {
-  if (cost >= 2500) return { flames: 10, color: "text-red-600", animation: "animate-flame-rage" };
-  if (cost >= 2000) return { flames: 9, color: "text-red-500", animation: "animate-flame-rage" };
-  if (cost >= 1500) return { flames: 8, color: "text-red-500", animation: "animate-flame-dance" };
-  if (cost >= 1100) return { flames: 7, color: "text-red-400", animation: "animate-flame-dance" };
-  if (cost >= 800) return { flames: 6, color: "text-orange-500", animation: "animate-flame-dance" };
-  if (cost >= 500) return { flames: 5, color: "text-orange-500", animation: "animate-flame-flicker" };
-  if (cost >= 300) return { flames: 4, color: "text-orange-400", animation: "animate-flame-flicker" };
-  if (cost >= 125) return { flames: 3, color: "text-orange-400", animation: "animate-flame-flicker" };
+  if (cost >= 4000) return { flames: 16, color: "text-rose-600", animation: "animate-flame-nuclear" };
+  if (cost >= 3000) return { flames: 14, color: "text-rose-600", animation: "animate-flame-nuclear" };
+  if (cost >= 2500) return { flames: 12, color: "text-red-600", animation: "animate-flame-rage" };
+  if (cost >= 2000) return { flames: 10, color: "text-red-500", animation: "animate-flame-rage" };
+  if (cost >= 1500) return { flames: 9, color: "text-red-500", animation: "animate-flame-dance" };
+  if (cost >= 1100) return { flames: 8, color: "text-red-400", animation: "animate-flame-dance" };
+  if (cost >= 800) return { flames: 7, color: "text-orange-500", animation: "animate-flame-dance" };
+  if (cost >= 500) return { flames: 6, color: "text-orange-500", animation: "animate-flame-flicker" };
+  if (cost >= 300) return { flames: 5, color: "text-orange-400", animation: "animate-flame-flicker" };
+  if (cost >= 125) return { flames: 4, color: "text-orange-400", animation: "animate-flame-flicker" };
   if (cost >= 25) return { flames: 2, color: "text-yellow-500", animation: "" };
   if (cost > 0) return { flames: 1, color: "text-yellow-500", animation: "" };
   return { flames: 0, color: "text-muted-foreground", animation: "" };
