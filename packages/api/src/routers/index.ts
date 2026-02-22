@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, gte, lt, sum } from "drizzle-orm";
+import { and, gte, lt, sql, sum } from "drizzle-orm";
 import db, { schema } from "@protoburn/db";
 import { publicProcedure, router } from "../index";
 import { calculateVelocity } from "../lib/velocity";
@@ -29,10 +29,21 @@ const tokenUsageRouter = router({
         cacheReadTokens: r.cacheReadTokens,
         date: r.date,
       }));
-      // D1 has a 100 bound-parameter limit per query; batch inserts to stay under
+      // D1 has a 100 bound-parameter limit per query; batch upserts to stay under
       const BATCH_SIZE = 10;
       for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-        await db.insert(schema.tokenUsage).values(rows.slice(i, i + BATCH_SIZE));
+        await db
+          .insert(schema.tokenUsage)
+          .values(rows.slice(i, i + BATCH_SIZE))
+          .onConflictDoUpdate({
+            target: [schema.tokenUsage.model, schema.tokenUsage.date],
+            set: {
+              inputTokens: sql`excluded.input_tokens`,
+              outputTokens: sql`excluded.output_tokens`,
+              cacheCreationTokens: sql`excluded.cache_creation_tokens`,
+              cacheReadTokens: sql`excluded.cache_read_tokens`,
+            },
+          });
       }
       return { count: rows.length };
     }),

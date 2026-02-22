@@ -421,11 +421,7 @@ async function syncOnce(full: boolean): Promise<boolean> {
     console.log("Syncing all usage data ...");
   }
 
-  // Clear DB before full sync to avoid duplicates
-  if (full) {
-    await clearDb();
-  }
-
+  // Upserts are idempotent — no need to clear DB for full sync
   const statsCache = full ? parseStatsCache() : new Map();
   const { usage: sessions, latestTs } = parseSessions(since);
   const usage = full ? mergeUsage(statsCache, sessions) : sessions;

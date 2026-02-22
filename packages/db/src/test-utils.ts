@@ -17,7 +17,7 @@ sqlite.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_date ON token_usage(date);
   CREATE INDEX IF NOT EXISTS idx_model ON token_usage(model);
-  CREATE INDEX IF NOT EXISTS idx_model_date ON token_usage(model, date);
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_model_date ON token_usage(model, date);
 
   CREATE TABLE IF NOT EXISTS monthly_usage (
     id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),

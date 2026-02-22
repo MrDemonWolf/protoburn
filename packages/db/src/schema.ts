@@ -20,7 +20,7 @@ export const tokenUsage = sqliteTable(
   (table) => [
     index("idx_date").on(table.date),
     index("idx_model").on(table.model),
-    index("idx_model_date").on(table.model, table.date),
+    uniqueIndex("idx_unique_model_date").on(table.model, table.date),
   ],
 );
 
