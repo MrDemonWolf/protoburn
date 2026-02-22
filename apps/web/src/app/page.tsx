@@ -1,13 +1,11 @@
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { VelocityTicker } from "@/components/dashboard/velocity-ticker";
-import { CacheEfficiency } from "@/components/dashboard/cache-efficiency";
 import { MonthlyAchievements } from "@/components/dashboard/monthly-achievements";
 import { UsageChart } from "@/components/dashboard/usage-chart";
 import { MostUsedModel } from "@/components/dashboard/most-used-model";
 import { HeatmapCalendar } from "@/components/dashboard/heatmap-calendar";
 import { CostForecast } from "@/components/dashboard/cost-forecast";
 import { MonthlyBurnHistory } from "@/components/dashboard/monthly-burn-history";
-import { OutputRatio } from "@/components/dashboard/output-ratio";
 import { KonamiEasterEgg } from "@/components/konami-easter-egg";
 import { BurnIntensity, MeltdownShake } from "@/components/burn-intensity";
 import { env } from "@protoburn/env/web";
@@ -20,14 +18,12 @@ export default function Home() {
       <MeltdownShake>
         <main className="container mx-auto flex flex-1 flex-col gap-2 p-2 sm:gap-3 sm:p-3 md:gap-4 md:p-4">
           <StatsCards />
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4 xl:grid-cols-7">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-6">
             <MostUsedModel className="col-span-2 sm:col-span-3 md:col-span-1" />
             <VelocityTicker />
             <CostForecast />
-            <CacheEfficiency />
-            <OutputRatio />
             <MonthlyBurnHistory />
-            <MonthlyAchievements className="col-span-2 sm:col-span-1" />
+            <MonthlyAchievements className="col-span-2" />
           </div>
           <div className="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-[1fr_auto] md:gap-4 md:min-h-0 md:flex-1 md:max-h-[50vh] [&>*]:md:min-h-0">
             <UsageChart />
