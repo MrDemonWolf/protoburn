@@ -261,7 +261,15 @@ export class FireEngine {
     p.life[i] = 0;
   }
 
-  update(dt: number, width: number, height: number) {
+  static decayMouse(mouse: MouseState, dt: number) {
+    if (mouse.active) {
+      mouse.strength = Math.min(1, mouse.strength + dt * 4.0);
+    } else {
+      mouse.strength = Math.max(0, mouse.strength - dt * 2.0);
+    }
+  }
+
+  update(dt: number, width: number, height: number, mouse?: MouseState) {
     this.time += dt;
     const p = this.pool;
     const cfg = this.config;
@@ -311,8 +319,26 @@ export class FireEngine {
       const jitterX = this.noise2D(i * 0.7 + t * 2, p.y[i] * 0.01) * 20;
       const jitterY = this.noise2D(i * 0.7 + 50, t * 1.5 + p.y[i] * 0.01) * 10;
 
-      p.x[i] += (p.vx[i] + noiseX + jitterX) * dt;
-      p.y[i] += (p.vy[i] + noiseY + jitterY) * dt;
+      let attractX = 0;
+      let attractY = 0;
+      if (mouse && mouse.strength > 0) {
+        const dx = mouse.x - p.x[i];
+        const dy = mouse.y - p.y[i];
+        const distSq = dx * dx + dy * dy;
+        const radiusSq = 150 * 150;
+        if (distSq < radiusSq && distSq > 1) {
+          const dist = Math.sqrt(distSq);
+          const force = (1 - dist / 150) * 200 * mouse.strength;
+          const nx = dx / dist;
+          const ny = dy / dist;
+          // Radial attraction + 30% tangential swirl
+          attractX = nx * force + (-ny) * force * 0.3;
+          attractY = ny * force + nx * force * 0.3;
+        }
+      }
+
+      p.x[i] += (p.vx[i] + noiseX + jitterX + attractX) * dt;
+      p.y[i] += (p.vy[i] + noiseY + jitterY + attractY) * dt;
 
       // Remove dead particles (life exceeded or off-screen)
       const lifeRatio = p.life[i] / p.maxLife[i];
@@ -346,6 +372,13 @@ export class FireEngine {
       }
     }
   }
+}
+
+export interface MouseState {
+  x: number;
+  y: number;
+  active: boolean;
+  strength: number; // 0..1, smoothed
 }
 
 export { EMBER_COLORS, FLAME_COLORS };

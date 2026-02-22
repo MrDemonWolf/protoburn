@@ -1,4 +1,4 @@
-import type { ParticlePool, TierConfig } from "./fire-engine";
+import type { ParticlePool, TierConfig, MouseState } from "./fire-engine";
 import { EMBER_COLORS, FLAME_COLORS } from "./fire-engine";
 import type { FireProgram } from "./fire-shaders";
 
@@ -20,6 +20,7 @@ export function renderFireShader(
   time: number,
   width: number,
   height: number,
+  mouse?: MouseState | null,
 ) {
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
   gl.clearColor(0, 0, 0, 0);
@@ -48,6 +49,15 @@ export function renderFireShader(
   gl.uniform1f(u.u_heatShimmer, config.heatShimmer ? (config.vignetteType === "meltdown" ? 2.0 : 1.0) : 0);
   gl.uniform1f(u.u_vignetteType, vignetteTypeToFloat(config.vignetteType));
   gl.uniform1f(u.u_vignetteIntensity, 1);
+
+  // Mouse cursor glow
+  if (mouse && mouse.strength > 0) {
+    gl.uniform2f(u.u_mousePos, mouse.x / width, 1.0 - mouse.y / height);
+    gl.uniform1f(u.u_mouseStrength, mouse.strength);
+  } else {
+    gl.uniform2f(u.u_mousePos, -1, -1);
+    gl.uniform1f(u.u_mouseStrength, 0);
+  }
 
   // Draw fullscreen triangle (3 vertices, no buffer needed — vertex ID trick)
   gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -100,6 +110,7 @@ export function renderFallback(
   time: number,
   width: number,
   height: number,
+  mouse?: MouseState | null,
 ) {
   ctx.clearRect(0, 0, width, height);
 
@@ -177,6 +188,18 @@ export function renderFallback(
     sg.addColorStop(1, "transparent");
     ctx.fillStyle = sg;
     ctx.fillRect(0, height - shimmerH, width, shimmerH);
+  }
+
+  // Mouse cursor glow
+  if (mouse && mouse.strength > 0) {
+    const radius = 120;
+    const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, radius);
+    const a = mouse.strength * 0.4;
+    grad.addColorStop(0, `rgba(255,170,50,${a})`);
+    grad.addColorStop(0.4, `rgba(255,140,30,${a * 0.5})`);
+    grad.addColorStop(1, "transparent");
+    ctx.fillStyle = grad;
+    ctx.fillRect(mouse.x - radius, mouse.y - radius, radius * 2, radius * 2);
   }
 
   // Particles

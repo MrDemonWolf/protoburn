@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { BurnTier } from "@/lib/burn-tiers";
-import { FireEngine, tierToConfig } from "@/lib/fire-engine";
+import { FireEngine, tierToConfig, type MouseState } from "@/lib/fire-engine";
 import { renderFireShader, renderParticles, renderFallback } from "@/lib/fire-renderer";
 import { createFireProgram, type FireProgram } from "@/lib/fire-shaders";
 
@@ -18,6 +18,7 @@ export function BurnCanvas({ tier }: BurnCanvasProps) {
   const lastTimeRef = useRef<number>(0);
   const webglRef = useRef<{ gl: WebGL2RenderingContext; prog: FireProgram } | null>(null);
   const fallbackRef = useRef(false);
+  const mouseRef = useRef<MouseState>({ x: 0, y: 0, active: false, strength: 0 });
 
   useEffect(() => {
     const glCanvas = glCanvasRef.current;
@@ -98,6 +99,23 @@ export function BurnCanvas({ tier }: BurnCanvasProps) {
     ro.observe(glCanvas);
     resize();
 
+    // Mouse tracking (canvas has pointer-events:none, so listen on document)
+    function onPointerMove(e: PointerEvent) {
+      if (!glCanvas) return;
+      const rect = glCanvas.getBoundingClientRect();
+      mouseRef.current.x = e.clientX - rect.left;
+      mouseRef.current.y = e.clientY - rect.top;
+      mouseRef.current.active = true;
+    }
+    function onPointerLeave() {
+      mouseRef.current.active = false;
+    }
+
+    if (!prefersReducedMotion) {
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerleave", onPointerLeave);
+    }
+
     // If reduced motion, render a single static frame
     if (prefersReducedMotion) {
       if (useWebGL && gl && prog) {
@@ -120,20 +138,23 @@ export function BurnCanvas({ tier }: BurnCanvasProps) {
       const dt = Math.min((now - lastTimeRef.current) / 1000, 0.1);
       lastTimeRef.current = now;
 
-      engine.update(dt, width, height);
+      const mouse = mouseRef.current;
+      FireEngine.decayMouse(mouse, dt);
+
+      engine.update(dt, width, height, mouse);
       const engineConfig = engine.getConfig();
       const engineTime = engine.getTime();
 
       if (useWebGL && gl && prog) {
         // Layer 1: WebGL procedural fire
-        renderFireShader(gl, prog, engineConfig, engineTime, width, height);
+        renderFireShader(gl, prog, engineConfig, engineTime, width, height, mouse);
         // Layer 2: Canvas 2D particles on top
         if (particleCtx) {
           renderParticles(particleCtx, engine.getPool(), width, height);
         }
       } else if (ctx2d) {
         // Fallback: everything on one canvas
-        renderFallback(ctx2d, engine.getPool(), engineConfig, engineTime, width, height);
+        renderFallback(ctx2d, engine.getPool(), engineConfig, engineTime, width, height, mouse);
       }
 
       rafRef.current = requestAnimationFrame(frame);
@@ -158,6 +179,8 @@ export function BurnCanvas({ tier }: BurnCanvasProps) {
       running = false;
       cancelAnimationFrame(rafRef.current);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerleave", onPointerLeave);
       ro.disconnect();
     };
   }, [tier]);

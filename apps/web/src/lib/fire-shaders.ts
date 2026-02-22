@@ -30,6 +30,10 @@ uniform float u_topIntensity;    // 0-1
 uniform float u_pulseSpeed;      // rad/s for bottom glow pulse
 uniform float u_heatShimmer;     // 0 or 1
 
+// Mouse cursor glow
+uniform vec2 u_mousePos;         // normalized UV (0..1)
+uniform float u_mouseStrength;   // 0..1
+
 // Vignette: 0=none, 1=blazing, 2=inferno, 3=meltdown
 uniform float u_vignetteType;
 uniform float u_vignetteIntensity;
@@ -222,6 +226,19 @@ void main() {
     totalAlpha = max(totalAlpha, shimmerAlpha);
   }
 
+  // --- Mouse cursor glow ---
+  if (u_mouseStrength > 0.0) {
+    vec2 mouseUV = u_mousePos;
+    vec2 diff = (uv - mouseUV) * vec2(aspect, 1.0);
+    float mouseDist = length(diff);
+    float mouseGlow = smoothstep(0.12, 0.0, mouseDist);
+    mouseGlow *= mouseGlow; // quadratic falloff for softness
+    mouseGlow *= u_mouseStrength * 0.6;
+    vec3 mouseCol = mix(vec3(1.0, 0.6, 0.1), vec3(1.0, 0.85, 0.3), mouseGlow);
+    totalColor += mouseCol * mouseGlow;
+    totalAlpha = max(totalAlpha, mouseGlow * 0.5);
+  }
+
   fragColor = vec4(totalColor, totalAlpha);
 }
 `;
@@ -240,6 +257,8 @@ export interface FireUniforms {
   u_heatShimmer: WebGLUniformLocation | null;
   u_vignetteType: WebGLUniformLocation | null;
   u_vignetteIntensity: WebGLUniformLocation | null;
+  u_mousePos: WebGLUniformLocation | null;
+  u_mouseStrength: WebGLUniformLocation | null;
 }
 
 export interface FireProgram {
@@ -295,6 +314,8 @@ export function createFireProgram(gl: WebGL2RenderingContext): FireProgram {
     u_heatShimmer: loc("u_heatShimmer"),
     u_vignetteType: loc("u_vignetteType"),
     u_vignetteIntensity: loc("u_vignetteIntensity"),
+    u_mousePos: loc("u_mousePos"),
+    u_mouseStrength: loc("u_mouseStrength"),
   };
 
   // Empty VAO for the fullscreen triangle (vertex ID trick)
