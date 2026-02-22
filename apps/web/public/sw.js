@@ -1,4 +1,4 @@
-const CACHE_NAME = "protoburn-v1";
+const CACHE_NAME = "protoburn-v2";
 const STATIC_ASSETS = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -23,6 +23,9 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Skip non-http(s) requests (e.g. chrome-extension://)
+  if (!url.protocol.startsWith("http")) return;
+
   // Network-first for API/tRPC calls
   if (url.pathname.startsWith("/trpc/") || url.pathname.startsWith("/api/")) {
     event.respondWith(
@@ -31,7 +34,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for static assets
+  // Network-first for Next.js hashed chunks — ensures fresh assets after deploy
+  if (url.pathname.startsWith("/_next/")) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok && request.method === "GET") {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Cache-first for other static assets (images, fonts, manifest)
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
