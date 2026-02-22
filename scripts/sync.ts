@@ -413,7 +413,14 @@ function printDashboard(data: Awaited<ReturnType<typeof fetchDashboard>>) {
 // ---------------------------------------------------------------------------
 
 async function syncOnce(full: boolean): Promise<boolean> {
-  const since = full ? "" : getLastSync();
+  let since = full ? "" : getLastSync();
+
+  // Clamp to start-of-day so we always re-scan the full current day.
+  // The upsert replaces the (model, date) row, so we need complete totals.
+  if (since) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (since > today) since = today;
+  }
 
   if (since) {
     console.log(`Syncing usage since ${since.slice(0, 19)} ...`);
