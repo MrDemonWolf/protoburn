@@ -8,13 +8,12 @@ import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
+import { useVelocity } from "@/hooks/use-velocity";
 import { calculateCost } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
 export function CostForecast({ className }: { className?: string }) {
-  const { data: velocityData, isLoading: velocityLoading } = useQuery(
-    trpc.tokenUsage.velocity.queryOptions(),
-  );
+  const { data: velocityData, isLoading: velocityLoading } = useVelocity();
   const { data: monthlyData, isLoading: monthlyLoading } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );

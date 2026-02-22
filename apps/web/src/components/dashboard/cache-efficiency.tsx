@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
 import { trpc } from "@/utils/trpc";
+import { useTimeSeries } from "@/hooks/use-time-series";
 import { computeCacheAnalytics } from "@/lib/cache-analytics";
 import { cn } from "@/lib/utils";
 
@@ -30,9 +31,7 @@ export function CacheEfficiency({ className }: { className?: string }) {
   const { data: modelData, isLoading: modelsLoading } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );
-  const { data: timeSeriesData, isLoading: timeSeriesLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 30 }),
-  );
+  const { data: timeSeriesData, isLoading: timeSeriesLoading } = useTimeSeries(30);
 
   const isFetching = useIsFetching();
   const wasFetchingRef = useRef(false);

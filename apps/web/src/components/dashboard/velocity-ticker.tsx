@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useQuery, useIsFetching } from "@tanstack/react-query";
+import { useIsFetching } from "@tanstack/react-query";
 import { Gauge, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
-import { trpc } from "@/utils/trpc";
+import { useVelocity } from "@/hooks/use-velocity";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -21,9 +21,7 @@ function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
 }
 
 export function VelocityTicker({ className }: { className?: string }) {
-  const { data, isLoading } = useQuery(
-    trpc.tokenUsage.velocity.queryOptions(),
-  );
+  const { data, isLoading } = useVelocity();
 
   const isFetching = useIsFetching();
   const wasFetchingRef = useRef(false);

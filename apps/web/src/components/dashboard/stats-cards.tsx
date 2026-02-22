@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
+import { useTotals } from "@/hooks/use-totals";
 import { calculateCost } from "@/lib/pricing";
 import { formatNumber, getFireLevel } from "@/lib/format";
 import { env } from "@protoburn/env/web";
@@ -19,9 +20,7 @@ const breakdownItems = [
 ] as const;
 
 export function StatsCards() {
-  const { data: totals, isLoading: totalsLoading } = useQuery(
-    trpc.tokenUsage.totals.queryOptions(),
-  );
+  const { data: totals, isLoading: totalsLoading } = useTotals();
   const { data: monthly, isLoading: monthlyLoading } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );

@@ -1,12 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Calendar, Flame, Zap } from "lucide-react";
 import { Tooltip } from "@base-ui/react/tooltip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { trpc } from "@/utils/trpc";
+import { useTimeSeries } from "@/hooks/use-time-series";
 import { formatNumber } from "@/lib/format";
 import { calculateCost } from "@/lib/pricing";
 
@@ -172,9 +171,7 @@ function computeStats(days: DayData[]) {
 }
 
 export function HeatmapCalendar({ className }: { className?: string }) {
-  const { data, isLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 90 }),
-  );
+  const { data, isLoading } = useTimeSeries(90);
 
   const processed = useMemo(() => {
     if (!data) return null;

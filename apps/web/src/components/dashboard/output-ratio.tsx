@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
 import { trpc } from "@/utils/trpc";
+import { useTimeSeries } from "@/hooks/use-time-series";
 import { cn } from "@/lib/utils";
 
 interface PersonalityLabel {
@@ -29,9 +30,7 @@ export function OutputRatio({ className }: { className?: string }) {
   const { data: monthlyData, isLoading: monthlyLoading } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );
-  const { data: timeSeriesData, isLoading: timeSeriesLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 14 }),
-  );
+  const { data: timeSeriesData, isLoading: timeSeriesLoading } = useTimeSeries(14);
 
   const isFetching = useIsFetching();
   const wasFetchingRef = useRef(false);

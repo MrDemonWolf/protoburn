@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import {
   Area,
   AreaChart,
@@ -17,7 +16,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { trpc } from "@/utils/trpc";
+import { useTimeSeries } from "@/hooks/use-time-series";
 
 const chartConfig = {
   inputTokens: {
@@ -46,9 +45,7 @@ const LEGEND_ITEMS = [
 ] as const;
 
 export function UsageChart() {
-  const { data, isLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 7 }),
-  );
+  const { data, isLoading } = useTimeSeries(7);
 
   return (
     <Card className="flex min-h-[250px] flex-col">

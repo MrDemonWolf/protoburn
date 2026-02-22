@@ -9,6 +9,7 @@ import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
+import { useTimeSeries } from "@/hooks/use-time-series";
 import { BADGE_DEFINITIONS, evaluateBadges, getEarnedCount } from "@/lib/achievements";
 import { cn } from "@/lib/utils";
 
@@ -16,9 +17,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
   const { data: modelData, isLoading: isLoadingModels } = useQuery(
     trpc.tokenUsage.byModelMonthly.queryOptions(),
   );
-  const { data: timeSeriesData, isLoading: isLoadingTimeSeries } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 30 }),
-  );
+  const { data: timeSeriesData, isLoading: isLoadingTimeSeries } = useTimeSeries(30);
   const isLoading = isLoadingModels || isLoadingTimeSeries;
 
   const isFetching = useIsFetching();
