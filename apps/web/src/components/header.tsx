@@ -5,6 +5,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { ModeToggle } from "./mode-toggle";
+import { MobileDrawer } from "./mobile-drawer";
 import { useBurnEnabled, useEffectiveTier } from "./burn-intensity";
 import { useSoundEnabled } from "./sound-provider";
 import { trpc } from "@/utils/trpc";
@@ -60,46 +61,49 @@ export default function Header() {
           ProtoBurn
         </Link>
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent disabled:opacity-50"
-            aria-label="Refresh data"
-            title="Refresh data"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 text-muted-foreground ${refreshing ? "animate-spin" : ""}`} />
-          </button>
-          <button
-            onClick={toggle}
-            className="flex h-8 items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm px-2.5 text-xs transition-colors hover:bg-accent"
-            aria-label="Toggle fire effects"
-            title={enabled ? "Disable fire effects" : "Enable fire effects"}
-          >
-            <Flame className={`h-3.5 w-3.5 ${enabled ? `${TIER_COLORS[tier.name] ?? "text-orange-500"} ${TIER_ANIMATIONS[tier.name] ?? ""}` : "text-muted-foreground"}`} />
-            {tier.name !== "cold" && enabled ? (
-              <span className={`font-medium capitalize ${TIER_COLORS[tier.name] ?? "text-muted-foreground"}`}>
-                {tier.name}
-              </span>
-            ) : (
-              <span className="text-muted-foreground">{enabled ? "On" : "Off"}</span>
-            )}
-          </button>
-          <button
-            onClick={() => {
-              soundEngine?.ensureContext();
-              toggleSound();
-            }}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent"
-            aria-label="Toggle sound effects"
-            title={soundEnabled ? "Disable sound effects" : "Enable sound effects"}
-          >
-            {soundEnabled ? (
-              <Volume2 className="h-3.5 w-3.5 text-muted-foreground" />
-            ) : (
-              <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />
-            )}
-          </button>
-          <ModeToggle />
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent disabled:opacity-50"
+              aria-label="Refresh data"
+              title="Refresh data"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 text-muted-foreground ${refreshing ? "animate-spin" : ""}`} />
+            </button>
+            <button
+              onClick={toggle}
+              className="flex h-8 items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm px-2.5 text-xs transition-colors hover:bg-accent"
+              aria-label="Toggle fire effects"
+              title={enabled ? "Disable fire effects" : "Enable fire effects"}
+            >
+              <Flame className={`h-3.5 w-3.5 ${enabled ? `${TIER_COLORS[tier.name] ?? "text-orange-500"} ${TIER_ANIMATIONS[tier.name] ?? ""}` : "text-muted-foreground"}`} />
+              {tier.name !== "cold" && enabled ? (
+                <span className={`font-medium capitalize ${TIER_COLORS[tier.name] ?? "text-muted-foreground"}`}>
+                  {tier.name}
+                </span>
+              ) : (
+                <span className="text-muted-foreground">{enabled ? "On" : "Off"}</span>
+              )}
+            </button>
+            <button
+              onClick={() => {
+                soundEngine?.ensureContext();
+                toggleSound();
+              }}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-card/40 backdrop-blur-sm transition-colors hover:bg-accent"
+              aria-label="Toggle sound effects"
+              title={soundEnabled ? "Disable sound effects" : "Enable sound effects"}
+            >
+              {soundEnabled ? (
+                <Volume2 className="h-3.5 w-3.5 text-muted-foreground" />
+              ) : (
+                <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+            </button>
+            <ModeToggle />
+          </div>
+          <MobileDrawer />
         </div>
       </div>
     </div>
