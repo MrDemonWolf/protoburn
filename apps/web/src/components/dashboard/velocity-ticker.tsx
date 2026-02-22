@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { Gauge, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
@@ -82,6 +83,7 @@ export function VelocityTicker({ className }: { className?: string }) {
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Gauge className="h-3.5 w-3.5 text-primary" />
             <span className="font-heading font-semibold">Token Velocity</span>
+            <InfoTooltip text="Average tokens processed per hour based on your active usage days. Projects your estimated month-end total using current pace." />
           </div>
           <AnimatedNumber
             value={`~${formatNumber(data.tokensPerHour)}/hr`}

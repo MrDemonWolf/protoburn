@@ -10,6 +10,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
@@ -57,6 +58,7 @@ export function CacheEfficiency({ className }: { className?: string }) {
             <span className="font-heading font-semibold">
               Cache Efficiency
             </span>
+            <InfoTooltip text="Ratio of cache reads to total cache tokens (reads + writes). Higher means more prompt cache reuse, saving you money on repeated context." />
           </div>
           <Skeleton className="h-5 w-24" />
         </CardContent>
@@ -87,6 +89,7 @@ export function CacheEfficiency({ className }: { className?: string }) {
             <span className="font-heading font-semibold">
               Cache Efficiency
             </span>
+            <InfoTooltip text="Ratio of cache reads to total cache tokens (reads + writes). Higher means more prompt cache reuse, saving you money on repeated context." />
           </div>
           <p className="text-xs text-muted-foreground">No cache data yet</p>
         </CardContent>
@@ -105,6 +108,7 @@ export function CacheEfficiency({ className }: { className?: string }) {
             <span className="font-heading font-semibold">
               Cache Efficiency
             </span>
+            <InfoTooltip text="Ratio of cache reads to total cache tokens (reads + writes). Higher means more prompt cache reuse, saving you money on repeated context." />
           </div>
           <AnimatedNumber
             value={`${ratioPercent}%`}

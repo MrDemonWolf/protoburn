@@ -8,8 +8,6 @@ import { HeatmapCalendar } from "@/components/dashboard/heatmap-calendar";
 import { CostForecast } from "@/components/dashboard/cost-forecast";
 import { MonthlyBurnHistory } from "@/components/dashboard/monthly-burn-history";
 import { OutputRatio } from "@/components/dashboard/output-ratio";
-import { ModelMix } from "@/components/dashboard/model-mix";
-import { MonthComparison } from "@/components/dashboard/month-comparison";
 import { KonamiEasterEgg } from "@/components/konami-easter-egg";
 import { BurnIntensity, MeltdownShake } from "@/components/burn-intensity";
 import { env } from "@protoburn/env/web";
@@ -22,20 +20,18 @@ export default function Home() {
       <MeltdownShake>
         <main className="container mx-auto flex flex-1 flex-col gap-2 p-2 sm:gap-3 sm:p-3 md:gap-4 md:p-4">
           <StatsCards />
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4 xl:grid-cols-8">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4 xl:grid-cols-7">
             <MostUsedModel className="col-span-2 sm:col-span-3 md:col-span-1" />
             <VelocityTicker />
             <CostForecast />
             <CacheEfficiency />
             <OutputRatio />
             <MonthlyBurnHistory />
-            <ModelMix />
-            <MonthlyAchievements className="col-span-2 sm:col-span-1 md:col-span-1" />
+            <MonthlyAchievements className="col-span-2 sm:col-span-1" />
           </div>
-          <div className="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-[1fr_auto_auto] md:gap-4 md:min-h-0 md:flex-1 md:max-h-[50vh] [&>*]:md:min-h-0">
+          <div className="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-[1fr_auto] md:gap-4 md:min-h-0 md:flex-1 md:max-h-[50vh] [&>*]:md:min-h-0">
             <UsageChart />
-            <HeatmapCalendar className="md:overflow-y-auto" />
-            <MonthComparison className="md:overflow-y-auto md:w-[220px]" />
+            <HeatmapCalendar />
           </div>
         </main>
         <footer className="glass-bar relative z-20 border-t border-[var(--_bar-border)] py-3">

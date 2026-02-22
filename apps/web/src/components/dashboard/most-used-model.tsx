@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { Cpu } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
@@ -42,6 +43,7 @@ export function MostUsedModel({ className }: { className?: string }) {
           <div className="flex items-center gap-2 mb-2">
             <Cpu className="size-4 text-primary" />
             <span className="text-xs text-muted-foreground">Top Models</span>
+            <InfoTooltip text="Your top 3 most-used Claude models ranked by all-time total token usage, with estimated cost per model." />
           </div>
           <Skeleton className="h-5 w-32 mb-1.5" />
           <Skeleton className="h-4 w-24" />

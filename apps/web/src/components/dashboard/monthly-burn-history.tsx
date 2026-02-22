@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { Flame } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
@@ -84,6 +85,7 @@ export function MonthlyBurnHistory({ className }: { className?: string }) {
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Flame className="h-3.5 w-3.5 text-orange-500" />
             <span className="font-heading font-semibold">Monthly Burn</span>
+            <InfoTooltip text="Token usage per month over the last 8 months. Bar colors match burn tier intensity. Shows month-over-month change percentage." />
           </div>
           <Skeleton className="h-5 w-24" />
         </CardContent>
@@ -127,6 +129,7 @@ export function MonthlyBurnHistory({ className }: { className?: string }) {
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Flame className="h-3.5 w-3.5 text-orange-500" />
             <span className="font-heading font-semibold">Monthly Burn</span>
+            <InfoTooltip text="Token usage per month over the last 8 months. Bar colors match burn tier intensity. Shows month-over-month change percentage." />
           </div>
           {/* Mini bar chart */}
           <div className="flex items-end gap-0.5 h-8">

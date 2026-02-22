@@ -73,7 +73,7 @@ function buildGrid(days: DayData[]): { weeks: WeekRow[]; maxTokens: number } {
 
   const today = new Date();
   const start = new Date(today);
-  start.setDate(start.getDate() - 179);
+  start.setDate(start.getDate() - 89);
 
   // Align start to Monday
   const startDay = start.getDay();
@@ -149,7 +149,7 @@ function computeStats(days: DayData[]) {
 
   // Find the most recent day with data
   let checkDate = new Date(today);
-  for (let i = 0; i < 180; i++) {
+  for (let i = 0; i < 90; i++) {
     const dateStr = toLocalDateStr(checkDate);
     const dayData = sorted.find((d) => d.date === dateStr);
     if (dayData && dayData.totalTokens > 0) {
@@ -173,7 +173,7 @@ function computeStats(days: DayData[]) {
 
 export function HeatmapCalendar({ className }: { className?: string }) {
   const { data, isLoading } = useQuery(
-    trpc.tokenUsage.timeSeries.queryOptions({ days: 180 }),
+    trpc.tokenUsage.timeSeries.queryOptions({ days: 90 }),
   );
 
   const processed = useMemo(() => {
@@ -233,7 +233,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
         <CardTitle className="flex items-center gap-2">
           <Calendar className="size-4" />
           Activity
-          <span className="text-muted-foreground text-xs font-normal">Last 6 months</span>
+          <span className="text-muted-foreground text-xs font-normal">Last 3 months</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -258,7 +258,7 @@ export function HeatmapCalendar({ className }: { className?: string }) {
           )}
         </div>
 
-        <div className="overflow-y-auto">
+        <div>
           <div
             className="inline-grid gap-[3px] [--cell:11px] md:[--cell:14px]"
             style={{

@@ -127,7 +127,7 @@ Ambient fire particle effects based on monthly total token usage including cache
 
 ## UI Details
 
-- **Layout**: Mobile-friendly responsive — scrollable on mobile (`min-h-svh`), fixed no-scroll viewport on desktop (`md:h-svh md:overflow-hidden`); 3-row desktop layout: StatsCards → 8 middle-row cards (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-8`) → UsageChart (`md:flex-1`); stats cards stack single-column on narrow screens (`grid-cols-1 sm:grid-cols-2`); middle-row cards fit on one line at xl+ (1280px); on mobile all sections stack vertically; chart has `min-h-[250px]` on mobile, `md:flex-1` on desktop; spacing/fonts reduce on mobile (`gap-3 p-3 md:gap-4 md:p-4`)
+- **Layout**: Mobile-friendly responsive — scrollable on mobile (`min-h-svh`), fixed no-scroll viewport on desktop (`md:h-svh md:overflow-hidden`); 3-row desktop layout: StatsCards → 7 middle-row cards (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7`) → UsageChart + HeatmapCalendar (`md:flex-1`); stats cards stack single-column on narrow screens (`grid-cols-1 sm:grid-cols-2`); middle-row cards fit on one line at xl+ (1280px); on mobile all sections stack vertically; chart has `min-h-[250px]` on mobile, `md:flex-1` on desktop; spacing/fonts reduce on mobile (`gap-3 p-3 md:gap-4 md:p-4`)
 - **Header**: Backdrop blur (`bg-background/80 backdrop-blur-md`), z-20 above burn embers; contains refresh button, fire toggle with tier label, and dark/light mode toggle
 - **Mode toggle**: Pill-style switch (sun/moon), click to toggle between light and dark
 - **Refresh button**: Invalidates all React Query caches, spinning animation during refresh; triggers odometer roll-up animation on stat cards and top models when refetch completes (skipped if data unchanged)

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { Activity } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { SparkLine } from "@/components/ui/spark-line";
@@ -82,6 +83,7 @@ export function OutputRatio({ className }: { className?: string }) {
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Activity className="h-3.5 w-3.5 text-primary" />
             <span className="font-heading font-semibold">Output Ratio</span>
+            <InfoTooltip text="Ratio of output tokens to input tokens (including cache). Shows how verbose Claude's responses are relative to your prompts." />
           </div>
           <Skeleton className="h-5 w-24" />
         </CardContent>
@@ -133,6 +135,7 @@ export function OutputRatio({ className }: { className?: string }) {
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Activity className="h-3.5 w-3.5 text-primary" />
             <span className="font-heading font-semibold">Output Ratio</span>
+            <InfoTooltip text="Ratio of output tokens to input tokens (including cache). Shows how verbose Claude's responses are relative to your prompts." />
           </div>
           {/* Gauge */}
           <svg

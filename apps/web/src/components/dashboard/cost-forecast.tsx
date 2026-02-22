@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
@@ -129,6 +130,7 @@ export function CostForecast({ className }: { className?: string }) {
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <DollarSign className="h-3.5 w-3.5 text-green-500" />
             <span className="font-heading font-semibold">Cost Forecast</span>
+            <InfoTooltip text="Projected end-of-month cost using linear extrapolation from your current burn rate. Color indicates cost trend vs. last month." />
           </div>
           <Skeleton className="h-5 w-24" />
         </CardContent>
@@ -170,6 +172,7 @@ export function CostForecast({ className }: { className?: string }) {
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <DollarSign className="h-3.5 w-3.5 text-green-500" />
             <span className="font-heading font-semibold">Cost Forecast</span>
+            <InfoTooltip text="Projected end-of-month cost using linear extrapolation from your current burn rate. Color indicates cost trend vs. last month." />
           </div>
           <AnimatedNumber
             value={`$${Math.ceil(forecast.projectedCost)}`}

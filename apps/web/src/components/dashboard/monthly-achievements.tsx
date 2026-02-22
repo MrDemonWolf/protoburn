@@ -5,6 +5,7 @@ import { useQuery, useIsFetching } from "@tanstack/react-query";
 import { Trophy } from "lucide-react";
 import { Tooltip } from "@base-ui/react/tooltip";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { trpc } from "@/utils/trpc";
@@ -63,6 +64,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Trophy className="h-3.5 w-3.5 text-amber-500" />
             <span className="font-heading font-semibold">Achievements</span>
+            <InfoTooltip text="Badges earned based on your monthly usage patterns — token milestones, model diversity, streak days, and more." />
           </div>
           <Skeleton className="h-5 w-20" />
         </CardContent>
@@ -77,6 +79,7 @@ export function MonthlyAchievements({ className }: { className?: string }) {
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Trophy className="h-3.5 w-3.5 text-amber-500" />
             <span className="font-heading font-semibold">Achievements</span>
+            <InfoTooltip text="Badges earned based on your monthly usage patterns — token milestones, model diversity, streak days, and more." />
           </div>
           <AnimatedNumber
             value={`${earnedCount}/${BADGE_DEFINITIONS.length} earned`}
