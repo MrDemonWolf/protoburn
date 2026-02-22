@@ -39,12 +39,18 @@ export const BADGE_DEFINITIONS: Badge[] = [
   { id: "week-streak", emoji: "\u{1F4C5}", name: "Week Streak", requirement: "7+ consecutive days with usage" },
   { id: "two-week-streak", emoji: "\u26A1", name: "Two-Week Streak", requirement: "14+ consecutive days with usage" },
   { id: "monthly-streak", emoji: "\u{1F3C5}", name: "Monthly Streak", requirement: "30+ consecutive days with usage" },
+  // Absence badges
+  { id: "touch-grass", emoji: "\u{1F33F}", name: "Touch Grass", requirement: "7+ consecutive days without usage" },
+  { id: "detox-complete", emoji: "\u{1F9D8}", name: "Detox Complete", requirement: "14+ consecutive days without usage" },
+  { id: "ghost-mode", emoji: "\u{1F47B}", name: "Ghost Mode", requirement: "30+ consecutive days without usage" },
+  // Weekend warrior
+  { id: "weekend-warrior", emoji: "\u{1F4AA}", name: "Weekend Warrior", requirement: "Used tokens on both Saturday and Sunday in the same week" },
   // Burn tier progression
-  { id: "spark-starter", emoji: "\u{2728}", name: "Spark Starter", requirement: "Reached Spark tier (5M+ tokens)" },
-  { id: "on-fire", emoji: "\u{1F525}", name: "On Fire", requirement: "Reached Burning tier (400M+ tokens)" },
-  { id: "blazing-glory", emoji: "\u{1F31F}", name: "Blazing Glory", requirement: "Reached Blazing tier (1B+ tokens)" },
-  { id: "inferno-survivor", emoji: "\u26A0\uFE0F", name: "Inferno Survivor", requirement: "Reached Inferno tier (2B+ tokens)" },
-  { id: "meltdown", emoji: "\u{2622}\uFE0F", name: "Meltdown", requirement: "Reached Meltdown tier (3B+ tokens)" },
+  { id: "spark-starter", emoji: "\u{2728}", name: "Spark Starter", requirement: "Reached Spark tier (7.5M+ tokens)" },
+  { id: "on-fire", emoji: "\u{1F525}", name: "On Fire", requirement: "Reached Burning tier (600M+ tokens)" },
+  { id: "blazing-glory", emoji: "\u{1F31F}", name: "Blazing Glory", requirement: "Reached Blazing tier (1.5B+ tokens)" },
+  { id: "inferno-survivor", emoji: "\u26A0\uFE0F", name: "Inferno Survivor", requirement: "Reached Inferno tier (3B+ tokens)" },
+  { id: "meltdown", emoji: "\u{2622}\uFE0F", name: "Meltdown", requirement: "Reached Meltdown tier (4.5B+ tokens)" },
   { id: "beyond-meltdown", emoji: "\u{1F480}", name: "Beyond Meltdown", requirement: "Hit 5B+ tokens in a single month" },
 ];
 
@@ -104,6 +110,67 @@ export function computeMaxStreak(days: DailyUsage[]): number {
   }
 
   return maxStreak;
+}
+
+export function computeMaxGap(days: DailyUsage[]): number {
+  if (days.length === 0) return 0;
+
+  const sorted = [...days].sort((a, b) => a.date.localeCompare(b.date));
+
+  let maxGap = 0;
+  let currentGap = 0;
+  let prevDate: Date | null = null;
+
+  for (const day of sorted) {
+    const currentDate = new Date(day.date + "T00:00:00");
+    const totalTokens = day.inputTokens + day.outputTokens;
+
+    if (totalTokens === 0) {
+      if (prevDate) {
+        const diffMs = currentDate.getTime() - prevDate.getTime();
+        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          currentGap++;
+        } else {
+          currentGap = 1;
+        }
+      } else {
+        currentGap = 1;
+      }
+      if (currentGap > maxGap) maxGap = currentGap;
+      prevDate = currentDate;
+    } else {
+      currentGap = 0;
+      prevDate = currentDate;
+    }
+  }
+
+  return maxGap;
+}
+
+export function hasWeekendWarrior(days: DailyUsage[]): boolean {
+  if (days.length === 0) return false;
+
+  // Group usage days by ISO week (week starts Monday)
+  const weekMap = new Map<string, Set<number>>();
+  for (const day of days) {
+    const totalTokens = day.inputTokens + day.outputTokens;
+    if (totalTokens === 0) continue;
+    const d = new Date(day.date + "T00:00:00");
+    const dow = d.getDay(); // 0=Sun, 6=Sat
+    // Get ISO week key: year + week number
+    const jan1 = new Date(d.getFullYear(), 0, 1);
+    const weekNum = Math.ceil(((d.getTime() - jan1.getTime()) / 86400000 + jan1.getDay() + 1) / 7);
+    const key = `${d.getFullYear()}-W${weekNum}`;
+    if (!weekMap.has(key)) weekMap.set(key, new Set());
+    weekMap.get(key)!.add(dow);
+  }
+
+  // Check if any week has both Saturday (6) and Sunday (0)
+  for (const daysSet of weekMap.values()) {
+    if (daysSet.has(0) && daysSet.has(6)) return true;
+  }
+  return false;
 }
 
 export function evaluateBadges(data: MonthlyData): Set<string> {
@@ -175,6 +242,15 @@ export function evaluateBadges(data: MonthlyData): Set<string> {
     if (maxStreak >= 7) earned.add("week-streak");
     if (maxStreak >= 14) earned.add("two-week-streak");
     if (maxStreak >= 30) earned.add("monthly-streak");
+
+    // Absence badges
+    const maxGap = computeMaxGap(data.timeSeries);
+    if (maxGap >= 7) earned.add("touch-grass");
+    if (maxGap >= 14) earned.add("detox-complete");
+    if (maxGap >= 30) earned.add("ghost-mode");
+
+    // Weekend warrior
+    if (hasWeekendWarrior(data.timeSeries)) earned.add("weekend-warrior");
   }
 
   // Burn tier badges

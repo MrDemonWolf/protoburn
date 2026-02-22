@@ -19,11 +19,23 @@ const BADGE_CATEGORIES = [
   },
   {
     label: "Cache",
-    ids: ["cache-champion", "big-saver", "mega-saver"],
+    ids: ["cache-champion", "cache-wizard", "big-saver", "mega-saver", "giga-saver"],
   },
   {
     label: "Model & Spending",
-    ids: ["model-explorer", "pro-burner", "max-burner", "ultra-burner"],
+    ids: ["model-explorer", "pro-burner", "max-burner", "ultra-burner", "whale-burner", "legendary-burner", "galaxy-burner"],
+  },
+  {
+    label: "Output & Ratio",
+    ids: ["chatterbox", "verbose-king", "listener", "balanced"],
+  },
+  {
+    label: "Streaks",
+    ids: ["three-day-streak", "week-streak", "two-week-streak", "monthly-streak", "weekend-warrior"],
+  },
+  {
+    label: "Absence",
+    ids: ["touch-grass", "detox-complete", "ghost-mode"],
   },
   {
     label: "Burn Tier Progression",
@@ -32,13 +44,13 @@ const BADGE_CATEGORIES = [
 ] as const;
 
 const BURN_TIERS = [
-  { name: "Cold", threshold: "< 5M tokens", color: "text-muted-foreground" },
-  { name: "Spark", threshold: "5M+", color: "text-amber-400" },
-  { name: "Warm", threshold: "100M+", color: "text-amber-500" },
-  { name: "Burning", threshold: "400M+", color: "text-orange-500" },
-  { name: "Blazing", threshold: "1B+", color: "text-orange-600" },
-  { name: "Inferno", threshold: "2B+", color: "text-red-500" },
-  { name: "Meltdown", threshold: "3B+", color: "text-red-600" },
+  { name: "Cold", threshold: "< 7.5M tokens", color: "text-muted-foreground" },
+  { name: "Spark", threshold: "7.5M+", color: "text-amber-400" },
+  { name: "Warm", threshold: "150M+", color: "text-amber-500" },
+  { name: "Burning", threshold: "600M+", color: "text-orange-500" },
+  { name: "Blazing", threshold: "1.5B+", color: "text-orange-600" },
+  { name: "Inferno", threshold: "3B+", color: "text-red-500" },
+  { name: "Meltdown", threshold: "4.5B+", color: "text-red-600" },
 ] as const;
 
 const badgeMap = new Map(BADGE_DEFINITIONS.map((b) => [b.id, b]));

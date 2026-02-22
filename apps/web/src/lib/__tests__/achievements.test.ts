@@ -612,8 +612,8 @@ describe("getEarnedCount", () => {
 });
 
 describe("BADGE_DEFINITIONS", () => {
-  it("has 30 badges", () => {
-    expect(BADGE_DEFINITIONS).toHaveLength(30);
+  it("has 34 badges", () => {
+    expect(BADGE_DEFINITIONS).toHaveLength(34);
   });
 
   it("all badges have unique ids", () => {
