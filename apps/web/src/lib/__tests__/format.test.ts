@@ -90,16 +90,23 @@ describe("getFireLevel", () => {
     expect(getFireLevel(2500).animation).toBe("animate-flame-rage");
   });
 
+  it("returns nuclear animation for cost >= $3000", () => {
+    expect(getFireLevel(3000).animation).toBe("animate-flame-nuclear");
+    expect(getFireLevel(4000).animation).toBe("animate-flame-nuclear");
+  });
+
   it("returns correct flame counts at each threshold", () => {
     expect(getFireLevel(25).flames).toBe(2);
-    expect(getFireLevel(125).flames).toBe(3);
-    expect(getFireLevel(300).flames).toBe(4);
-    expect(getFireLevel(500).flames).toBe(5);
-    expect(getFireLevel(800).flames).toBe(6);
-    expect(getFireLevel(1100).flames).toBe(7);
-    expect(getFireLevel(1500).flames).toBe(8);
-    expect(getFireLevel(2000).flames).toBe(9);
-    expect(getFireLevel(2500).flames).toBe(10);
-    expect(getFireLevel(10000).flames).toBe(10);
+    expect(getFireLevel(125).flames).toBe(4);
+    expect(getFireLevel(300).flames).toBe(5);
+    expect(getFireLevel(500).flames).toBe(6);
+    expect(getFireLevel(800).flames).toBe(7);
+    expect(getFireLevel(1100).flames).toBe(8);
+    expect(getFireLevel(1500).flames).toBe(9);
+    expect(getFireLevel(2000).flames).toBe(10);
+    expect(getFireLevel(2500).flames).toBe(12);
+    expect(getFireLevel(3000).flames).toBe(14);
+    expect(getFireLevel(4000).flames).toBe(16);
+    expect(getFireLevel(10000).flames).toBe(16);
   });
 });

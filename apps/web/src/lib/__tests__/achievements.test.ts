@@ -202,27 +202,27 @@ describe("evaluateBadges", () => {
   });
 
   // Burn tier progression
-  it("earns spark-starter at 5M+ tokens", () => {
+  it("earns spark-starter at 7.5M+ tokens", () => {
     const earned = evaluateBadges({
-      totalTokens: 5_000_000,
+      totalTokens: 7_500_000,
       models: makeModels([{}]),
     });
     expect(earned.has("spark-starter")).toBe(true);
     expect(earned.has("on-fire")).toBe(false);
   });
 
-  it("earns on-fire at 400M+ tokens (burning tier)", () => {
+  it("earns on-fire at 600M+ tokens (burning tier)", () => {
     const earned = evaluateBadges({
-      totalTokens: 400_000_000,
+      totalTokens: 600_000_000,
       models: makeModels([{}]),
     });
     expect(earned.has("on-fire")).toBe(true);
     expect(earned.has("blazing-glory")).toBe(false);
   });
 
-  it("earns blazing-glory at 1B+ tokens", () => {
+  it("earns blazing-glory at 1.5B+ tokens", () => {
     const earned = evaluateBadges({
-      totalTokens: 1_000_000_000,
+      totalTokens: 1_500_000_000,
       models: makeModels([{}]),
     });
     expect(earned.has("blazing-glory")).toBe(true);
@@ -230,9 +230,9 @@ describe("evaluateBadges", () => {
     expect(earned.has("inferno-survivor")).toBe(false);
   });
 
-  it("earns inferno-survivor at 2B+ tokens", () => {
+  it("earns inferno-survivor at 3B+ tokens", () => {
     const earned = evaluateBadges({
-      totalTokens: 2_000_000_000,
+      totalTokens: 3_000_000_000,
       models: makeModels([{}]),
     });
     expect(earned.has("inferno-survivor")).toBe(true);
@@ -240,9 +240,9 @@ describe("evaluateBadges", () => {
     expect(earned.has("meltdown")).toBe(false);
   });
 
-  it("earns meltdown at 3B+ tokens", () => {
+  it("earns meltdown at 4.5B+ tokens", () => {
     const earned = evaluateBadges({
-      totalTokens: 3_000_000_000,
+      totalTokens: 4_500_000_000,
       models: makeModels([{}]),
     });
     expect(earned.has("meltdown")).toBe(true);
@@ -261,7 +261,7 @@ describe("evaluateBadges", () => {
 
   it("does not earn beyond-meltdown below 5B", () => {
     const earned = evaluateBadges({
-      totalTokens: 4_500_000_000,
+      totalTokens: 4_900_000_000,
       models: makeModels([{}]),
     });
     expect(earned.has("meltdown")).toBe(true);
