@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { trpc } from "@/utils/trpc";
 import { getBurnTier, TIERS, type BurnTier } from "@/lib/burn-tiers";
@@ -267,13 +267,58 @@ export function MeltdownShake({ children }: { children: ReactNode }) {
 
   const tier = useEffectiveTier(monthlyTokens);
   const isMeltdown = enabled && (tier.isMeltdown ?? false);
+  const turbulenceRef = useRef<SVGFETurbulenceElement>(null);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (!isMeltdown) return;
+    // Respect prefers-reduced-motion
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const animate = () => {
+      const t = performance.now() / 1000;
+      const bfx = 0.013 + 0.004 * Math.sin(t * 0.7);
+      const bfy = 0.015 + 0.005 * Math.sin(t * 1.1);
+      turbulenceRef.current?.setAttribute("baseFrequency", `${bfx} ${bfy}`);
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [isMeltdown]);
 
   return (
-    <div
-      className="flex flex-1 flex-col overflow-auto"
-      style={isMeltdown ? { animation: "screenShake 0.15s linear infinite" } : undefined}
-    >
-      {children}
-    </div>
+    <>
+      {isMeltdown && (
+        <svg width="0" height="0" style={{ position: "absolute" }}>
+          <defs>
+            <filter id="meltFilter">
+              <feTurbulence
+                ref={turbulenceRef}
+                type="turbulence"
+                baseFrequency="0.013 0.015"
+                numOctaves={3}
+                result="turbulence"
+              />
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="turbulence"
+                scale={14}
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+            </filter>
+          </defs>
+        </svg>
+      )}
+      <div
+        className="flex flex-1 flex-col overflow-auto"
+        style={isMeltdown ? {
+          animation: "screenShake 0.15s linear infinite",
+          filter: "url(#meltFilter)",
+        } : undefined}
+      >
+        {children}
+      </div>
+    </>
   );
 }
