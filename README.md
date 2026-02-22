@@ -6,12 +6,24 @@ Track your Claude API spending and token usage with a personal dashboard. Monito
 
 - **Monthly Cost Tracking**: Estimated API spend per month with a fire indicator that intensifies as costs rise.
 - **Top Models Leaderboard**: Trophy-ranked top 3 models with gold/silver/bronze medals and per-model cost.
-- **Token Usage Stats**: Real-time cards showing total, input, and output tokens.
-- **Time-Series Charts**: Stacked area charts to visualize usage trends over time.
-- **Burn Intensity System**: Ambient fire particle effects that scale with monthly token usage — from a few floating embers at 100K tokens to a full-screen meltdown inferno at 50M+. Toggleable from the header with localStorage persistence.
-- **Tier Preview**: Append `?flametier=meltdown` (or any tier: cold, spark, warm, burning, blazing, inferno, meltdown) to preview fire effects.
+- **Token Usage Stats**: Real-time cards showing total, input, output, cache write, and cache read tokens — all with odometer roll-up animations.
+- **Prompt Caching Tracking**: Tracks cache creation and cache read tokens separately from regular input tokens, with accurate per-model cost calculation.
+- **Time-Series Charts**: Stacked area charts (input, output, cache write, cache read) with weekly navigation to browse historical data.
+- **Heatmap Calendar**: GitHub-contribution-style 90-day grid showing daily token usage intensity with hover tooltips.
+- **Cost Breakdown Donut**: Pie chart splitting regular vs. cached token costs.
+- **Cost Forecast**: Projected monthly spend based on current velocity.
+- **Monthly Burn History**: Historical monthly token totals with burn tier indicators.
+- **Monthly Achievements**: 30 unlockable badges based on usage milestones.
+- **Velocity Ticker**: Live token burn rate with trend indicators.
+- **Burn Intensity System**: Ambient fire particle effects (WebGL2 + Canvas 2D) that scale with monthly token usage — from a few floating embers at 20M tokens to a full-screen nuclear meltdown at 4B+. Seven tiers: cold, spark, warm, burning, blazing, inferno, meltdown. Toggleable from the header with localStorage persistence.
+- **Tier Preview**: Append `?flametier=meltdown` (or any tier name) to preview fire effects.
+- **Dynamic OG Image**: Server-generated Open Graph image with live stats and burn tier, served at `/api/og`.
+- **PWA Support**: Installable as a Progressive Web App with offline capability via service worker.
+- **Discord Webhooks**: Notifications for sync events and burn tier changes via Discord webhook.
+- **Mobile Hamburger Drawer**: Responsive mobile navigation with fire effects and theme controls.
+- **Error Boundaries**: Runtime and global error handlers with fallback UI and recovery buttons.
 - **Glassmorphism UI**: Frosted glass header and footer with backdrop blur, pill-style dark/light mode toggle, and one-click data refresh.
-- **Automatic Sync**: Built-in sync script reads directly from Claude Code's local session data.
+- **Automatic Sync**: Built-in sync script reads directly from Claude Code's local session data, with continuous watch mode.
 - **API Key Protection**: Write endpoints are protected with a bearer token so only you can push data.
 - **Konami Code Easter Egg**: Up Up Down Down Left Right Left Right B A triggers an explosive multi-wave fire animation.
 - **Free Tier Friendly**: Designed to run entirely on Cloudflare's free plan (Workers + Pages + D1).
@@ -68,7 +80,7 @@ Track your Claude API spending and token usage with a personal dashboard. Monito
 ```bash
 curl -X POST http://localhost:3000/api/usage \
   -H "Content-Type: application/json" \
-  -d '{"records":[{"model":"claude-opus-4","inputTokens":15000,"outputTokens":3000,"date":"2026-02-07"}]}'
+  -d '{"records":[{"model":"claude-opus-4","inputTokens":15000,"outputTokens":3000,"cacheCreationTokens":5000,"cacheReadTokens":2000,"date":"2026-02-07"}]}'
 ```
 
 ## Deployment to Cloudflare
@@ -160,11 +172,23 @@ alias protoburn-sync="pnpm --dir /path/to/protoburn sync"
 # Sync new usage since last run
 protoburn-sync
 
+# Continuous sync (push every 60m, fetch every 30m)
+pnpm sync:watch
+
+# Custom interval (push every 30m, fetch every 15m)
+pnpm sync --watch --interval 30
+
 # Re-sync all historical data
 protoburn-sync --full
 
 # Wipe the database and re-sync everything
 protoburn-sync --reset
+```
+
+To enable Discord webhook notifications for sync events and tier changes, set:
+
+```bash
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
 ```
 
 The script reads from two sources:
@@ -187,6 +211,8 @@ curl -X POST https://your-worker.workers.dev/api/usage \
         "model": "claude-opus-4",
         "inputTokens": 15000,
         "outputTokens": 3000,
+        "cacheCreationTokens": 5000,
+        "cacheReadTokens": 2000,
         "date": "2026-02-07"
       }
     ]
@@ -198,6 +224,8 @@ curl -X POST https://your-worker.workers.dev/api/usage \
 | `model` | string | Model identifier (e.g. `claude-opus-4-6`, `claude-sonnet-4-5`) |
 | `inputTokens` | number | Number of input tokens |
 | `outputTokens` | number | Number of output tokens |
+| `cacheCreationTokens` | number | _(optional)_ Cache write tokens (default 0) |
+| `cacheReadTokens` | number | _(optional)_ Cache read tokens (default 0) |
 | `date` | string | ISO date string, day granularity (`YYYY-MM-DD`) |
 
 ## Project Structure
@@ -235,6 +263,10 @@ protoburn/
 | `pnpm db:push` | Push schema to local database |
 | `pnpm db:migrate` | Run database migrations |
 | `pnpm sync` | Sync Claude Code usage to dashboard |
+| `pnpm sync:watch` | Continuous sync (push every 60m, fetch every 30m) |
+| `pnpm test` | Run all tests (Vitest) |
+| `pnpm test:watch` | Run tests in watch mode |
+| `pnpm test:coverage` | Run tests with coverage |
 | `pnpm cf:setup` | Authenticate Alchemy with Cloudflare |
 | `pnpm cf:deploy` | Deploy to Cloudflare |
 | `pnpm cf:destroy` | Tear down Cloudflare resources |
