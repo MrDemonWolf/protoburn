@@ -29,6 +29,7 @@ const API_URL =
   "https://protoburn-api.mrdemonwolf.workers.dev";
 
 const API_KEY = process.env.PROTOBURN_API_KEY ?? "";
+const DISCORD_WEBHOOK_URL = process.env.PROTOBURN_DISCORD_WEBHOOK ?? "";
 
 const CLAUDE_DIR = join(homedir(), ".claude");
 const STATE_FILE = join(CLAUDE_DIR, ".protoburn-last-sync");
@@ -462,6 +463,43 @@ async function syncOnce(full: boolean): Promise<boolean> {
   const count = await push(usage);
   console.log(`Pushed ${count} record(s) to protoburn.`);
   if (latestTs) saveLastSync(latestTs);
+
+  // Fire Discord webhook with sync summary
+  if (DISCORD_WEBHOOK_URL) {
+    const totalTokens = totalIn + totalOut + totalCW + totalCR;
+    let estCost = 0;
+    for (const [model, dates] of usage) {
+      for (const [, tokens] of dates) {
+        estCost += calculateCost(model, tokens.input, tokens.output, tokens.cacheCreation, tokens.cacheRead);
+      }
+    }
+    try {
+      await fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "ProtoBurn",
+          embeds: [{
+            title: "Sync Complete",
+            color: 0x00aced,
+            fields: [
+              { name: "Records", value: count.toLocaleString(), inline: true },
+              { name: "Input", value: totalIn.toLocaleString(), inline: true },
+              { name: "Output", value: totalOut.toLocaleString(), inline: true },
+              { name: "Cache Write", value: totalCW.toLocaleString(), inline: true },
+              { name: "Cache Read", value: totalCR.toLocaleString(), inline: true },
+              { name: "Est. Cost", value: `$${estCost.toFixed(2)}`, inline: true },
+            ],
+            timestamp: new Date().toISOString(),
+            footer: { text: "ProtoBurn" },
+          }],
+        }),
+      });
+    } catch {
+      // Don't let webhook failure break the sync
+    }
+  }
+
   return true;
 }
 

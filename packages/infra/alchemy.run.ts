@@ -28,6 +28,7 @@ export const server = await Worker("server", {
     OWNER_SITE: alchemy.env.OWNER_SITE ?? "mrdemonwolf.com",
     API_PLAN: process.env.API_PLAN ?? "Max",
     BILLING_RENEWAL_DAY: process.env.BILLING_RENEWAL_DAY ?? "6",
+    DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL ?? "",
   },
   crons: ["0 0 * * *"],
   dev: {

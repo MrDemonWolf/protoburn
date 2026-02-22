@@ -1,13 +1,15 @@
 import { trpcServer } from "@hono/trpc-server";
 import { createContext } from "@protoburn/api/context";
 import { appRouter } from "@protoburn/api/routers/index";
+import { sendDiscordWebhook, buildTierChangeEmbed } from "@protoburn/api/lib/discord";
 import db, { schema } from "@protoburn/db";
 import { env } from "@protoburn/env/server";
-import { sql, lt, sum } from "drizzle-orm";
+import { sql, lt, sum, and, gte } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { z } from "zod";
+import { getBurnTierName } from "./lib/burn-tiers";
 
 const app = new Hono();
 
@@ -63,6 +65,35 @@ app.post("/api/usage", async (c) => {
     return c.json({ error: parsed.error.flatten() }, 400);
   }
 
+  // Compute current month's tier before insert
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  const nextMonth = now.getMonth() === 11 ? 1 : now.getMonth() + 2;
+  const nextYear = now.getMonth() === 11 ? now.getFullYear() + 1 : now.getFullYear();
+  const monthEnd = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
+
+  const [beforeResult] = await db
+    .select({
+      total: sum(schema.tokenUsage.inputTokens).mapWith(Number),
+      totalOut: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+      totalCW: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+      totalCR: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
+    })
+    .from(schema.tokenUsage)
+    .where(
+      and(
+        gte(schema.tokenUsage.date, monthStart),
+        lt(schema.tokenUsage.date, monthEnd),
+      ),
+    );
+
+  const tokensBefore =
+    (beforeResult?.total ?? 0) +
+    (beforeResult?.totalOut ?? 0) +
+    (beforeResult?.totalCW ?? 0) +
+    (beforeResult?.totalCR ?? 0);
+  const tierBefore = getBurnTierName(tokensBefore);
+
   const rows = parsed.data.records.map((r) => ({
     model: r.model,
     inputTokens: r.inputTokens,
@@ -76,6 +107,39 @@ app.post("/api/usage", async (c) => {
   const BATCH_SIZE = 10;
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     await db.insert(schema.tokenUsage).values(rows.slice(i, i + BATCH_SIZE));
+  }
+
+  // Check if tier changed after insert
+  const discordUrl = env.DISCORD_WEBHOOK_URL;
+  if (discordUrl) {
+    const [afterResult] = await db
+      .select({
+        total: sum(schema.tokenUsage.inputTokens).mapWith(Number),
+        totalOut: sum(schema.tokenUsage.outputTokens).mapWith(Number),
+        totalCW: sum(schema.tokenUsage.cacheCreationTokens).mapWith(Number),
+        totalCR: sum(schema.tokenUsage.cacheReadTokens).mapWith(Number),
+      })
+      .from(schema.tokenUsage)
+      .where(
+        and(
+          gte(schema.tokenUsage.date, monthStart),
+          lt(schema.tokenUsage.date, monthEnd),
+        ),
+      );
+
+    const tokensAfter =
+      (afterResult?.total ?? 0) +
+      (afterResult?.totalOut ?? 0) +
+      (afterResult?.totalCW ?? 0) +
+      (afterResult?.totalCR ?? 0);
+    const tierAfter = getBurnTierName(tokensAfter);
+
+    if (tierAfter !== tierBefore) {
+      await sendDiscordWebhook(
+        discordUrl,
+        buildTierChangeEmbed(tierBefore, tierAfter, tokensAfter),
+      );
+    }
   }
 
   return c.json({ ok: true, count: rows.length });
