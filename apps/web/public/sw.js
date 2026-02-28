@@ -1,4 +1,4 @@
-const CACHE_NAME = "protoburn-v2";
+const CACHE_NAME = "protoburn-v3";
 const STATIC_ASSETS = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -19,6 +19,19 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Network-first helper: try network, update cache, fall back to cache
+function networkFirst(request) {
+  return fetch(request)
+    .then((response) => {
+      if (response.ok && request.method === "GET") {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+      }
+      return response;
+    })
+    .catch(() => caches.match(request));
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -36,17 +49,13 @@ self.addEventListener("fetch", (event) => {
 
   // Network-first for Next.js hashed chunks — ensures fresh assets after deploy
   if (url.pathname.startsWith("/_next/")) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.ok && request.method === "GET") {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(request))
-    );
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // Network-first for HTML navigation requests — ensures fresh page shell after deploy
+  if (request.mode === "navigate") {
+    event.respondWith(networkFirst(request));
     return;
   }
 
