@@ -23,7 +23,7 @@ export const server = await Worker("server", {
   compatibility: "node",
   bindings: {
     DB: db,
-    CORS_ORIGIN: "*",
+    CORS_ORIGIN: process.env.SITE_URL ?? "https://protoburn.mrdemonwolf.workers.dev",
     API_KEY: alchemy.env.API_KEY ?? "",
     OWNER_SITE: alchemy.env.OWNER_SITE ?? "mrdemonwolf.com",
     API_PLAN: process.env.API_PLAN ?? "Max",
@@ -43,7 +43,7 @@ export const web = await Website("protoburn", {
   name: "protoburn",
   cwd: "../../apps/web",
   build: {
-    command: "pnpm build",
+    command: "bun run build",
     env: {
       NEXT_PUBLIC_SERVER_URL: serverUrl,
       NEXT_PUBLIC_SITE_URL: process.env.SITE_URL ?? "https://protoburn.mrdemonwolf.workers.dev",
@@ -53,7 +53,7 @@ export const web = await Website("protoburn", {
   assets: "out",
   spa: true,
   dev: {
-    command: "pnpm dev:bare",
+    command: "bun dev:bare",
     domain: "localhost:3001",
   },
 });

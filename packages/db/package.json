@@ -5,6 +5,12 @@
     ".": {
       "default": "./src/index.ts"
     },
+    "./node": {
+      "default": "./src/node.ts"
+    },
+    "./schema-export": {
+      "default": "./src/schema-export.ts"
+    },
     "./*": {
       "default": "./src/*.ts"
     }
@@ -16,14 +22,14 @@
   },
   "dependencies": {
     "@protoburn/env": "workspace:*",
-    "dotenv": "catalog:",
+    "dotenv": "^17.2.2",
     "drizzle-orm": "^0.45.1",
-    "zod": "catalog:"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@protoburn/config": "workspace:*",
     "better-sqlite3": "^12.6.2",
     "drizzle-kit": "^0.31.8",
-    "typescript": "catalog:"
+    "typescript": "^5"
   }
 }

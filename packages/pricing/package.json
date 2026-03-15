@@ -1,0 +1,19 @@
+{
+  "name": "@protoburn/pricing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@protoburn/config": "workspace:*",
+    "typescript": "^5"
+  }
+}

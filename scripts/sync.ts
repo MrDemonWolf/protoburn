@@ -1,4 +1,4 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env bun
 /**
  * Sync Claude Code token usage to protoburn dashboard.
  *
@@ -7,11 +7,11 @@
  * Tracks last-sync timestamp to avoid duplicates.
  *
  * Usage:
- *   pnpm sync                    # sync new usage since last run
- *   pnpm sync --full             # re-sync everything
- *   pnpm sync --reset            # wipe DB, clear state, and re-sync everything
- *   pnpm sync --watch            # continuous mode: push every 60m, fetch every 30m
- *   pnpm sync --watch --interval 30  # push every 30m, fetch every 15m
+ *   bun sync                    # sync new usage since last run
+ *   bun sync --full             # re-sync everything
+ *   bun sync --reset            # wipe DB, clear state, and re-sync everything
+ *   bun sync --watch            # continuous mode: push every 60m, fetch every 30m
+ *   bun sync --watch --interval 30  # push every 30m, fetch every 15m
  */
 
 import {
@@ -290,33 +290,11 @@ async function resetDb() {
 }
 
 // ---------------------------------------------------------------------------
-// Pricing (mirrors apps/web/src/lib/pricing.ts)
+// Pricing (from shared @protoburn/pricing package)
 // ---------------------------------------------------------------------------
 
-const MODEL_PRICING: Record<string, { inputPerMillion: number; outputPerMillion: number; cacheWritePerMillion: number; cacheReadPerMillion: number }> = {
-  "haiku-4-5": { inputPerMillion: 1.0, outputPerMillion: 5.0, cacheWritePerMillion: 1.25, cacheReadPerMillion: 0.1 },
-  "sonnet-4-5": { inputPerMillion: 3.0, outputPerMillion: 15.0, cacheWritePerMillion: 3.75, cacheReadPerMillion: 0.3 },
-  "opus-4-6": { inputPerMillion: 5.0, outputPerMillion: 25.0, cacheWritePerMillion: 6.25, cacheReadPerMillion: 0.5 },
-};
-
-const DEFAULT_PRICING = MODEL_PRICING["sonnet-4-5"]!;
-
-export function getPricingTier(model: string) {
-  for (const [pattern, pricing] of Object.entries(MODEL_PRICING)) {
-    if (model.includes(pattern)) return pricing;
-  }
-  return DEFAULT_PRICING;
-}
-
-export function calculateCost(model: string, inputTokens: number, outputTokens: number, cacheCreationTokens = 0, cacheReadTokens = 0): number {
-  const tier = getPricingTier(model);
-  return (
-    (inputTokens / 1_000_000) * tier.inputPerMillion +
-    (outputTokens / 1_000_000) * tier.outputPerMillion +
-    (cacheCreationTokens / 1_000_000) * tier.cacheWritePerMillion +
-    (cacheReadTokens / 1_000_000) * tier.cacheReadPerMillion
-  );
-}
+import { getTier as getPricingTier, calculateCost } from "@protoburn/pricing";
+export { getPricingTier, calculateCost };
 
 // ---------------------------------------------------------------------------
 // Fetch dashboard data from API (pull)

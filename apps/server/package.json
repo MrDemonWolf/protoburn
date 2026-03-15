@@ -9,25 +9,30 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.3",
     "@hono/trpc-server": "^0.4.0",
     "@protoburn/api": "workspace:*",
+    "@protoburn/auth": "workspace:*",
     "@protoburn/db": "workspace:*",
     "@protoburn/env": "workspace:*",
+    "@protoburn/pricing": "workspace:*",
     "@resvg/resvg-wasm": "^2.6.2",
-    "@trpc/server": "catalog:",
-    "dotenv": "catalog:",
+    "@trpc/server": "^11.7.2",
+    "dotenv": "^17.2.2",
     "drizzle-orm": "^0.45.1",
-    "hono": "catalog:",
+    "hono": "^4.8.2",
+    "node-cron": "^3.0.3",
     "satori": "^0.19.2",
-    "zod": "catalog:"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "catalog:",
+    "@cloudflare/workers-types": "^4.20251213.0",
     "@protoburn/config": "workspace:*",
     "@types/node": "^22.13.14",
-    "alchemy": "catalog:",
+    "@types/node-cron": "^3.0.11",
+    "alchemy": "^0.82.1",
     "tsdown": "^0.16.5",
-    "typescript": "catalog:",
-    "wrangler": "catalog:"
+    "typescript": "^5",
+    "wrangler": "^4.54.0"
   }
 }

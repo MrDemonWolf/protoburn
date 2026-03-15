@@ -6,6 +6,7 @@
     "apps/*",
     "packages/*"
   ],
+  "packageManager": "bun@1.3.10",
   "type": "module",
   "scripts": {
     "dev": "turbo dev",
@@ -19,9 +20,9 @@
     "db:migrate": "turbo -F @protoburn/db db:migrate",
     "cf:deploy": "turbo -F @protoburn/infra deploy",
     "cf:destroy": "turbo -F @protoburn/infra destroy",
-    "cf:setup": "pnpm -F @protoburn/infra exec alchemy configure",
-    "sync": "tsx scripts/sync.ts",
-    "sync:watch": "tsx scripts/sync.ts --watch",
+    "cf:setup": "bun run --cwd packages/infra alchemy configure",
+    "sync": "bun scripts/sync.ts",
+    "sync:watch": "bun scripts/sync.ts --watch",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest run --coverage",
@@ -31,27 +32,19 @@
   },
   "dependencies": {
     "@protoburn/env": "workspace:*",
-    "dotenv": "catalog:",
-    "zod": "catalog:"
+    "@protoburn/pricing": "workspace:*",
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "catalog:",
+    "@cloudflare/workers-types": "^4.20251213.0",
     "@protoburn/config": "workspace:*",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.13.14",
     "@vitest/coverage-v8": "^4.0.18",
     "better-sqlite3": "^12.6.2",
-    "tsx": "^4.21.0",
     "turbo": "^2.6.3",
-    "typescript": "catalog:",
+    "typescript": "^5",
     "vitest": "^4.0.18"
-  },
-  "packageManager": "pnpm@10.29.1",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "esbuild",
-      "workerd"
-    ]
   }
 }

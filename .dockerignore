@@ -1,0 +1,13 @@
+node_modules
+.git
+.github
+.alchemy
+.turbo
+.next
+out
+dist
+*.log
+.env
+.env.*
+!.env.example
+data

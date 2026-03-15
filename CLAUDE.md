@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**ProtoBurn** is a Claude API token usage dashboard that tracks token consumption (including prompt caching), calculates estimated costs, and displays usage analytics. Built as a full-stack app deployed on Cloudflare infrastructure.
+**ProtoBurn** is a personal Claude API token burn tracker that tracks token consumption (including prompt caching), calculates estimated costs, and displays usage analytics. Deploys on Cloudflare Workers + D1 or self-hosts via Docker + SQLite.
 
 ## Repository
 
@@ -13,35 +13,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-- **Monorepo**: Turbo + pnpm workspaces
+- **Monorepo**: Turbo + Bun workspaces
 - **Frontend** (`apps/web`): Next.js 16 (static export), React 19, Tailwind CSS v4, shadcn/ui (Base UI primitives), Recharts, Lucide icons
-- **Backend** (`apps/server`): Hono with tRPC integration, API key auth for writes
-- **Database** (`packages/db`): Drizzle ORM + Cloudflare D1 (SQLite). Single `tokenUsage` table (model, inputTokens, outputTokens, cacheCreationTokens, cacheReadTokens, date)
-- **API** (`packages/api`): Shared tRPC router definitions used by both web and server
+- **Backend** (`apps/server`): Hono with tRPC integration, API key auth for writes. App factory pattern (`createApp(deps)`) supports both CF Workers and Node.js entry points.
+- **Database** (`packages/db`): Drizzle ORM with D1 (Cloudflare) and better-sqlite3 (Node.js) adapters. Tables: `tokenUsage`, `monthlyUsage`, Better Auth tables (`user`, `session`, `account`, `verification`), `api_keys`.
+- **API** (`packages/api`): Shared tRPC router definitions; `db` passed via tRPC context (not module-level import). Uses `@protoburn/db/schema-export` for schema-only imports.
+- **Auth** (`packages/auth`): Better Auth config with Drizzle adapter (optional, enabled via `BETTER_AUTH_SECRET` env var)
+- **Pricing** (`packages/pricing`): Shared pricing tiers and burn tier thresholds — single source of truth used by web, server, and sync script
 - **Infra** (`packages/infra`): Alchemy for Cloudflare Workers + D1 + static site deployment
-- **Env** (`packages/env`): T3 Env pattern with Zod validation (`NEXT_PUBLIC_SERVER_URL`, `NEXT_PUBLIC_API_PLAN` for web; `DB`/`API_KEY`/`CORS_ORIGIN`/`API_PLAN` for server)
+- **Env** (`packages/env`): T3 Env pattern with Zod validation. Separate entries for Cloudflare (`./server`) and Node.js (`./server-node`)
 - **Config** (`packages/config`): Shared `tsconfig.base.json`
 
 ## Common Commands
 
 ```bash
-pnpm dev              # Start all apps (turbo)
-pnpm dev:web          # Start web only (via alchemy dev)
-pnpm dev:server       # Start server only
-pnpm build            # Build all
-pnpm --filter web build  # Build web only
-pnpm check-types      # TypeScript check all packages
-pnpm db:push          # Push schema to D1
-pnpm db:generate      # Generate Drizzle migrations
-pnpm db:migrate       # Run migrations
-pnpm cf:deploy        # Deploy to Cloudflare (web + server + D1)
-pnpm cf:destroy       # Tear down Cloudflare resources
-pnpm test             # Run all tests (vitest)
-pnpm test:watch       # Watch mode
-pnpm test:coverage    # Run with coverage
-pnpm sync             # Sync Claude Code token usage (scripts/sync.ts)
-pnpm sync:watch       # Continuous sync: push every 60m, fetch dashboard every 30m
-pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
+bun dev              # Start all apps (turbo)
+bun dev:web          # Start web only (via alchemy dev)
+bun dev:server       # Start server only
+bun run build        # Build all
+bun run --cwd apps/web build  # Build web only
+bun run check-types  # TypeScript check all packages
+bun db:push          # Push schema to D1
+bun db:generate      # Generate Drizzle migrations
+bun db:migrate       # Run migrations
+bun cf:deploy        # Deploy to Cloudflare (web + server + D1)
+bun cf:destroy       # Tear down Cloudflare resources
+bun run test         # Run all tests (vitest)
+bun test:watch       # Watch mode
+bun test:coverage    # Run with coverage
+bun sync             # Sync Claude Code token usage (scripts/sync.ts)
+bun sync:watch       # Continuous sync: push every 60m, fetch dashboard every 30m
+bun sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 ```
 
 ## Architecture Notes
@@ -49,7 +51,16 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 - Frontend uses `useQuery(trpc.x.queryOptions())` pattern (tRPC v11 + TanStack React Query) — NOT the older `trpc.x.useQuery()` pattern
 - UI components use `@base-ui/react` primitives (not `@radix-ui`) with shadcn "base-lyra" style
 - `next.config.ts` has `output: "export"` (static SPA) and `reactCompiler: true`
-- Server binds tRPC at `/trpc` and has REST endpoints at `/api/usage`
+- Server uses app factory pattern: `createApp(deps)` in `apps/server/src/app.ts` accepts `db` and `env` as parameters
+- Cloudflare entry: `apps/server/src/index.ts` — passes CF bindings to `createApp`
+- Node.js entry: `apps/server/src/node.ts` — uses `@hono/node-server` + `node-cron` for scheduled tasks
+- tRPC router receives `db` via context (set by middleware in `app.ts`), not via module-level import
+- Server binds tRPC at `/trpc`, REST endpoints at `/api/usage`, Better Auth at `/api/auth/*`
+- CORS is restricted to `SITE_URL` (not wildcard), API key is required (no open access fallback)
+- Write endpoints are rate-limited (30 req/min per IP via in-memory sliding window)
+- Both tRPC `push` mutation and REST `/api/*` POST/DELETE require Bearer token auth
+- Pricing is centralized in `@protoburn/pricing` — `apps/web/src/lib/pricing.ts`, `apps/server/src/lib/pricing.ts`, and `scripts/sync.ts` re-export from it
+- Burn tier thresholds are also in `@protoburn/pricing` — `apps/web/src/lib/burn-tiers.ts` and `apps/server/src/lib/burn-tiers.ts` re-export from it
 - Prompt caching tokens (`cache_creation_input_tokens`, `cache_read_input_tokens`) are tracked from Claude API JSONL session data and stored separately from regular input tokens; stats-cache historical data defaults cache fields to 0
 - **Monthly token totals must use `m.totalTokens`** (which includes all token types: input, output, cache write, cache read) — NOT `m.inputTokens + m.outputTokens`. This affects burn tier calculation, header tier display, tab title, and MeltdownShake.
 - API plan name is configurable via `API_PLAN` env var (defaults to "Max"); passed to server as binding and to web as `NEXT_PUBLIC_API_PLAN` at build time
@@ -62,6 +73,14 @@ pnpm sync --watch --interval 30  # Custom: push every 30m, fetch every 15m
 - Server deploys as a separate Worker
 - D1 database with migrations from `packages/db/drizzle`
 - `alchemy.env` proxy throws on missing vars — use `process.env.X ?? "default"` for optional bindings like `API_PLAN`
+
+### Docker Deployment
+- `Dockerfile`: Multi-stage build (builder [oven/bun:1] → server [oven/bun:1-alpine] → web [nginx:alpine])
+- `docker-compose.yml`: server + web services with persistent SQLite volume
+- `nginx.conf`: SPA routing for static web assets
+- Server uses `@hono/node-server` with `better-sqlite3` at `DATABASE_PATH` (default `./data/protoburn.db`)
+- Node.js entry uses `node-cron` for daily aggregation (same logic as CF `scheduled()`)
+- Better Auth is optional — enabled when `BETTER_AUTH_SECRET` env var is set
 
 ## Branding
 

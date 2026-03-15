@@ -1,283 +1,128 @@
-# protoburn - Claude API Cost & Usage Dashboard
+# ProtoBurn — Your Personal Claude API Token Burn Tracker
 
-Track your Claude API spending and token usage with a personal dashboard. Monitor monthly costs with a fire intensity indicator, see your top 3 most-used models on a trophy leaderboard, and visualize usage trends over time — all self-hosted on Cloudflare's free tier.
+Track your Claude API token burn, monitor spending, and watch your usage go up in flames. Self-hosted, open-source, and built for power users.
+
+**Deploy on Cloudflare (free tier)** or **self-host with Docker/Coolify**.
 
 ## Features
 
-- **Monthly Cost Tracking**: Estimated API spend per month with a fire indicator that intensifies as costs rise.
-- **Top Models Leaderboard**: Trophy-ranked top 3 models with gold/silver/bronze medals and per-model cost.
-- **Token Usage Stats**: Real-time cards showing total, input, output, cache write, and cache read tokens — all with odometer roll-up animations.
-- **Prompt Caching Tracking**: Tracks cache creation and cache read tokens separately from regular input tokens, with accurate per-model cost calculation.
-- **Time-Series Charts**: Stacked area charts (input, output, cache write, cache read) with weekly navigation to browse historical data.
-- **Heatmap Calendar**: GitHub-contribution-style 90-day grid showing daily token usage intensity with hover tooltips.
-- **Cost Breakdown Donut**: Pie chart splitting regular vs. cached token costs.
-- **Cost Forecast**: Projected monthly spend based on current velocity.
-- **Monthly Burn History**: Historical monthly token totals with burn tier indicators.
-- **Monthly Achievements**: 30 unlockable badges based on usage milestones.
-- **Velocity Ticker**: Live token burn rate with trend indicators.
-- **Burn Intensity System**: Ambient fire particle effects (WebGL2 + Canvas 2D) that scale with monthly token usage — from a few floating embers at 20M tokens to a full-screen nuclear meltdown at 4B+. Seven tiers: cold, spark, warm, burning, blazing, inferno, meltdown. Toggleable from the header with localStorage persistence.
-- **Tier Preview**: Append `?flametier=meltdown` (or any tier name) to preview fire effects.
-- **Dynamic OG Image**: Server-generated Open Graph image with live stats and burn tier, served at `/api/og`.
-- **PWA Support**: Installable as a Progressive Web App with offline capability via service worker.
-- **Discord Webhooks**: Notifications for sync events and burn tier changes via Discord webhook.
-- **Mobile Hamburger Drawer**: Responsive mobile navigation with fire effects and theme controls.
-- **Error Boundaries**: Runtime and global error handlers with fallback UI and recovery buttons.
-- **Glassmorphism UI**: Frosted glass header and footer with backdrop blur, pill-style dark/light mode toggle, and one-click data refresh.
-- **Automatic Sync**: Built-in sync script reads directly from Claude Code's local session data, with continuous watch mode.
-- **API Key Protection**: Write endpoints are protected with a bearer token so only you can push data.
-- **Konami Code Easter Egg**: Up Up Down Down Left Right Left Right B A triggers an explosive multi-wave fire animation.
-- **Free Tier Friendly**: Designed to run entirely on Cloudflare's free plan (Workers + Pages + D1).
+- **Monthly Cost Tracking**: Estimated API spend with fire intensity that scales with usage
+- **Top Models Leaderboard**: Trophy-ranked top 3 models with gold/silver/bronze medals
+- **Token Usage Stats**: Real-time cards with odometer roll-up animations for total, input, output, cache write, and cache read tokens
+- **Prompt Caching Analytics**: Separate tracking for cache creation and cache read tokens with accurate per-model cost calculation
+- **Time-Series Charts**: Stacked area charts (input, output, cache write, cache read) with weekly navigation
+- **Heatmap Calendar**: GitHub-contribution-style 90-day grid with hover tooltips
+- **Cost Breakdown & Forecast**: Donut chart + projected monthly spend based on current velocity
+- **Monthly Burn History**: Historical monthly totals with burn tier indicators
+- **Monthly Achievements**: 30 unlockable badges based on usage milestones
+- **Velocity Ticker**: Live token burn rate with trend indicators
+- **Burn Intensity System**: Ambient fire particle effects (WebGL2 + Canvas 2D) scaling from a few embers to nuclear meltdown across 7 tiers: cold, spark, warm, burning, blazing, inferno, meltdown
+- **Dynamic OG Image**: Server-generated Open Graph image with live stats and burn tier
+- **PWA Support**: Installable with offline capability
+- **Discord Webhooks**: Notifications for sync events and burn tier changes
+- **Admin Panel**: API key management and data management (with optional Better Auth)
+- **Setup Wizard**: First-user account creation with API key generation
+- **API Key Protection**: Write endpoints are protected with Bearer token auth; rate-limited to 30 req/min
+- **Konami Code Easter Egg**: Explosive multi-wave fire animation
+- **Dual Deployment**: Cloudflare Workers + D1 (free tier) or Docker + SQLite (self-hosted)
 
-## Getting Started
+## Quick Start
 
-### Prerequisites
+### Option 1: Cloudflare (recommended for single user)
 
-- Node.js 20.x or later
-- pnpm 10.x
-- A [Cloudflare account](https://dash.cloudflare.com/sign-up) (free tier works)
+```bash
+git clone https://github.com/MrDemonWolf/protoburn.git
+cd protoburn
+bun install
+bun cf:setup
+# Set API_KEY in .env
+bun cf:deploy
+```
 
-### Setup
+See [docs/deploy-cloudflare.md](docs/deploy-cloudflare.md) for full instructions.
 
-1. Clone the repository:
+### Option 2: Docker (self-hosted / Coolify)
 
-   ```bash
-   git clone https://github.com/MrDemonWolf/protoburn.git
-   cd protoburn
-   ```
+```bash
+git clone https://github.com/MrDemonWolf/protoburn.git
+cd protoburn
+cp .env.example .env
+# Edit .env with your API_KEY
+docker compose up -d
+```
 
-2. Install dependencies:
-
-   ```bash
-   pnpm install
-   ```
-
-3. Copy environment variables:
-
-   ```bash
-   cp apps/server/.env.example apps/server/.env
-   cp apps/web/.env.example apps/web/.env
-   cp packages/infra/.env.example packages/infra/.env
-   ```
-
-4. Generate a Drizzle migration and push the schema to local SQLite:
-
-   ```bash
-   pnpm db:generate
-   pnpm db:push
-   ```
-
-5. Start the development servers:
-
-   ```bash
-   pnpm dev
-   ```
-
-- **Web**: http://localhost:3001
+- **Web**: http://localhost:8080
 - **API**: http://localhost:3000
+- **Setup**: http://localhost:8080/setup (first-time only)
 
-### Push test data locally
-
-```bash
-curl -X POST http://localhost:3000/api/usage \
-  -H "Content-Type: application/json" \
-  -d '{"records":[{"model":"claude-opus-4","inputTokens":15000,"outputTokens":3000,"cacheCreationTokens":5000,"cacheReadTokens":2000,"date":"2026-02-07"}]}'
-```
-
-## Deployment to Cloudflare
-
-This project uses [Alchemy](https://alchemy.run) to deploy the **API server** as a Cloudflare Worker and the **web dashboard** as a Cloudflare Pages site, with a D1 (SQLite) database.
-
-### Step 1: Authenticate with Cloudflare
-
-```bash
-pnpm cf:setup
-```
-
-This opens a browser to authorize Alchemy with your Cloudflare account.
-
-Alternatively, set an API token directly:
-
-```bash
-export CLOUDFLARE_API_TOKEN=your-api-token-here
-```
-
-Create a token at https://dash.cloudflare.com/profile/api-tokens with these permissions:
-- **Account** > Workers Scripts > Edit
-- **Account** > D1 > Edit
-- **Account** > Cloudflare Pages > Edit
-
-### Step 2: Configure environment
-
-Update `packages/infra/.env` with a secure password for Alchemy state:
-
-```
-ALCHEMY_PASSWORD=your-secure-password
-```
-
-Optionally set an API key in `apps/server/.env` to protect write endpoints:
-
-```
-API_KEY=your-secret-api-key
-```
-
-Generate one with:
-
-```bash
-openssl rand -hex 32
-```
-
-### Step 3: Deploy
-
-```bash
-pnpm cf:deploy
-```
-
-This will:
-1. Create a D1 database and run migrations
-2. Deploy the Hono API server as a Cloudflare Worker
-3. Build the Next.js dashboard as a static site
-4. Deploy the static site to Cloudflare Pages
-5. Print the URLs for both services
-
-### Subsequent deploys
-
-```bash
-pnpm cf:deploy
-```
-
-### Tear down
-
-```bash
-pnpm cf:destroy
-```
-
-This removes all Cloudflare resources (Worker, Pages, D1 database).
+See [docs/deploy-docker.md](docs/deploy-docker.md) for full instructions including Coolify.
 
 ## Syncing Claude Code Usage
 
 The included sync script reads token usage directly from Claude Code's local data (`~/.claude/`) and pushes it to your dashboard.
 
-### Setup
-
-Add to your `~/.zshrc` (or `~/.bashrc`):
-
 ```bash
-export PROTOBURN_API_KEY="your-api-key-here"
-alias protoburn-sync="pnpm --dir /path/to/protoburn sync"
-```
+export PROTOBURN_API_KEY="your-api-key"
+export PROTOBURN_API_URL="https://your-api.workers.dev"  # or http://localhost:3000
 
-### Usage
-
-```bash
-# Sync new usage since last run
-protoburn-sync
+# One-time sync
+bun sync
 
 # Continuous sync (push every 60m, fetch every 30m)
-pnpm sync:watch
-
-# Custom interval (push every 30m, fetch every 15m)
-pnpm sync --watch --interval 30
+bun sync:watch
 
 # Re-sync all historical data
-protoburn-sync --full
-
-# Wipe the database and re-sync everything
-protoburn-sync --reset
+bun sync --full
 ```
-
-To enable Discord webhook notifications for sync events and tier changes, set:
-
-```bash
-export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
-```
-
-The script reads from two sources:
-- **`~/.claude/stats-cache.json`** for historical daily data (survives session rotation)
-- **Session JSONL files** in `~/.claude/projects/` for current-day granular data
-
-A `.protoburn-last-sync` file in `~/.claude/` tracks the last sync timestamp to avoid duplicates.
-
-## Pushing Usage Data Manually
-
-The `POST /api/usage` endpoint accepts token usage records via curl or any HTTP client:
-
-```bash
-curl -X POST https://your-worker.workers.dev/api/usage \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-api-key" \
-  -d '{
-    "records": [
-      {
-        "model": "claude-opus-4",
-        "inputTokens": 15000,
-        "outputTokens": 3000,
-        "cacheCreationTokens": 5000,
-        "cacheReadTokens": 2000,
-        "date": "2026-02-07"
-      }
-    ]
-  }'
-```
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `model` | string | Model identifier (e.g. `claude-opus-4-6`, `claude-sonnet-4-5`) |
-| `inputTokens` | number | Number of input tokens |
-| `outputTokens` | number | Number of output tokens |
-| `cacheCreationTokens` | number | _(optional)_ Cache write tokens (default 0) |
-| `cacheReadTokens` | number | _(optional)_ Cache read tokens (default 0) |
-| `date` | string | ISO date string, day granularity (`YYYY-MM-DD`) |
 
 ## Project Structure
 
 ```
 protoburn/
 ├── apps/
-│   ├── web/                 # Next.js frontend (static export)
-│   │   └── src/
-│   │       ├── app/             # Pages & layout
-│   │       └── components/
-│   │           ├── dashboard/       # Stats cards, chart, top models leaderboard
-│   │           └── ui/              # shadcn/ui components
-│   └── server/              # Hono API server (Cloudflare Worker)
-│       └── src/
-│           └── index.ts         # tRPC + REST endpoints
+│   ├── web/              # Next.js 16 static SPA (dashboard UI)
+│   └── server/           # Hono API server (CF Workers or Node.js)
 ├── packages/
-│   ├── api/                 # tRPC router definitions
-│   ├── db/                  # Drizzle ORM schema & migrations
-│   ├── env/                 # Cloudflare Workers env bindings
-│   ├── config/              # Shared TypeScript config
-│   └── infra/               # Alchemy deployment config
-└── scripts/
-    └── sync.ts              # Claude Code usage sync script
+│   ├── api/              # Shared tRPC router definitions
+│   ├── auth/             # Better Auth configuration
+│   ├── config/           # Shared TypeScript config
+│   ├── db/               # Drizzle ORM schema + adapters (D1 + SQLite)
+│   ├── env/              # T3 Env validation (CF + Node.js entries)
+│   ├── infra/            # Alchemy (Cloudflare deployment)
+│   └── pricing/          # Shared pricing & burn tier logic
+├── scripts/
+│   └── sync.ts           # Claude Code usage sync script
+├── docs/                 # Deployment & reference docs
+├── Dockerfile            # Multi-stage Docker build
+└── docker-compose.yml
 ```
 
-## Development Scripts
+## Documentation
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all apps in development mode |
-| `pnpm build` | Build all applications |
-| `pnpm check-types` | Run TypeScript type checking |
-| `pnpm db:generate` | Generate Drizzle migration files |
-| `pnpm db:push` | Push schema to local database |
-| `pnpm db:migrate` | Run database migrations |
-| `pnpm sync` | Sync Claude Code usage to dashboard |
-| `pnpm sync:watch` | Continuous sync (push every 60m, fetch every 30m) |
-| `pnpm test` | Run all tests (Vitest) |
-| `pnpm test:watch` | Run tests in watch mode |
-| `pnpm test:coverage` | Run tests with coverage |
-| `pnpm cf:setup` | Authenticate Alchemy with Cloudflare |
-| `pnpm cf:deploy` | Deploy to Cloudflare |
-| `pnpm cf:destroy` | Tear down Cloudflare resources |
+- [Deploy to Cloudflare](docs/deploy-cloudflare.md)
+- [Deploy with Docker](docs/deploy-docker.md) (includes Coolify)
+- [API Reference](docs/api.md)
+- [Architecture](docs/architecture.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+## Development
+
+```bash
+bun install
+bun dev          # Start all apps
+bun run test     # Run tests (vitest)
+bun run check-types  # TypeScript check
+bun run build    # Build all
+```
 
 ## Tech Stack
 
-- **Frontend**: [Next.js](https://nextjs.org/) 16, [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Recharts](https://recharts.org/), Montserrat + Roboto fonts
-- **Backend**: [Hono](https://hono.dev/), [tRPC](https://trpc.io/), [Drizzle ORM](https://orm.drizzle.team/)
-- **Database**: [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite)
-- **Deployment**: [Alchemy](https://alchemy.run), Cloudflare Workers + Pages
-- **Monorepo**: [Turborepo](https://turbo.build/), pnpm workspaces
+- **Frontend**: Next.js 16, React 19, Tailwind CSS v4, shadcn/ui, Recharts
+- **Backend**: Hono, tRPC v11, Drizzle ORM
+- **Auth**: Better Auth (optional, for self-hosted admin panel)
+- **Database**: Cloudflare D1 or SQLite (via better-sqlite3)
+- **Deployment**: Cloudflare Workers or Docker + nginx
+- **Monorepo**: Turborepo + Bun workspaces
 
 ## License
 
